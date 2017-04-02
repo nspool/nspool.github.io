@@ -1,0 +1,109 @@
+  <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    
+    <title> Bruteforcing XOR encrypted PHP cookies </title>
+    
+	<link rel="stylesheet" href="https://nspool.github.io/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/theme.css" />
+    
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="nspool&#39;s blog" />
+</head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-right">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://nspool.github.io">nspool&#39;s blog</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-right">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li><a href="/contact/" >Contact</a></li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <div class="container page-wrap">
+      <h1>Bruteforcing XOR encrypted PHP cookies</h1>
+      <small class="post-meta">Jan 13, 2015</small>
+      <div class="post-content">
+        <p>In days part there were sites known to store login status in a client-side cookie obscured by a XOR cyper. When first visting the site some code like this would run:</p>
+
+
+$cookie = xor_crypt($json_encode(array("login"=>"false")));
+
+
+<p>Then <code>$cookie</code> would be set on the client side, something like <code>data=GkAPXlVaD0BZE1RSDREGE08=</code>. A successful login would containg a similar:</p>
+
+
+$cookie = xor_crypt($json_encode(array("login"=>"true")));
+
+
+<p>That would result in the cookie <code>data=GkAPXlVaD0BZE0ZBFAdBTA==</code>. Looking at there two values it is plain that they are very similar. That only a few positions have changed indicate a basic <a href="http://en.wikipedia.org/wiki/Symmetric-key_algorithm">symmetric cypher</a>, in this case just a simple XOR of the JSON value against a fixed key.</p>
+
+<p>While it is trivial to brute-force the key, it is more fun to guess. A website setting a single long key might indicate a serialized array and logging in and out gives some indicate to what is being set. Then we can determine the key:</p>
+
+
+$ct = base64_decode("GkAPXlVaD0BZE1RSDREGE08=");
+$pt = json_encode(array("login"=>"false"));
+$key = "";
+
+for($i=0;$i<strlen($ct);$i++) {
+  $key .= $ct[$i] ^ $pt[$i % strlen($pt)];
+}
+
+
+<p>This gives <code>abc123abc123abc123abc1 ..</code> which is both human readable and contains repetitive.</p>
+
+<p>Now it is just a matter of determining the value of <code>login</code> that we desire and re-encoding the cookie.</p>
+
+        
+      </div>
+    </div>
+    <footer class="site-footer">
+	<div class="container">
+		<h4>nspool&#39;s blog</h4>
+		<div class="row">
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>Programming to math.. and back again!</p>
+					<a href="mailto:"></a>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>
+						<span class="fa fa-fw fa-github"></span>
+						<a href="https://github.com/nspool">nspool</a>
+						<br>
+						<span class="fa fa-fw fa-twitter"></span>
+						<a href="https://twitter.com/"></a>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+
+    <script src="https://nspool.github.io/js/jquery-2.1.4.min.js"></script>
+<script src="https://nspool.github.io/js/bootstrap.min.js"></script>
+
+  </body>
+</html>

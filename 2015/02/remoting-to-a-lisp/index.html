@@ -1,0 +1,132 @@
+  <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    
+    <title> Write a Lisp web app over SSH with Emacs </title>
+    
+	<link rel="stylesheet" href="https://nspool.github.io/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/theme.css" />
+    
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="nspool&#39;s blog" />
+</head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-right">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://nspool.github.io">nspool&#39;s blog</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-right">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li><a href="/contact/" >Contact</a></li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <div class="container page-wrap">
+      <h1>Write a Lisp web app over SSH with Emacs</h1>
+      <small class="post-meta">Feb 4, 2015</small>
+      <div class="post-content">
+        <p>After reading about <a href="http://www.flownet.com/gat/jpl-lisp.html">the rise and fall of Lisp at the Jet Propulsion Lab JPL</a> I refresh my Lisp experience. Now I can hack on a Lisp web service hosted on a remote server from within Emacs from my laptop.</p>
+
+<p>Setting up a Lisp dev environment is easy: the instructions at <a href="http://www.cliki.net/Getting%20Started">Common Lisp Wiki</a> will give you a GNU/Emacs with <a href="http://common-lisp.net/project/slime/">SLIME mode</a> package installed. For a remote development setup, both the remote server and local dev machine should have <a href="http://www.sbcl.org/">Steel Bank Common Lisp</a> along with the <a href="http://www.quicklisp.org/">QuickLisp</a> package manager installed.</p>
+
+<p>The <em>SLIME</em> package provides an Emacs major-mode for Common Lisp development. Similar to the <a href="http://en.wikipedia.org/wiki/Sam_(text_editor)">Sam text editor</a>, the SLIME uses a seperate backend server that it communicates with over a network port. It is that server, named <em>Swank</em>, that is loaded into the Lisp interpreter. This means that on the target box we can just install the <em>Swank</em> backend and then communicate with it over SSH.</p>
+
+<p>Add the following to the <code>.sbclrc</code> on the remote box to load <em>Swank</em> when SBCL is started:</p>
+
+
+; Setup Swank
+(ql:quickload "swank")
+(require 'asdf)
+(asdf:oos 'asdf:load-op 'swank)
+(setf swank:*communication-style* :fd-handler)
+(swank:create-server :dont-close t)
+
+
+<p>Now in a seperate terminal window start a new instance of SSH to the remote machine, and forward the local port <code>4007</code> to the remote port <code>4005</code> which is used by <em>Swank</em>:
+
+ssh -C -L4007:127.0.0.1:4005 $USER@$REMOTEIP
+</p>
+
+<p>Now tell <em>SLIME</em> to connect to the remote machine. In Emacs type <code>M-x slime-connect</code> and choose <code>127.0.0.1</code> and port <code>4007</code>.</p>
+
+<p>And that&rsquo;s it! You will now be interacting with the REPL of the remote machine. For bonus points we can start a simple web server on the remote box just to prove we&rsquo;ve done it. If you type this into the REPL it will load the <a href="http://clacklisp.org/tutorial/02-getting-clack.html">Clack web framwork</a> and serve up a simple Hello, World on port 5000:</p>
+
+
+(ql:quickload :clack)
+(clack:clackup
+  (lambda (env)
+    (declare (ignore env))
+    '(200 (:content-type "text/plain")(break) ("Hello, Clack!"))))
+
+
+<p>Use Curl on the development machine and you should see:</p>
+
+
+curl http://$REMOTEIP:5000
+Hello, Clack!
+
+
+<p>To change the server text to <code>Hello, World!</code>:</p>
+
+
+(clack:stop *)
+(clack:clackup
+  (lambda (env)
+  (declare (ignore env))
+  '(200 (:content-type "text/plain")(break) ("Hello, World!"))))
+
+
+<p>Enjoy!</p>
+
+        
+      </div>
+    </div>
+    <footer class="site-footer">
+	<div class="container">
+		<h4>nspool&#39;s blog</h4>
+		<div class="row">
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>Programming to math.. and back again!</p>
+					<a href="mailto:"></a>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>
+						<span class="fa fa-fw fa-github"></span>
+						<a href="https://github.com/nspool">nspool</a>
+						<br>
+						<span class="fa fa-fw fa-twitter"></span>
+						<a href="https://twitter.com/"></a>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+
+    <script src="https://nspool.github.io/js/jquery-2.1.4.min.js"></script>
+<script src="https://nspool.github.io/js/bootstrap.min.js"></script>
+
+  </body>
+</html>

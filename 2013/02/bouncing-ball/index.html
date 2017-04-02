@@ -1,0 +1,200 @@
+  <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    
+    <title> Getting Started with Plan 9 graphics programming </title>
+    
+	<link rel="stylesheet" href="https://nspool.github.io/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/theme.css" />
+    
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="nspool&#39;s blog" />
+</head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-right">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://nspool.github.io">nspool&#39;s blog</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-right">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li><a href="/contact/" >Contact</a></li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <div class="container page-wrap">
+      <h1>Getting Started with Plan 9 graphics programming</h1>
+      <small class="post-meta">Feb 22, 2013</small>
+      <div class="post-content">
+        <p><img src="ball.png" alt="Plan 9 bouncing ball demo" /></p>
+
+<p>Where to start writing apps for Plan 9 from Bell Labs? Most of the documentation around focuses on the shell and the file system. The tutorial explains how to write a simple bouncing ball app for the Plan 9 UI.</p>
+
+<p>First, install either <a href="http://plan9.bell-labs.com/plan9/">the official Plan 9 distribution</a> or the <a href="http://code.google.com/p/plan9front/">community fork 9front</a>. If you are only interested in experimenting with the Plan 9 GUI, I would recommend 9front. However if you intend on understanding Plan 9 as an operating systems research project <em>in the way that it was intended</em> then start with the official distribution, set up the prerequisite file, CPU and auth servers and go from there.</p>
+
+<p>Let&rsquo;s create a simple bouncing ball demo with an exit menu to demonstrate drawing graphics directly and also use the builtin Plan 9 UI functions. Not as impressive as the <a href="http://www.youtube.com/watch?v=-ga41edXw3A">canonical bouncing ball demo</a>, but it&rsquo;s a start.</p>
+
+<p>In either Sam or Acme, create a new file named <code>ball.c</code>. Add these headers:</p>
+
+
+#include <u.h>
+#include <libc.h>
+#include <draw.h>
+#include <event.h>
+
+
+<p>The first two are standard headers for writing in the Plan 9 dialect of C instead of ANSI C, which use a <code>pragma</code> directive to also provide the necessary parameters to the linker. The headers <code>draw.h</code> and <code>event.h</code> both include the libdraw and libevent. In the main method we will initiate drawing on the current window as well as register our interest in mouse events for the window:</p>
+
+
+/* Initiate graphics and mouse */
+    
+if(initdraw(nil, nil, "bouncing ball demo") < 0) {
+  sysfatal("initdraw failed: %r");
+}
+
+einit(Emouse);
+
+
+<p>In Rio, the Plan 9 window manager, we do not create a new window but instead take over the terminal window that our program was spawned from. Just as the underlying shell forked, we take over the graphical context of the parent process.</p>
+
+<p>Libevent requires that we implement a method called eresized to handle when the window has been resized or the window is newly created. If this is the first time the program is run then it will need to connect to the display using <code>getwindow()</code> and then clear the screen by painting it white.</p>
+
+
+void
+eresized(int new)
+{
+  if(new && getwindow(display, Refnone) < 0)
+    sysfatal("can't reattach to window");
+
+  /* Store new screen coordinates for collision detection */
+  p = Pt(Dx(screen->r), Dy(screen->r));
+
+  /* Draw the background DWhite */
+  draw(screen, 
+    insetrect(screen->r, borderWidth), 
+    allocimage(display, Rect(0, 0, 1, 1), screen->chan, 1, DWhite), 
+    nil, ZP);
+}
+
+
+<p>Call this method by adding <code>eresized(0);</code>. The windowing system Rio will call this function for subsequent window resizes.</p>
+
+<p>So look at what we have done so far: we have created a new blank window by attaching to the current terminal window, specified a mouse handler and painted the terminal white. Now we can draw our ball. First set up a timer to move the ball every 5 milliseconds unless there is an Emouse event.</p>
+
+
+timer = etimer(0, 5);
+
+
+<p>Create a method <code>initball()</code> that allocates an image as a brush, and image to draw on and then an ellipse:</p>
+
+
+Image *brush;
+brush=allocimage(display, Rect(0,0,1,1), CMAP8, 1, DRed);
+ball=allocimage(display, (Rectangle){(Point){0,0},(Point){r*4,r*4}},
+screen->chan, 0, DWhite);
+fillellipse(ball, (Point){r*2,r*2}, r, r, brush, ZP);
+
+
+<p>Also, we will need a method <code>moveball()</code> to move the ball. <a href="https://www.cl.cam.ac.uk/~mgk25/ucs/utf-8-history.txt">Plan 9 has supported UTF-8 since the very beginning</a> we can use symbols such as the greek letter delta to denote change.</p>
+
+
+static Point bp={6, 6}; /* Ball Position */
+static double Δi=4, Δj=4;
+
+/* Collision detection */
+if(bp.x > p.x - (r*3) || bp.x < -r) Δi = Δi*-1;
+if(bp.y > p.y - (r*3) || bp.y < -r) Δj = Δj*-1;
+
+/* Increment ball position */
+bp.x = bp.x + Δi;
+bp.y = bp.y + Δj;
+
+draw(screen, rectaddpt(screen->r, bp), ball, nil, ZP);
+
+
+<p>Now add an event loop that will either move the ball if there are no mouse events, or will handle the mouse event:</p>
+
+
+char *buttons[] = {"exit", 0};
+Menu menu = { buttons };
+
+for(;;)
+{
+  e = event(&ev);
+
+  /* If there is a mouse event, the rightmost button
+   * pressed and the first menu option selected
+   * then exit.. */
+
+ if( (e == Emouse) &&
+    (ev.mouse.buttons & 4) && 
+    (emenuhit(3, &ev.mouse, &menu) == 0)) exits(nil);
+  else 
+    if(e == timer)
+      moveball();
+}
+
+
+<p>Putting this all together gives the bouncing ball demo!</p>
+
+<p>There are a number of ways this program can be improved:</p>
+
+<ul>
+<li>Change the ball radius and color</li>
+<li>Change the ball speed and accelleration</li>
+<li>Add multiple balls to the window and implement collision detection</li>
+</ul>
+
+<p>Source: <a href="https://github.com/nspool/plan9-gui-demo">https://github.com/nspool/plan9-gui-demo</a></p>
+
+        
+      </div>
+    </div>
+    <footer class="site-footer">
+	<div class="container">
+		<h4>nspool&#39;s blog</h4>
+		<div class="row">
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>Programming to math.. and back again!</p>
+					<a href="mailto:"></a>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>
+						<span class="fa fa-fw fa-github"></span>
+						<a href="https://github.com/nspool">nspool</a>
+						<br>
+						<span class="fa fa-fw fa-twitter"></span>
+						<a href="https://twitter.com/"></a>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+
+    <script src="https://nspool.github.io/js/jquery-2.1.4.min.js"></script>
+<script src="https://nspool.github.io/js/bootstrap.min.js"></script>
+
+  </body>
+</html>

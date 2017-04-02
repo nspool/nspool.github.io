@@ -1,0 +1,850 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on nspool&#39;s blog</title>
+    <link>https://nspool.github.io/post/index.xml</link>
+    <description>Recent content in Posts on nspool&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
+    <lastBuildDate>Sun, 19 Mar 2017 21:24:00 +1100</lastBuildDate>
+    <atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Making a fat libSDL.a for iOS development</title>
+      <link>https://nspool.github.io/2017/03/2017-03-19-building-fat-library/</link>
+      <pubDate>Sun, 19 Mar 2017 21:24:00 +1100</pubDate>
+      
+      <guid>https://nspool.github.io/2017/03/2017-03-19-building-fat-library/</guid>
+      <description>&lt;p&gt;Building the SDL Xcode-iOS project will output for i386 if the simulator target is selected, or ARM for a physical device.
+This results in two output libraries named &lt;code&gt;libSDL2.a&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;For development it is handy to have a single fat library that supports both platforms.&lt;/p&gt;
+
+&lt;p&gt;Enter the macOS &lt;code&gt;lipo&lt;/code&gt; command.&lt;/p&gt;
+
+&lt;p&gt;Copy each library from the &lt;code&gt;Debug-iphoneos&lt;/code&gt; and &lt;code&gt;Debug-iphonesimulator&lt;/code&gt; in the derived data and combine them:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;lipo -create libSDL2arm.a libSDL2i386.a -output libSDL2.a
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Building OpenCV 3.1.0 on macOS</title>
+      <link>https://nspool.github.io/2017/03/2017-03-18-building-opencv/</link>
+      <pubDate>Sat, 18 Mar 2017 21:32:56 +1100</pubDate>
+      
+      <guid>https://nspool.github.io/2017/03/2017-03-18-building-opencv/</guid>
+      <description>&lt;p&gt;Clone the OpenCV and OpenCV_Contrib repos and checkout release 3.1.0:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/opencv/opencv.git
+git clone https://github.com/opencv/opencv_contrib.git
+cd opencv &amp;amp;&amp;amp; git checkout 3.1.0 &amp;amp;&amp;amp; cd ..
+cd opencv_contrib &amp;amp;&amp;amp; git checkout 3.1.0 &amp;amp;&amp;amp; cd ..
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Create a build directory, configure and build the project:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir opencv_build &amp;amp;&amp;amp; cd opencv_build
+cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;-D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_CUDA=OFF -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ../opencv/
+    make -j7 # runs 7 jobs in parallel
+    cd ..&lt;/p&gt;
+
+&lt;p&gt;Copy the contrib modules into the OpenCV project:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cp -ri opencv_contrib/modules opencv/modules
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To build an iOS framework:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;python opencv/platforms/ios/build_framework.py ios
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Similarly, to build the macOS framework:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;python opencv/platforms/osx/build_framework.py osx
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Building Live555 RTSP library in Visual Studio 2015</title>
+      <link>https://nspool.github.io/2016/02/building-live555/</link>
+      <pubDate>Mon, 01 Feb 2016 20:10:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2016/02/building-live555/</guid>
+      <description>
+
+&lt;p&gt;Live555 is an excellent RTSP library for Windows, but can be a bit tricky to build. These are the instructions that I follow to build it in Visual Studio 2015 in Windows 10 Professional.&lt;/p&gt;
+
+&lt;h3 id=&#34;1-extract-the-live555-latest-tar-gz-into-your-source-directory&#34;&gt;1) Extract the &lt;code&gt;live555-latest.tar.gz&lt;/code&gt; into your source directory.&lt;/h3&gt;
+
+&lt;h3 id=&#34;2-make-the-following-changes-to-the-win32config-file&#34;&gt;2) Make the following changes to the win32config file:&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Change &lt;code&gt;msvcirt.lib&lt;/code&gt; to &lt;code&gt;msvcrt.lib&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;Comment out the &lt;code&gt;ntwin32.mak&lt;/code&gt; include. ie:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;#!include &amp;lt;ntwin32.mak&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If you&amp;rsquo;ve installed Visual Studio in the default location then change TOOLS32 to:
+&lt;code&gt;TOOLS32 = C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;3-run-vsvars32-bat-and-build-the-make-files&#34;&gt;3) Run &lt;code&gt;vsvars32.bat&lt;/code&gt; and build the make files&lt;/h3&gt;
+
+&lt;p&gt;Open an MSBuild for Visual Studio 2015 command prompt. Set the environment variables by running this batch file:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;quot;\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\vsvars32.bat&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Build the make files run running:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;genWindowsMakefiles
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;4-build-the-project&#34;&gt;4) Build the project!&lt;/h3&gt;
+
+&lt;p&gt;Now you’re ready to build! Build each of the components of the project in this order:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd liveMedia
+nmake /B -f liveMedia.mak
+cd ..\groupsock
+nmake /B -f groupsock.mak
+cd ..\UsageEnvironment
+nmake /B -f UsageEnvironment.mak
+cd ..\BasicUsageEnvironment
+nmake /B -f BasicUsageEnvironment.mak
+cd ..\testProgs
+nmake /B -f testProgs.mak
+cd ..\mediaServer
+nmake /B -f mediaServer.mak
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you encounter a linker errors when compiling any of the executable projects (like the Live555MediaServer) then build that project manually by entering the command displayed by nmake, but without the &lt;code&gt;out:&lt;/code&gt; parameter and including the ws2_32 library, for example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cl ws2_32.lib msvcrt.lib live555MediaServer.obj DynamicRTSPServer.obj ../liveMedia/libliveMedia.lib ../groupsock/libgroupsock.lib  ../BasicUsageEnvironment/libBasicUsageEnvironment.lib ../UsageEnvironment/libUsageEnvironment.lib
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This should give a valid &lt;code&gt;Live555MediaServer.exe&lt;/code&gt; that is ready to run!&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;h1 id=&#34;extending-live555mediaserver-to-cope-with-large-frames&#34;&gt;Extending Live555MediaServer to cope with large frames&lt;/h1&gt;
+
+&lt;p&gt;Live555MediaServer sometimes cannot handle large 1080p frames and will throw this error:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;MultiFramedRTPSink::afterGettingFrame1(): The input frame data was too large for
+our buffer size (100452).  3712 bytes of trailing data was dropped!  Correct th
+is by increasing &#34;OutPacketBuffer::maxSize&#34; to at least 103712, *before* creatin
+g this &#39;RTPSink&#39;.  (Current value is 100000.)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Edit the file &lt;code&gt;DynamicRTSPServer.cpp&lt;/code&gt; and any time this appears:&lt;/p&gt;
+
+
+  OutPacketBuffer::maxSize = 100000;
+
+
+&lt;p&gt;change it to:&lt;/p&gt;
+
+
+  OutPacketBuffer::maxSize = 200000;
+
+
+&lt;p&gt;Then rebuild the Live555MediaServer with these commands:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;del *.obj
+del Live555MediaServer.exe
+cl ws2_32.lib msvcrt.lib live555MediaServer.obj DynamicRTSPServer.obj ../liveMedia/libliveMedia.lib ../groupsock/libgroupsock.lib  ../BasicUsageEnvironment/libBasicUsageEnvironment.lib ../UsageEnvironment/libUsageEnvironment.lib
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>ZeroMQ &#43; Vagrant for Fun and Profit</title>
+      <link>https://nspool.github.io/2015/12/zeromq-virtualbox/</link>
+      <pubDate>Sat, 26 Dec 2015 10:00:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2015/12/zeromq-virtualbox/</guid>
+      <description>
+
+&lt;hr&gt;
+
+&lt;p&gt;ZeroMQ is a powerful library for network programming.&lt;/p&gt;
+
+&lt;p&gt;But &lt;strong&gt;it&amp;rsquo;s no fun to just connecting to localhost!&lt;/strong&gt; By building a single Ubuntu VM and saving it as a Vagrant box, we can spin up as many clients as the machine can handle!&lt;/p&gt;
+
+&lt;h3 id=&#34;install-ubuntu-14-04-into-a-virtualbox-vm&#34;&gt;Install Ubuntu 14.04 into a VirtualBox VM&lt;/h3&gt;
+
+&lt;p&gt;Remeber to Install Ubuntu with user &amp;lsquo;Vagrant&amp;rsquo; and forward port 22 to work from the host.
+Tested with ubuntu-14.04.3-server-amd64.iso&lt;/p&gt;
+
+&lt;h3 id=&#34;setting-up-vagrant&#34;&gt;Setting up Vagrant&lt;/h3&gt;
+
+&lt;p&gt;It is best just to follow &lt;a href=&#34;https://docs.vagrantup.com/v2/boxes/base.html&#34;&gt;https://docs.vagrantup.com/v2/boxes/base.html&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;This is the default Vagrant public key. Add it to .ssh/authorized_keys by default. Vagrant will change it later:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eWW6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXPITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pzC6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZEnDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXzcWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ== vagrant insecure public key
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Also enable passwordless sudo for the vagrant user to the end of the sudoers file:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;vagrant ALL=(ALL) NOPASSWD: ALL
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;install-virtualbox-additions&#34;&gt;Install VirtualBox Additions&lt;/h3&gt;
+
+&lt;p&gt;sudo apt-get -y install libtool pkg-config linux-headers-generic build-essential dkms autoconf automake git
+Install the VirtualBox guest additions.
+Devices -&amp;gt; Insert Guest Additions CD Image
+sudo mount /dev/cdrom /media/cdrom
+sudo sh /media/cdrom/VBoxLinuxAdditions.run&lt;/p&gt;
+
+&lt;h3 id=&#34;install-dependencies&#34;&gt;Install Dependencies&lt;/h3&gt;
+
+&lt;p&gt;ZeroMQ uses Libsodium for encryption, but this is not available in the 14.04 LTS repos.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;wget -c https://download.libsodium.org/libsodium/releases/libsodium-1.0.8.tar.gz  http://download.zeromq.org/zeromq-4.1.4.tar.gz  
+tar -xf libsodium-1.0.8.tar.gz
+./configure --prefix=/usr &amp;amp;&amp;amp; make
+sudo make install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;install-zeromq&#34;&gt;Install ZeroMQ&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;cd ~
+tar -xzf zeromq-4.1.4.tar.gz &amp;amp;&amp;amp; cd zeromq-4.1.4
+./configure --prefix=/usr &amp;amp;&amp;amp; make
+sudo make install
+cd ~
+git clone https://github.com/zeromq/cppzmq
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;install-rmate-optional&#34;&gt;Install rmate (Optional)&lt;/h3&gt;
+
+&lt;p&gt;For any TextMate users that prefer to use their host machine for editing:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo apt-get -y install ruby &amp;amp;&amp;amp; sudo gem install rmate
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Textmate remote:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ssh -p8022 -R 52698:localhost:52698 127.0.0.1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So now a command in the VM such as:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;rmate test.cc
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Will open textmate locally if rmate is enabled under TextMate preferences.&lt;/p&gt;
+
+&lt;h3 id=&#34;testing-that-it-works&#34;&gt;Testing that it works&lt;/h3&gt;
+
+&lt;p&gt;Download the &lt;code&gt;hwserver&lt;/code&gt; example from the ZeroMQ documentation and compile it:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;gcc hwserver.c -o hwserver -lzmq
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;With the C++ bindings come in the box we should also be able to compile the hwserver C++ example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;g++ hwserver.cpp -o hwserver -lzmq
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Remember to include the &lt;code&gt;zmq.hpp&lt;/code&gt; cloned previously.&lt;/p&gt;
+
+&lt;h3 id=&#34;packaging-the-vm&#34;&gt;Packaging the VM&lt;/h3&gt;
+
+&lt;p&gt;Once we have verified that the VM will build a ZeroMQ project, we can package it using Vagrant for reuse.&lt;/p&gt;
+
+&lt;p&gt;Create a box called NodeTemplate from a VM called BaseNode into the directory ~/Boxes:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;vagrant package --base BaseNode --output ~/Boxes/NodeTemplate.box&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;Create a new directory containing a VagrantFile:&lt;/p&gt;
+
+
+Vagrant.configure(&#34;2&#34;) do |config|
+  # Number of nodes to provision
+  numNodes = 2
+  # IP Address Base for private network
+  ipAddrPrefix = &#34;172.16.0.0&#34;
+  # Download the initial box from this url
+  config.vm.box_url = &#34;file:///Users/nspool/Boxes/NodeTemplate.box&#34;
+  # Provision Config for each of the nodes
+  1.upto(numNodes) do |num|
+    nodeName = (&#34;node&#34; + num.to_s).to_sym
+      config.vm.define nodeName do |node|
+        node.vm.box = &#34;NodeTemplate&#34;
+        node.vm.network :private_network, ip: ipAddrPrefix + num.to_s
+        node.vm.provider &#34;virtualbox&#34; do |v|
+          v.name = &#34;Cluster Node &#34; + num.to_s
+        end
+      end
+    end
+  end
+
+
+&lt;p&gt;It should now be possible to SSH into each box by name, ie.
+vagrant ssh node1&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;h1 id=&#34;alternative-approaches&#34;&gt;Alternative approaches&lt;/h1&gt;
+
+&lt;p&gt;Here are some approached that I tried, but gave up on for one or another reason.&lt;/p&gt;
+
+&lt;h3 id=&#34;alternative-1-installing-from-source&#34;&gt;Alternative 1. Installing from source&lt;/h3&gt;
+
+&lt;p&gt;Add this to /etc/apt/sources.list:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;deb http://us.archive.ubuntu.com/ubuntu vivid main universe 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then run:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo apt-get update &amp;amp;&amp;amp;
+sudo apt-get -y upgrade &amp;amp;&amp;amp;
+sudo apt-get -y install ruby libtool pkg-config build-essential autoconf automake git libsodium-dev &amp;amp;&amp;amp;
+sudo gem install rmate &amp;amp;&amp;amp;
+wget -c http://download.zeromq.org/zeromq-4.1.4.tar.gz &amp;amp;&amp;amp;
+tar -xzf zeromq-4.1.4.tar.gz &amp;amp;&amp;amp; cd zeromq-4.1.4 &amp;amp;&amp;amp;
+./configure --prefix=/usr &amp;amp;&amp;amp; make &amp;amp;&amp;amp; sudo make install &amp;amp;&amp;amp;
+cd ~ &amp;amp;&amp;amp;
+git clone https://github.com/zeromq/cppzmq
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now reboot. Connect using:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;ssh -i ~/.vagrant.d/insecure_private_key -p8022 -R 52698:localhost:52698 vagrant@127.0.0.1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This should compile the example without errors:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;g++ hwserver.cpp -o hwserver -lzmq
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then run:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;./hwserver 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now shutdown and package the node.. Except that upgrading&lt;/p&gt;
+
+&lt;h3 id=&#34;alternative-2-using-ubuntu-server-15-10&#34;&gt;Alternative 2. Using Ubuntu Server 15.10&lt;/h3&gt;
+
+&lt;p&gt;Libsodium is available for in the 15.10 packages, meaning that it doesn&amp;rsquo;t need to be built.&lt;/p&gt;
+
+&lt;p&gt;Copy SSH public key into authorized_keys. Add to sources:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;deb http://httpredir.debian.org/debian/ experimental main contrib non-free
+deb-src http://httpredir.debian.org/debian/ experimental main contrib non-free
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;apt-get update
+apt-get install libzmq5-dev ruby
+apt-get gem install rmate
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Running a full Bitcoin node on a Debian VPS</title>
+      <link>https://nspool.github.io/2015/12/bitcoin-on-linux/</link>
+      <pubDate>Wed, 23 Dec 2015 15:30:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2015/12/bitcoin-on-linux/</guid>
+      <description>
+
+&lt;h2 id=&#34;1-building-bitcoin-core&#34;&gt;1. Building BitCoin-Core&lt;/h2&gt;
+
+&lt;p&gt;Install the build environment and dependencies&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo apt-get update
+sudo apt-get install build-essential autoconf libssl-dev libboost-dev libboost-chrono-dev libboost-filesystem-dev libboost-program-options-dev libboost-system-dev libboost-test-dev libboost-thread-dev libdb4.8++-dev libdb4.8-dev pkg-config
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Clone the Git repo and view available version:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/bitcoin/bitcoin.git
+git tag
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Checkout the last released version ie.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;git checkout 0.9.5rc2
+cd bitcoin
+./autogen.sh
+./configure --without-gui
+sudo make install
+which bitcoind
+which bitcoin-cli
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now run setup Bitcoind&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;bitcoind
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;create .bitcoin/bitcoin.conf and add:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;rpcuser=bitcoinrpc
+rpcpassword=&amp;lt;password shown in the previous step&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now run Bitcoind and rebuild the blockchain:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;bitcoind -daemon
+tail -f ~/.bitcoin/debug.log
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;2-setting-up-a-wallet&#34;&gt;2. Setting up a wallet&lt;/h2&gt;
+
+&lt;p&gt;Set a password&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;bitcoin-cli encryptwallet &amp;lt;SECURE PASSWORD&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Restart the daemon if it isn&amp;rsquo;t running:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;bitcoind -daemon
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Login to the wallet:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;bitcoin-cli walletpassphrase &amp;lt;SECURE PASSWORD&amp;gt; 360
+bitcoin-cli getinfo
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Backup and Restore&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;bitcoin-cli backupwallet wallet.bak
+bitcoin-cli importwallet wallet.bak
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;View as human readable:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;bitcoin-cli dumpwallet wallet.txt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now wait for the client to become synched with the blockchain&lt;/p&gt;
+
+&lt;h2 id=&#34;3-receiving-bitcoins&#34;&gt;3. Receiving bitcoins&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;bitcoin-cli getnewaddress
+&amp;lt;NEW ADDRESS APPEARS&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Send some bitcoins!&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;  bitcoin-cli getreceivedbyaddress &amp;lt;NEW ADDRESS APPEARS&amp;gt;
+  bitcoin-cli getbalance
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;4-stopping-the-vps-hypervisor-from-shutting-down-the-vm&#34;&gt;4. Stopping the VPS hypervisor from shutting down the VM&lt;/h3&gt;
+
+&lt;p&gt;While it is syncing the blockchain it will be verifying each and every block that it receives, and so the CPU usage will get so high that the VPS provider will keep shutting it down.&lt;/p&gt;
+
+&lt;p&gt;To avoid this, limit the CPU:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;$ echo daemon=0 &amp;gt;&amp;gt; ~/.bitcoin/bitcoin.conf
+$ cpulimit -l 90 bitcoind &amp;amp;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;How far along is it synching?&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;nspool@vps:~$ bitcoind getinfo
+{
+    &amp;quot;version&amp;quot; : 90500,
+    &amp;quot;protocolversion&amp;quot; : 70002,
+    &amp;quot;walletversion&amp;quot; : 60000,
+    &amp;quot;balance&amp;quot; : 0.00000000,
+    &amp;quot;blocks&amp;quot; : 299058,
+    &amp;quot;timeoffset&amp;quot; : 0,
+    &amp;quot;connections&amp;quot; : 13,
+    &amp;quot;proxy&amp;quot; : &amp;quot;&amp;quot;,
+    &amp;quot;difficulty&amp;quot; : 8000872135.96816349,
+    &amp;quot;testnet&amp;quot; : false,
+    &amp;quot;keypoololdest&amp;quot; : 1449355342,
+    &amp;quot;keypoolsize&amp;quot; : 100,
+    &amp;quot;unlocked_until&amp;quot; : 0,
+    &amp;quot;paytxfee&amp;quot; : 0.00000000,
+    &amp;quot;relayfee&amp;quot; : 0.00001000,
+    &amp;quot;errors&amp;quot; : &amp;quot;&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It was 386959 last I checked on blockchain.info. So the progress is &lt;sup&gt;324173&lt;/sup&gt;&amp;frasl;&lt;sub&gt;386959&lt;/sub&gt; = ~77%&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;du -sh .bitcoin/blocks/
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Quick REST endpoint with Ruby &amp; Sinatra</title>
+      <link>https://nspool.github.io/2015/09/serving-files/</link>
+      <pubDate>Wed, 23 Sep 2015 20:30:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2015/09/serving-files/</guid>
+      <description>&lt;p&gt;Suppose we wish to serve a bunch of images from a directory by over a REST endpoint and retrieve them by index.
+For example: &lt;code&gt;http://localhost:4567/image?index=0&lt;/code&gt; would return the first image in the directory.
+This is easy to accomplish in Ruby by using Sinatra:&lt;/p&gt;
+
+
+require &#39;sinatra&#39;
+get &#39;/image&#39; do
+
+  # Read all the JPEG files from a given directory
+  @images = Dir.glob(&#34;/Users/nspool/Pictures/*.jpg&#34;)
+
+  # Take the path at the supplied index
+  index = params[&#39;index&#39;].to_i
+  path = @images[index]
+
+  # Return the image
+  send_file open(path, type: &#39;image/jpeg&#39;, disposition: &#39;inline&#39;)
+end 
+
+
+&lt;p&gt;If we just want to serve a different image for each index and not worry about running out of images by choosing an image index that is too high, we can return the image at index modulo the number of available images.&lt;/p&gt;
+
+&lt;p&gt;Here is a more complete example that does just that:&lt;/p&gt;
+
+
+require &#39;sinatra&#39;
+get &#39;/&#39; do
+	&#39;Usage: /image?index=123&#39;
+end
+get &#39;/image&#39; do
+	@images = Dir.glob(&#34;/Users/nspool/Pictures/*.jpg&#34;)
+	index = params[&#39;index&#39;].to_i % @images.count
+	path = @images[index]
+	redirect 404 unless File.readable?(path)
+	content_type &#39;image/jpeg&#39;
+	send_file open(path, type: &#39;image/jpeg&#39;, disposition: &#39;inline&#39;)
+end
+
+
+&lt;p&gt;Run with &lt;code&gt;ruby server.rb&lt;/code&gt; then use URLs of the form &lt;code&gt;http://localhost:4567/image?index=123&lt;/code&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Handling an NSFileHandle SIGPIPE in Swift</title>
+      <link>https://nspool.github.io/2015/09/nsfilehandle/</link>
+      <pubDate>Wed, 16 Sep 2015 20:30:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2015/09/nsfilehandle/</guid>
+      <description>&lt;p&gt;If you are working with an NSFileHandle that encapsulated a pipe, it was possible to use a &lt;code&gt;@try-@catch&lt;/code&gt; block to handle a failed write.&lt;/p&gt;
+
+&lt;p&gt;In this example, fileHandle could represent an open socket, with the &lt;em&gt;SIGPIP&lt;/em&gt; thrown if the client disconnects unexpectedly and the pipe is closed:&lt;/p&gt;
+
+
+@try
+{
+  [fileHandle writeData:fileData];
+}
+@catch (NSException *exception)
+{
+  // Ignore the SIGPIP
+}
+@finally
+{
+  CFRelease(fileData);
+}
+
+
+&lt;p&gt;Unfortunately in Swift 2.0 this isn&amp;rsquo;t possible; the analogous &lt;code&gt;try-catch&lt;/code&gt; doesn&amp;rsquo;t capture signals.&lt;/p&gt;
+
+&lt;p&gt;How can we can handle this in Swift?&lt;/p&gt;
+
+&lt;p&gt;My solution has been to fall back to the native BSD APIs. When creating the socket with &lt;code&gt;CFSocketCreate&lt;/code&gt; prevent &lt;em&gt;SIGPIP&lt;/em&gt; from being thrown by setting the option:&lt;/p&gt;
+
+
+var no_sig_pipe: Int32 = 1
+setsockopt(CFSocketGetNative(socket),
+SOL_SOCKET,
+SO_NOSIGPIPE,
+&amp;no_sig_pipe,
+socklen_t(sizeof(Int32)))
+
+
+&lt;p&gt;Then assuming the write is performed in a separate method, we can use a guard to perform a dummy write before the socket is used:&lt;/p&gt;
+
+
+guard (write(fileHandle.fileDescriptor, nil, 0) == 0) else {
+  CFRelease(fileData)
+    return false
+  }
+fileHandle.writeData(fileData)
+
+
+&lt;p&gt;If the socket is closed then the guard will cleanup and return.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Creating a Certificate Chain for AWS</title>
+      <link>https://nspool.github.io/2015/07/moving/</link>
+      <pubDate>Mon, 20 Jul 2015 09:00:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2015/07/moving/</guid>
+      <description>&lt;p&gt;GitHub Pages doesn&amp;rsquo;t (yet) allow an SSL certificate for a custom domain, so I&amp;rsquo;ve moved this blog to S3.&lt;/p&gt;
+
+&lt;p&gt;Uploading the certificate to AWS requires the CA certificate chain. This isn&amp;rsquo;t always always provided by the CA, but can be generated from the command line. For example, Comodo provides the certificates in the chain, so all that&amp;rsquo;s necessary to create the file is to concatenate the certs in PEM format into one file:&lt;/p&gt;
+
+
+(openssl x509 -inform PEM -in COMODORSADomainValidationSecureServerCA.crt; 
+openssl x509 -inform PEM -in COMODORSAAddTrustCA.crt; 
+openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) &gt; ca_chain.pem
+
+
+&lt;p&gt;This will provide a file that is suitable for the &lt;code&gt;--certificate-chain&lt;/code&gt; parameter of &lt;code&gt;aws iam upload-server-certificate&lt;/code&gt;:&lt;/p&gt;
+
+
+aws iam upload-server-certificate \
+  --server-certificate-name mycert \
+  --certificate-body file://mycert.crt \
+  --private-key file://mycert.key \
+  --certificate-chain file://ca_chain.pem \
+  --path /cloudfront/
+
+</description>
+    </item>
+    
+    <item>
+      <title>Write a Lisp web app over SSH with Emacs</title>
+      <link>https://nspool.github.io/2015/02/remoting-to-a-lisp/</link>
+      <pubDate>Wed, 04 Feb 2015 22:00:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2015/02/remoting-to-a-lisp/</guid>
+      <description>&lt;p&gt;After reading about &lt;a href=&#34;http://www.flownet.com/gat/jpl-lisp.html&#34;&gt;the rise and fall of Lisp at the Jet Propulsion Lab JPL&lt;/a&gt; I refresh my Lisp experience. Now I can hack on a Lisp web service hosted on a remote server from within Emacs from my laptop.&lt;/p&gt;
+
+&lt;p&gt;Setting up a Lisp dev environment is easy: the instructions at &lt;a href=&#34;http://www.cliki.net/Getting%20Started&#34;&gt;Common Lisp Wiki&lt;/a&gt; will give you a GNU/Emacs with &lt;a href=&#34;http://common-lisp.net/project/slime/&#34;&gt;SLIME mode&lt;/a&gt; package installed. For a remote development setup, both the remote server and local dev machine should have &lt;a href=&#34;http://www.sbcl.org/&#34;&gt;Steel Bank Common Lisp&lt;/a&gt; along with the &lt;a href=&#34;http://www.quicklisp.org/&#34;&gt;QuickLisp&lt;/a&gt; package manager installed.&lt;/p&gt;
+
+&lt;p&gt;The &lt;em&gt;SLIME&lt;/em&gt; package provides an Emacs major-mode for Common Lisp development. Similar to the &lt;a href=&#34;http://en.wikipedia.org/wiki/Sam_(text_editor)&#34;&gt;Sam text editor&lt;/a&gt;, the SLIME uses a seperate backend server that it communicates with over a network port. It is that server, named &lt;em&gt;Swank&lt;/em&gt;, that is loaded into the Lisp interpreter. This means that on the target box we can just install the &lt;em&gt;Swank&lt;/em&gt; backend and then communicate with it over SSH.&lt;/p&gt;
+
+&lt;p&gt;Add the following to the &lt;code&gt;.sbclrc&lt;/code&gt; on the remote box to load &lt;em&gt;Swank&lt;/em&gt; when SBCL is started:&lt;/p&gt;
+
+
+; Setup Swank
+(ql:quickload &#34;swank&#34;)
+(require &#39;asdf)
+(asdf:oos &#39;asdf:load-op &#39;swank)
+(setf swank:*communication-style* :fd-handler)
+(swank:create-server :dont-close t)
+
+
+&lt;p&gt;Now in a seperate terminal window start a new instance of SSH to the remote machine, and forward the local port &lt;code&gt;4007&lt;/code&gt; to the remote port &lt;code&gt;4005&lt;/code&gt; which is used by &lt;em&gt;Swank&lt;/em&gt;:
+
+ssh -C -L4007:127.0.0.1:4005 $USER@$REMOTEIP
+&lt;/p&gt;
+
+&lt;p&gt;Now tell &lt;em&gt;SLIME&lt;/em&gt; to connect to the remote machine. In Emacs type &lt;code&gt;M-x slime-connect&lt;/code&gt; and choose &lt;code&gt;127.0.0.1&lt;/code&gt; and port &lt;code&gt;4007&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;And that&amp;rsquo;s it! You will now be interacting with the REPL of the remote machine. For bonus points we can start a simple web server on the remote box just to prove we&amp;rsquo;ve done it. If you type this into the REPL it will load the &lt;a href=&#34;http://clacklisp.org/tutorial/02-getting-clack.html&#34;&gt;Clack web framwork&lt;/a&gt; and serve up a simple Hello, World on port 5000:&lt;/p&gt;
+
+
+(ql:quickload :clack)
+(clack:clackup
+  (lambda (env)
+    (declare (ignore env))
+    &#39;(200 (:content-type &#34;text/plain&#34;)(break) (&#34;Hello, Clack!&#34;))))
+
+
+&lt;p&gt;Use Curl on the development machine and you should see:&lt;/p&gt;
+
+
+curl http://$REMOTEIP:5000
+Hello, Clack!
+
+
+&lt;p&gt;To change the server text to &lt;code&gt;Hello, World!&lt;/code&gt;:&lt;/p&gt;
+
+
+(clack:stop *)
+(clack:clackup
+  (lambda (env)
+  (declare (ignore env))
+  &#39;(200 (:content-type &#34;text/plain&#34;)(break) (&#34;Hello, World!&#34;))))
+
+
+&lt;p&gt;Enjoy!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Counting Happy Numbers in Mathematica</title>
+      <link>https://nspool.github.io/2015/01/happy-numbers/</link>
+      <pubDate>Wed, 28 Jan 2015 22:18:56 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2015/01/happy-numbers/</guid>
+      <description>&lt;p&gt;Here is a Mathematica snippit to count the number of &lt;a href=&#34;http://oeis.org/A007770&#34;&gt;Happy Numbers&lt;/a&gt; up to 1000:&lt;/p&gt;
+
+
+Length[Select[Range[1000], 
+FixedPoint[Total[IntegerDigits[#]^2] &amp;, #, 10] == 1 &amp;]]
+
+</description>
+    </item>
+    
+    <item>
+      <title>Printing strings in GDB</title>
+      <link>https://nspool.github.io/2015/01/strings-and-gdb/</link>
+      <pubDate>Wed, 14 Jan 2015 21:16:11 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2015/01/strings-and-gdb/</guid>
+      <description>&lt;p&gt;In a GDB disassembly, what string is at the value being compared with &lt;code&gt;eax&lt;/code&gt;?&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;x080485a0 &amp;lt;+48&amp;gt;: je 0x34(%esp),%eax
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Solution:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;(gdb) x/s *(esp + 0x34)
+0x8048690: &amp;quot;hellostring!\n&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Bruteforcing XOR encrypted PHP cookies</title>
+      <link>https://nspool.github.io/2015/01/cracking-a-xor/</link>
+      <pubDate>Tue, 13 Jan 2015 21:16:11 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2015/01/cracking-a-xor/</guid>
+      <description>&lt;p&gt;In days part there were sites known to store login status in a client-side cookie obscured by a XOR cyper. When first visting the site some code like this would run:&lt;/p&gt;
+
+
+$cookie = xor_crypt($json_encode(array(&#34;login&#34;=&gt;&#34;false&#34;)));
+
+
+&lt;p&gt;Then &lt;code&gt;$cookie&lt;/code&gt; would be set on the client side, something like &lt;code&gt;data=GkAPXlVaD0BZE1RSDREGE08=&lt;/code&gt;. A successful login would containg a similar:&lt;/p&gt;
+
+
+$cookie = xor_crypt($json_encode(array(&#34;login&#34;=&gt;&#34;true&#34;)));
+
+
+&lt;p&gt;That would result in the cookie &lt;code&gt;data=GkAPXlVaD0BZE0ZBFAdBTA==&lt;/code&gt;. Looking at there two values it is plain that they are very similar. That only a few positions have changed indicate a basic &lt;a href=&#34;http://en.wikipedia.org/wiki/Symmetric-key_algorithm&#34;&gt;symmetric cypher&lt;/a&gt;, in this case just a simple XOR of the JSON value against a fixed key.&lt;/p&gt;
+
+&lt;p&gt;While it is trivial to brute-force the key, it is more fun to guess. A website setting a single long key might indicate a serialized array and logging in and out gives some indicate to what is being set. Then we can determine the key:&lt;/p&gt;
+
+
+$ct = base64_decode(&#34;GkAPXlVaD0BZE1RSDREGE08=&#34;);
+$pt = json_encode(array(&#34;login&#34;=&gt;&#34;false&#34;));
+$key = &#34;&#34;;
+
+for($i=0;$i&lt;strlen($ct);$i++) {
+  $key .= $ct[$i] ^ $pt[$i % strlen($pt)];
+}
+
+
+&lt;p&gt;This gives &lt;code&gt;abc123abc123abc123abc1 ..&lt;/code&gt; which is both human readable and contains repetitive.&lt;/p&gt;
+
+&lt;p&gt;Now it is just a matter of determining the value of &lt;code&gt;login&lt;/code&gt; that we desire and re-encoding the cookie.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Using netcat with authenticated sessions</title>
+      <link>https://nspool.github.io/2015/01/cookies-and-netcat/</link>
+      <pubDate>Mon, 12 Jan 2015 21:08:56 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2015/01/cookies-and-netcat/</guid>
+      <description>&lt;p&gt;I&amp;rsquo;ve decided to move this blog to &lt;a href=&#34;https://pages.github.com&#34;&gt;GitHub Pages&lt;/a&gt;. This will be the third move since this blog was started in 2007 on the &lt;a href=&#34;http://sdf.org&#34;&gt;Super Dimension Fortress&lt;/a&gt; and then to some cheap wordpress shared hosting.&lt;/p&gt;
+
+&lt;p&gt;In the following couple of weeks I&amp;rsquo;ll triage the old site and re-post anything that is still worthwhile to this blog.&lt;/p&gt;
+
+&lt;p&gt;In the meantime here&amp;rsquo;s an example of using &lt;code&gt;netcat&lt;/code&gt; to do a HTTP request containing a cookie. For good measure parameter &lt;code&gt;-p 24&lt;/code&gt; forces the server to reply to the client on port 42.&lt;/p&gt;
+
+
+#!/bin/bash
+head=&#34;GET http://www.example.org HTTP/1.1\r\nHost: .example.org\r\nCookie: VALUE=ABC123;\r\nAccept: */*\r\nConnection: Close\r\n\r\n&#34;;
+echo -ne $head | nc -p42 www.example.org 80
+#=&gt; Using port 42 for the reply.
+
+</description>
+    </item>
+    
+    <item>
+      <title>Partitioning Sets</title>
+      <link>https://nspool.github.io/2014/08/notes-from-a-combinatorial-problem/</link>
+      <pubDate>Fri, 01 Aug 2014 09:00:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2014/08/notes-from-a-combinatorial-problem/</guid>
+      <description>
+
+&lt;p&gt;We have a program that performs a comparison of every pair of elements in a database, and then compares the result with the median value of all values. It was suggested that the program should instead make pairwise comparisons within every possible combination of subsets. How many comparisons would we end up making?&lt;/p&gt;
+
+&lt;p&gt;For this example, each element in our database will be represented by an integer. We call these elements &lt;img src=&#34;P_in_Z.svg&#34; alt=&#34;$P \in \mathbb{Z}$&#34; /&gt; the &lt;em&gt;population&lt;/em&gt; which is then partitioned into all possible distinct pairwise disjoint subsets &lt;img src=&#34;P_set.svg&#34; alt=&#34;$\{P_1, P_2, .. , P_k\}$&#34; /&gt;. Each &lt;img src=&#34;P_i.svg&#34; alt=&#34;$P_i$&#34; /&gt; is called a &lt;em&gt;block&lt;/em&gt; of  &lt;img src=&#34;P.svg&#34; alt=&#34;\emph{P}&#34; /&gt; and is distinct; the program should not enumerate the same block multiple times. As an extra complication, each pairwise comparison will need to be also made against the block median. So for each block &lt;img src=&#34;P_i.svg&#34; alt=&#34;$P_i$&#34; /&gt; there are two operations performed:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Take the median value of each &lt;img src=&#34;P_i.svg&#34; alt=&#34;$P_i$&#34; /&gt;&lt;/li&gt;
+&lt;li&gt;Take the euclidean distance between the median and every element &lt;img src=&#34;e_in_P_i.svg&#34; alt=&#34;$e \in P_i$&#34; /&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The first operation need only be performed once per block and the second will need to be performed exactly &lt;img src=&#34;abs_P_i.svg&#34; alt=&#34;$\|P_i\|$&#34; /&gt; times, as each block is also a subset and cannot contain duplicates.&lt;/p&gt;
+
+&lt;p&gt;The number of ways can the population &lt;img src=&#34;P.svg&#34; alt=&#34;\emph{P}&#34; /&gt; be divided into &lt;img src=&#34;n.svg&#34; alt=&#34;$n$&#34; /&gt; disjoint non-empty subsets is known as a Stirling number of the second kind, or simply a Stirling partition number.  (see [1]) This is defined as:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;def_sterling.svg&#34; alt=&#34;$\stirling{n}{k} =\frac{1}{k!}\sum\limits_{j=0}{k}(-1)^{k-j}\binom{k}{j}j^n$&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;So when &lt;img src=&#34;P.svg&#34; alt=&#34;\emph{P}&#34; /&gt; is divided with &lt;img src=&#34;k.svg&#34; alt=&#34;$k$&#34; /&gt; partitions where &lt;img src=&#34;n.svg&#34; alt=&#34;$n$&#34; /&gt; is the cardinality of the block it follows that the program will need to obtain &lt;img src=&#34;k.svg&#34; alt=&#34;$k$&#34; /&gt; median values and then perform &lt;img src=&#34;n.svg&#34; alt=&#34;$n$&#34; /&gt; pairwise comparisons:[sterling]&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&#34;n_sterling_k.svg&#34; alt=&#34;$C^k_{total} = n\stirling{n}{k} + k$&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;which is the number of ways a set with n elements can be partitioned into disjoint, non-empty subsets. &lt;img src=&#34;S.svg&#34; alt=&#34;$S$&#34; /&gt; the number of ways a set with &lt;img src=&#34;n.svg&#34; alt=&#34;$n$&#34; /&gt; elements can be partitioned into &lt;img src=&#34;k.svg&#34; alt=&#34;$k$&#34; /&gt; disjoint, non-empty subsets. As the partition changes, all of &lt;img src=&#34;n.svg&#34; alt=&#34;$n$&#34; /&gt; needs to be recalculated as does the score of the partition &lt;img src=&#34;k.svg&#34; alt=&#34;$k$&#34; /&gt;. For every different set of partitions we perform &lt;img src=&#34;n.svg&#34; alt=&#34;$n$&#34; /&gt; operations plus &lt;img src=&#34;k.svg&#34; alt=&#34;$k$&#34; /&gt; operations as it is possible to have anywhere from 0 to &lt;img src=&#34;n.svg&#34; alt=&#34;&amp;quot;$n$&amp;quot;&#34; /&gt; partitions in the set.&lt;/p&gt;
+
+&lt;p&gt;Then the total number of operations over all possible partitions is:
+        &lt;img src=&#34;C_total_1.svg&#34; alt=&#34;C_{total} = \sum_{k=0}^{|P|}{( n\stirling{n}{k} + k)}&#34; /&gt;
+        &lt;img src=&#34;C_total_1.svg&#34; alt=&#34;C_{total} = n\sum_{k=0}^{n}{\stirling{n}{k}} + \frac{n(n+1)}{2}&amp;quot;&#34; /&gt;
+        &lt;img src=&#34;C_total_final.svg&#34; alt=&#34;C_{total} = nB_n + \frac{n(n+1)}{2}&#34; /&gt;
+        Where &lt;img src=&#34;B_n.svg&#34; alt=&#34;B_n&#34; /&gt; is the nth &lt;em&gt;Bell number&lt;/em&gt;. We can now use this formula to calculate the exact number of comparisons made during the execution of the program&lt;/p&gt;
+
+&lt;h3 id=&#34;further-reading&#34;&gt;Further Reading&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Stirling numbers &lt;a href=&#34;https://oeis.org/A008277&#34;&gt;https://oeis.org/A008277&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Bell numbers &lt;a href=&#34;https://oeis.org/A008277&#34;&gt;https://oeis.org/A008277&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>StatusNet on MAMP</title>
+      <link>https://nspool.github.io/2013/12/status.net-on-mamp/</link>
+      <pubDate>Wed, 11 Dec 2013 09:00:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2013/12/status.net-on-mamp/</guid>
+      <description>&lt;p&gt;(Update: StatusNet is now &lt;a href=&#34;http://www.gnu.org/software/social/merge.html&#34;&gt;merged into GNU social&lt;/a&gt;)&lt;/p&gt;
+
+&lt;p&gt;StatusNet is a federated microblogging service. This is how I managed to setup a local server on my laptop under &lt;a href=&#34;https://www.mamp.info/&#34;&gt;MAMP&lt;/a&gt;.&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Set MAMP PHP version to 5.2.*&lt;/li&gt;
+&lt;li&gt;Extract tar into htdocs&lt;/li&gt;
+&lt;li&gt;Fix permissions&lt;/li&gt;
+&lt;li&gt;Replace .htaccess with the htaccess.sample, filling out the values manually&lt;/li&gt;
+&lt;li&gt;Add statusnet database using phpmyadmin&lt;/li&gt;
+&lt;li&gt;Make sure statusnet database user has all the permissions.&lt;/li&gt;
+&lt;li&gt;Apply &lt;a href=&#34;http://pastebin.com/usWAGgB9&#34;&gt;this patch&lt;/a&gt;. If this isn&amp;rsquo;t applied doing a tweet status update will result in a HTTP 500.&lt;/li&gt;
+&lt;li&gt;Run the install script&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;StatusNet should now be running locally and be fully functional.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

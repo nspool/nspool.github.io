@@ -1,0 +1,100 @@
+  <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    
+    <title> Creating a Certificate Chain for AWS </title>
+    
+	<link rel="stylesheet" href="https://nspool.github.io/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/theme.css" />
+    
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="nspool&#39;s blog" />
+</head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-right">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://nspool.github.io">nspool&#39;s blog</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-right">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li><a href="/contact/" >Contact</a></li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <div class="container page-wrap">
+      <h1>Creating a Certificate Chain for AWS</h1>
+      <small class="post-meta">Jul 20, 2015</small>
+      <div class="post-content">
+        <p>GitHub Pages doesn&rsquo;t (yet) allow an SSL certificate for a custom domain, so I&rsquo;ve moved this blog to S3.</p>
+
+<p>Uploading the certificate to AWS requires the CA certificate chain. This isn&rsquo;t always always provided by the CA, but can be generated from the command line. For example, Comodo provides the certificates in the chain, so all that&rsquo;s necessary to create the file is to concatenate the certs in PEM format into one file:</p>
+
+
+(openssl x509 -inform PEM -in COMODORSADomainValidationSecureServerCA.crt; 
+openssl x509 -inform PEM -in COMODORSAAddTrustCA.crt; 
+openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) > ca_chain.pem
+
+
+<p>This will provide a file that is suitable for the <code>--certificate-chain</code> parameter of <code>aws iam upload-server-certificate</code>:</p>
+
+
+aws iam upload-server-certificate \
+  --server-certificate-name mycert \
+  --certificate-body file://mycert.crt \
+  --private-key file://mycert.key \
+  --certificate-chain file://ca_chain.pem \
+  --path /cloudfront/
+
+
+        
+      </div>
+    </div>
+    <footer class="site-footer">
+	<div class="container">
+		<h4>nspool&#39;s blog</h4>
+		<div class="row">
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>Programming to math.. and back again!</p>
+					<a href="mailto:"></a>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>
+						<span class="fa fa-fw fa-github"></span>
+						<a href="https://github.com/nspool">nspool</a>
+						<br>
+						<span class="fa fa-fw fa-twitter"></span>
+						<a href="https://twitter.com/"></a>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+
+    <script src="https://nspool.github.io/js/jquery-2.1.4.min.js"></script>
+<script src="https://nspool.github.io/js/bootstrap.min.js"></script>
+
+  </body>
+</html>

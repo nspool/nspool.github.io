@@ -1,0 +1,167 @@
+  <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    
+    <title> Building Live555 RTSP library in Visual Studio 2015 </title>
+    
+	<link rel="stylesheet" href="https://nspool.github.io/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/theme.css" />
+    
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="nspool&#39;s blog" />
+</head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-right">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://nspool.github.io">nspool&#39;s blog</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-right">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li><a href="/contact/" >Contact</a></li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <div class="container page-wrap">
+      <h1>Building Live555 RTSP library in Visual Studio 2015</h1>
+      <small class="post-meta">Feb 1, 2016</small>
+      <div class="post-content">
+        
+
+<p>Live555 is an excellent RTSP library for Windows, but can be a bit tricky to build. These are the instructions that I follow to build it in Visual Studio 2015 in Windows 10 Professional.</p>
+
+<h3 id="1-extract-the-live555-latest-tar-gz-into-your-source-directory">1) Extract the <code>live555-latest.tar.gz</code> into your source directory.</h3>
+
+<h3 id="2-make-the-following-changes-to-the-win32config-file">2) Make the following changes to the win32config file:</h3>
+
+<ul>
+<li>Change <code>msvcirt.lib</code> to <code>msvcrt.lib</code>.</li>
+<li>Comment out the <code>ntwin32.mak</code> include. ie:</li>
+</ul>
+
+<p><code>#!include &lt;ntwin32.mak&gt;</code></p>
+
+<ul>
+<li>If you&rsquo;ve installed Visual Studio in the default location then change TOOLS32 to:
+<code>TOOLS32 = C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC</code></li>
+</ul>
+
+<h3 id="3-run-vsvars32-bat-and-build-the-make-files">3) Run <code>vsvars32.bat</code> and build the make files</h3>
+
+<p>Open an MSBuild for Visual Studio 2015 command prompt. Set the environment variables by running this batch file:</p>
+
+<pre><code>&quot;\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\vsvars32.bat&quot;
+</code></pre>
+
+<p>Build the make files run running:</p>
+
+<pre><code>genWindowsMakefiles
+</code></pre>
+
+<h3 id="4-build-the-project">4) Build the project!</h3>
+
+<p>Now you’re ready to build! Build each of the components of the project in this order:</p>
+
+<pre><code>cd liveMedia
+nmake /B -f liveMedia.mak
+cd ..\groupsock
+nmake /B -f groupsock.mak
+cd ..\UsageEnvironment
+nmake /B -f UsageEnvironment.mak
+cd ..\BasicUsageEnvironment
+nmake /B -f BasicUsageEnvironment.mak
+cd ..\testProgs
+nmake /B -f testProgs.mak
+cd ..\mediaServer
+nmake /B -f mediaServer.mak
+</code></pre>
+
+<p>If you encounter a linker errors when compiling any of the executable projects (like the Live555MediaServer) then build that project manually by entering the command displayed by nmake, but without the <code>out:</code> parameter and including the ws2_32 library, for example:</p>
+
+<pre><code>cl ws2_32.lib msvcrt.lib live555MediaServer.obj DynamicRTSPServer.obj ../liveMedia/libliveMedia.lib ../groupsock/libgroupsock.lib  ../BasicUsageEnvironment/libBasicUsageEnvironment.lib ../UsageEnvironment/libUsageEnvironment.lib
+</code></pre>
+
+<p>This should give a valid <code>Live555MediaServer.exe</code> that is ready to run!</p>
+
+<hr>
+
+<h1 id="extending-live555mediaserver-to-cope-with-large-frames">Extending Live555MediaServer to cope with large frames</h1>
+
+<p>Live555MediaServer sometimes cannot handle large 1080p frames and will throw this error:</p>
+
+<pre><code>MultiFramedRTPSink::afterGettingFrame1(): The input frame data was too large for
+our buffer size (100452).  3712 bytes of trailing data was dropped!  Correct th
+is by increasing "OutPacketBuffer::maxSize" to at least 103712, *before* creatin
+g this 'RTPSink'.  (Current value is 100000.)
+</code></pre>
+
+<p>Edit the file <code>DynamicRTSPServer.cpp</code> and any time this appears:</p>
+
+
+  OutPacketBuffer::maxSize = 100000;
+
+
+<p>change it to:</p>
+
+
+  OutPacketBuffer::maxSize = 200000;
+
+
+<p>Then rebuild the Live555MediaServer with these commands:</p>
+
+<pre><code>del *.obj
+del Live555MediaServer.exe
+cl ws2_32.lib msvcrt.lib live555MediaServer.obj DynamicRTSPServer.obj ../liveMedia/libliveMedia.lib ../groupsock/libgroupsock.lib  ../BasicUsageEnvironment/libBasicUsageEnvironment.lib ../UsageEnvironment/libUsageEnvironment.lib
+</code></pre>
+
+        
+      </div>
+    </div>
+    <footer class="site-footer">
+	<div class="container">
+		<h4>nspool&#39;s blog</h4>
+		<div class="row">
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>Programming to math.. and back again!</p>
+					<a href="mailto:"></a>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>
+						<span class="fa fa-fw fa-github"></span>
+						<a href="https://github.com/nspool">nspool</a>
+						<br>
+						<span class="fa fa-fw fa-twitter"></span>
+						<a href="https://twitter.com/"></a>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+
+    <script src="https://nspool.github.io/js/jquery-2.1.4.min.js"></script>
+<script src="https://nspool.github.io/js/bootstrap.min.js"></script>
+
+  </body>
+</html>

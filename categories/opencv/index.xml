@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Opencv on nspool&#39;s blog</title>
+    <link>https://nspool.github.io/categories/opencv/index.xml</link>
+    <description>Recent content in Opencv on nspool&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
+    <atom:link href="/categories/opencv/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Building OpenCV 3.1.0 on macOS</title>
+      <link>https://nspool.github.io/2017/03/2017-03-18-building-opencv/</link>
+      <pubDate>Sat, 18 Mar 2017 21:32:56 +1100</pubDate>
+      
+      <guid>https://nspool.github.io/2017/03/2017-03-18-building-opencv/</guid>
+      <description>&lt;p&gt;Clone the OpenCV and OpenCV_Contrib repos and checkout release 3.1.0:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/opencv/opencv.git
+git clone https://github.com/opencv/opencv_contrib.git
+cd opencv &amp;amp;&amp;amp; git checkout 3.1.0 &amp;amp;&amp;amp; cd ..
+cd opencv_contrib &amp;amp;&amp;amp; git checkout 3.1.0 &amp;amp;&amp;amp; cd ..
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Create a build directory, configure and build the project:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mkdir opencv_build &amp;amp;&amp;amp; cd opencv_build
+cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;-D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_CUDA=OFF -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ../opencv/
+    make -j7 # runs 7 jobs in parallel
+    cd ..&lt;/p&gt;
+
+&lt;p&gt;Copy the contrib modules into the OpenCV project:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cp -ri opencv_contrib/modules opencv/modules
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To build an iOS framework:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;python opencv/platforms/ios/build_framework.py ios
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Similarly, to build the macOS framework:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;python opencv/platforms/osx/build_framework.py osx
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

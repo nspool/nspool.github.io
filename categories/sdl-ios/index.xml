@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Sdl Ios on nspool&#39;s blog</title>
+    <link>https://nspool.github.io/categories/sdl-ios/index.xml</link>
+    <description>Recent content in Sdl Ios on nspool&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
+    <atom:link href="/categories/sdl-ios/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Making a fat libSDL.a for iOS development</title>
+      <link>https://nspool.github.io/2017/03/2017-03-19-building-fat-library/</link>
+      <pubDate>Sun, 19 Mar 2017 21:24:00 +1100</pubDate>
+      
+      <guid>https://nspool.github.io/2017/03/2017-03-19-building-fat-library/</guid>
+      <description>&lt;p&gt;Building the SDL Xcode-iOS project will output for i386 if the simulator target is selected, or ARM for a physical device.
+This results in two output libraries named &lt;code&gt;libSDL2.a&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;For development it is handy to have a single fat library that supports both platforms.&lt;/p&gt;
+
+&lt;p&gt;Enter the macOS &lt;code&gt;lipo&lt;/code&gt; command.&lt;/p&gt;
+
+&lt;p&gt;Copy each library from the &lt;code&gt;Debug-iphoneos&lt;/code&gt; and &lt;code&gt;Debug-iphonesimulator&lt;/code&gt; in the derived data and combine them:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;lipo -create libSDL2arm.a libSDL2i386.a -output libSDL2.a
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

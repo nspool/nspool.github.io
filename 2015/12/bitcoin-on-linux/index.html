@@ -1,0 +1,204 @@
+  <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    
+    <title> Running a full Bitcoin node on a Debian VPS </title>
+    
+	<link rel="stylesheet" href="https://nspool.github.io/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/theme.css" />
+    
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="nspool&#39;s blog" />
+</head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-right">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://nspool.github.io">nspool&#39;s blog</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-right">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li><a href="/contact/" >Contact</a></li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <div class="container page-wrap">
+      <h1>Running a full Bitcoin node on a Debian VPS</h1>
+      <small class="post-meta">Dec 23, 2015</small>
+      <div class="post-content">
+        
+
+<h2 id="1-building-bitcoin-core">1. Building BitCoin-Core</h2>
+
+<p>Install the build environment and dependencies</p>
+
+<pre><code>sudo apt-get update
+sudo apt-get install build-essential autoconf libssl-dev libboost-dev libboost-chrono-dev libboost-filesystem-dev libboost-program-options-dev libboost-system-dev libboost-test-dev libboost-thread-dev libdb4.8++-dev libdb4.8-dev pkg-config
+</code></pre>
+
+<p>Clone the Git repo and view available version:</p>
+
+<pre><code>git clone https://github.com/bitcoin/bitcoin.git
+git tag
+</code></pre>
+
+<p>Checkout the last released version ie.</p>
+
+<pre><code>git checkout 0.9.5rc2
+cd bitcoin
+./autogen.sh
+./configure --without-gui
+sudo make install
+which bitcoind
+which bitcoin-cli
+</code></pre>
+
+<p>Now run setup Bitcoind</p>
+
+<pre><code>bitcoind
+</code></pre>
+
+<p>create .bitcoin/bitcoin.conf and add:</p>
+
+<pre><code>rpcuser=bitcoinrpc
+rpcpassword=&lt;password shown in the previous step&gt;
+</code></pre>
+
+<p>Now run Bitcoind and rebuild the blockchain:</p>
+
+<pre><code>bitcoind -daemon
+tail -f ~/.bitcoin/debug.log
+</code></pre>
+
+<h2 id="2-setting-up-a-wallet">2. Setting up a wallet</h2>
+
+<p>Set a password</p>
+
+<pre><code>bitcoin-cli encryptwallet &lt;SECURE PASSWORD&gt;
+</code></pre>
+
+<p>Restart the daemon if it isn&rsquo;t running:</p>
+
+<pre><code>bitcoind -daemon
+</code></pre>
+
+<p>Login to the wallet:</p>
+
+<pre><code>bitcoin-cli walletpassphrase &lt;SECURE PASSWORD&gt; 360
+bitcoin-cli getinfo
+</code></pre>
+
+<p>Backup and Restore</p>
+
+<pre><code>bitcoin-cli backupwallet wallet.bak
+bitcoin-cli importwallet wallet.bak
+</code></pre>
+
+<p>View as human readable:</p>
+
+<pre><code>bitcoin-cli dumpwallet wallet.txt
+</code></pre>
+
+<p>Now wait for the client to become synched with the blockchain</p>
+
+<h2 id="3-receiving-bitcoins">3. Receiving bitcoins</h2>
+
+<pre><code>bitcoin-cli getnewaddress
+&lt;NEW ADDRESS APPEARS&gt;
+</code></pre>
+
+<p>Send some bitcoins!</p>
+
+<pre><code>  bitcoin-cli getreceivedbyaddress &lt;NEW ADDRESS APPEARS&gt;
+  bitcoin-cli getbalance
+</code></pre>
+
+<h3 id="4-stopping-the-vps-hypervisor-from-shutting-down-the-vm">4. Stopping the VPS hypervisor from shutting down the VM</h3>
+
+<p>While it is syncing the blockchain it will be verifying each and every block that it receives, and so the CPU usage will get so high that the VPS provider will keep shutting it down.</p>
+
+<p>To avoid this, limit the CPU:</p>
+
+<pre><code>$ echo daemon=0 &gt;&gt; ~/.bitcoin/bitcoin.conf
+$ cpulimit -l 90 bitcoind &amp;
+</code></pre>
+
+<p>How far along is it synching?</p>
+
+<pre><code>nspool@vps:~$ bitcoind getinfo
+{
+    &quot;version&quot; : 90500,
+    &quot;protocolversion&quot; : 70002,
+    &quot;walletversion&quot; : 60000,
+    &quot;balance&quot; : 0.00000000,
+    &quot;blocks&quot; : 299058,
+    &quot;timeoffset&quot; : 0,
+    &quot;connections&quot; : 13,
+    &quot;proxy&quot; : &quot;&quot;,
+    &quot;difficulty&quot; : 8000872135.96816349,
+    &quot;testnet&quot; : false,
+    &quot;keypoololdest&quot; : 1449355342,
+    &quot;keypoolsize&quot; : 100,
+    &quot;unlocked_until&quot; : 0,
+    &quot;paytxfee&quot; : 0.00000000,
+    &quot;relayfee&quot; : 0.00001000,
+    &quot;errors&quot; : &quot;&quot;
+}
+</code></pre>
+
+<p>It was 386959 last I checked on blockchain.info. So the progress is <sup>324173</sup>&frasl;<sub>386959</sub> = ~77%</p>
+
+<pre><code>du -sh .bitcoin/blocks/
+</code></pre>
+
+        
+      </div>
+    </div>
+    <footer class="site-footer">
+	<div class="container">
+		<h4>nspool&#39;s blog</h4>
+		<div class="row">
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>Programming to math.. and back again!</p>
+					<a href="mailto:"></a>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>
+						<span class="fa fa-fw fa-github"></span>
+						<a href="https://github.com/nspool">nspool</a>
+						<br>
+						<span class="fa fa-fw fa-twitter"></span>
+						<a href="https://twitter.com/"></a>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+
+    <script src="https://nspool.github.io/js/jquery-2.1.4.min.js"></script>
+<script src="https://nspool.github.io/js/bootstrap.min.js"></script>
+
+  </body>
+</html>

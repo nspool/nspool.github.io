@@ -1,0 +1,120 @@
+  <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    
+    <title> Quick REST endpoint with Ruby &amp; Sinatra </title>
+    
+	<link rel="stylesheet" href="https://nspool.github.io/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/theme.css" />
+    
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="nspool&#39;s blog" />
+</head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-right">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://nspool.github.io">nspool&#39;s blog</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-right">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li><a href="/contact/" >Contact</a></li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <div class="container page-wrap">
+      <h1>Quick REST endpoint with Ruby &amp; Sinatra</h1>
+      <small class="post-meta">Sep 23, 2015</small>
+      <div class="post-content">
+        <p>Suppose we wish to serve a bunch of images from a directory by over a REST endpoint and retrieve them by index.
+For example: <code>http://localhost:4567/image?index=0</code> would return the first image in the directory.
+This is easy to accomplish in Ruby by using Sinatra:</p>
+
+
+require 'sinatra'
+get '/image' do
+
+  # Read all the JPEG files from a given directory
+  @images = Dir.glob("/Users/nspool/Pictures/*.jpg")
+
+  # Take the path at the supplied index
+  index = params['index'].to_i
+  path = @images[index]
+
+  # Return the image
+  send_file open(path, type: 'image/jpeg', disposition: 'inline')
+end 
+
+
+<p>If we just want to serve a different image for each index and not worry about running out of images by choosing an image index that is too high, we can return the image at index modulo the number of available images.</p>
+
+<p>Here is a more complete example that does just that:</p>
+
+
+require 'sinatra'
+get '/' do
+	'Usage: /image?index=123'
+end
+get '/image' do
+	@images = Dir.glob("/Users/nspool/Pictures/*.jpg")
+	index = params['index'].to_i % @images.count
+	path = @images[index]
+	redirect 404 unless File.readable?(path)
+	content_type 'image/jpeg'
+	send_file open(path, type: 'image/jpeg', disposition: 'inline')
+end
+
+
+<p>Run with <code>ruby server.rb</code> then use URLs of the form <code>http://localhost:4567/image?index=123</code>.</p>
+
+        
+      </div>
+    </div>
+    <footer class="site-footer">
+	<div class="container">
+		<h4>nspool&#39;s blog</h4>
+		<div class="row">
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>Programming to math.. and back again!</p>
+					<a href="mailto:"></a>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>
+						<span class="fa fa-fw fa-github"></span>
+						<a href="https://github.com/nspool">nspool</a>
+						<br>
+						<span class="fa fa-fw fa-twitter"></span>
+						<a href="https://twitter.com/"></a>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+
+    <script src="https://nspool.github.io/js/jquery-2.1.4.min.js"></script>
+<script src="https://nspool.github.io/js/bootstrap.min.js"></script>
+
+  </body>
+</html>

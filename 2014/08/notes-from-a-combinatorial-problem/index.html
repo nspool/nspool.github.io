@@ -1,0 +1,115 @@
+  <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    
+    <title> Partitioning Sets </title>
+    
+	<link rel="stylesheet" href="https://nspool.github.io/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/theme.css" />
+    
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="nspool&#39;s blog" />
+</head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-right">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://nspool.github.io">nspool&#39;s blog</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-right">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li><a href="/contact/" >Contact</a></li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <div class="container page-wrap">
+      <h1>Partitioning Sets</h1>
+      <small class="post-meta">Aug 1, 2014</small>
+      <div class="post-content">
+        
+
+<p>We have a program that performs a comparison of every pair of elements in a database, and then compares the result with the median value of all values. It was suggested that the program should instead make pairwise comparisons within every possible combination of subsets. How many comparisons would we end up making?</p>
+
+<p>For this example, each element in our database will be represented by an integer. We call these elements <img src="P_in_Z.svg" alt="$P \in \mathbb{Z}$" /> the <em>population</em> which is then partitioned into all possible distinct pairwise disjoint subsets <img src="P_set.svg" alt="$\{P_1, P_2, .. , P_k\}$" />. Each <img src="P_i.svg" alt="$P_i$" /> is called a <em>block</em> of  <img src="P.svg" alt="\emph{P}" /> and is distinct; the program should not enumerate the same block multiple times. As an extra complication, each pairwise comparison will need to be also made against the block median. So for each block <img src="P_i.svg" alt="$P_i$" /> there are two operations performed:</p>
+
+<ul>
+<li>Take the median value of each <img src="P_i.svg" alt="$P_i$" /></li>
+<li>Take the euclidean distance between the median and every element <img src="e_in_P_i.svg" alt="$e \in P_i$" />.</li>
+</ul>
+
+<p>The first operation need only be performed once per block and the second will need to be performed exactly <img src="abs_P_i.svg" alt="$\|P_i\|$" /> times, as each block is also a subset and cannot contain duplicates.</p>
+
+<p>The number of ways can the population <img src="P.svg" alt="\emph{P}" /> be divided into <img src="n.svg" alt="$n$" /> disjoint non-empty subsets is known as a Stirling number of the second kind, or simply a Stirling partition number.  (see [1]) This is defined as:</p>
+
+<p><img src="def_sterling.svg" alt="$\stirling{n}{k} =\frac{1}{k!}\sum\limits_{j=0}{k}(-1)^{k-j}\binom{k}{j}j^n$" /></p>
+
+<p>So when <img src="P.svg" alt="\emph{P}" /> is divided with <img src="k.svg" alt="$k$" /> partitions where <img src="n.svg" alt="$n$" /> is the cardinality of the block it follows that the program will need to obtain <img src="k.svg" alt="$k$" /> median values and then perform <img src="n.svg" alt="$n$" /> pairwise comparisons:[sterling]</p>
+
+<p><img src="n_sterling_k.svg" alt="$C^k_{total} = n\stirling{n}{k} + k$" /></p>
+
+<p>which is the number of ways a set with n elements can be partitioned into disjoint, non-empty subsets. <img src="S.svg" alt="$S$" /> the number of ways a set with <img src="n.svg" alt="$n$" /> elements can be partitioned into <img src="k.svg" alt="$k$" /> disjoint, non-empty subsets. As the partition changes, all of <img src="n.svg" alt="$n$" /> needs to be recalculated as does the score of the partition <img src="k.svg" alt="$k$" />. For every different set of partitions we perform <img src="n.svg" alt="$n$" /> operations plus <img src="k.svg" alt="$k$" /> operations as it is possible to have anywhere from 0 to <img src="n.svg" alt="&quot;$n$&quot;" /> partitions in the set.</p>
+
+<p>Then the total number of operations over all possible partitions is:
+        <img src="C_total_1.svg" alt="C_{total} = \sum_{k=0}^{|P|}{( n\stirling{n}{k} + k)}" />
+        <img src="C_total_1.svg" alt="C_{total} = n\sum_{k=0}^{n}{\stirling{n}{k}} + \frac{n(n+1)}{2}&quot;" />
+        <img src="C_total_final.svg" alt="C_{total} = nB_n + \frac{n(n+1)}{2}" />
+        Where <img src="B_n.svg" alt="B_n" /> is the nth <em>Bell number</em>. We can now use this formula to calculate the exact number of comparisons made during the execution of the program</p>
+
+<h3 id="further-reading">Further Reading</h3>
+
+<ul>
+<li>Stirling numbers <a href="https://oeis.org/A008277">https://oeis.org/A008277</a></li>
+<li>Bell numbers <a href="https://oeis.org/A008277">https://oeis.org/A008277</a></li>
+</ul>
+
+        
+      </div>
+    </div>
+    <footer class="site-footer">
+	<div class="container">
+		<h4>nspool&#39;s blog</h4>
+		<div class="row">
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>Programming to math.. and back again!</p>
+					<a href="mailto:"></a>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>
+						<span class="fa fa-fw fa-github"></span>
+						<a href="https://github.com/nspool">nspool</a>
+						<br>
+						<span class="fa fa-fw fa-twitter"></span>
+						<a href="https://twitter.com/"></a>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+
+    <script src="https://nspool.github.io/js/jquery-2.1.4.min.js"></script>
+<script src="https://nspool.github.io/js/bootstrap.min.js"></script>
+
+  </body>
+</html>

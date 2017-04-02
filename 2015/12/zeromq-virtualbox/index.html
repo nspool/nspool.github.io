@@ -1,0 +1,262 @@
+  <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    
+    <title> ZeroMQ &#43; Vagrant for Fun and Profit </title>
+    
+	<link rel="stylesheet" href="https://nspool.github.io/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/theme.css" />
+    
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="nspool&#39;s blog" />
+</head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-right">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://nspool.github.io">nspool&#39;s blog</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-right">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li><a href="/contact/" >Contact</a></li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <div class="container page-wrap">
+      <h1>ZeroMQ &#43; Vagrant for Fun and Profit</h1>
+      <small class="post-meta">Dec 26, 2015</small>
+      <div class="post-content">
+        
+
+<hr>
+
+<p>ZeroMQ is a powerful library for network programming.</p>
+
+<p>But <strong>it&rsquo;s no fun to just connecting to localhost!</strong> By building a single Ubuntu VM and saving it as a Vagrant box, we can spin up as many clients as the machine can handle!</p>
+
+<h3 id="install-ubuntu-14-04-into-a-virtualbox-vm">Install Ubuntu 14.04 into a VirtualBox VM</h3>
+
+<p>Remeber to Install Ubuntu with user &lsquo;Vagrant&rsquo; and forward port 22 to work from the host.
+Tested with ubuntu-14.04.3-server-amd64.iso</p>
+
+<h3 id="setting-up-vagrant">Setting up Vagrant</h3>
+
+<p>It is best just to follow <a href="https://docs.vagrantup.com/v2/boxes/base.html">https://docs.vagrantup.com/v2/boxes/base.html</a></p>
+
+<p>This is the default Vagrant public key. Add it to .ssh/authorized_keys by default. Vagrant will change it later:</p>
+
+<pre><code>ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eWW6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXPITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pzC6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZEnDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXzcWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ== vagrant insecure public key
+</code></pre>
+
+<p>Also enable passwordless sudo for the vagrant user to the end of the sudoers file:</p>
+
+<pre><code>vagrant ALL=(ALL) NOPASSWD: ALL
+</code></pre>
+
+<h3 id="install-virtualbox-additions">Install VirtualBox Additions</h3>
+
+<p>sudo apt-get -y install libtool pkg-config linux-headers-generic build-essential dkms autoconf automake git
+Install the VirtualBox guest additions.
+Devices -&gt; Insert Guest Additions CD Image
+sudo mount /dev/cdrom /media/cdrom
+sudo sh /media/cdrom/VBoxLinuxAdditions.run</p>
+
+<h3 id="install-dependencies">Install Dependencies</h3>
+
+<p>ZeroMQ uses Libsodium for encryption, but this is not available in the 14.04 LTS repos.</p>
+
+<pre><code>wget -c https://download.libsodium.org/libsodium/releases/libsodium-1.0.8.tar.gz  http://download.zeromq.org/zeromq-4.1.4.tar.gz  
+tar -xf libsodium-1.0.8.tar.gz
+./configure --prefix=/usr &amp;&amp; make
+sudo make install
+</code></pre>
+
+<h3 id="install-zeromq">Install ZeroMQ</h3>
+
+<pre><code>cd ~
+tar -xzf zeromq-4.1.4.tar.gz &amp;&amp; cd zeromq-4.1.4
+./configure --prefix=/usr &amp;&amp; make
+sudo make install
+cd ~
+git clone https://github.com/zeromq/cppzmq
+</code></pre>
+
+<h3 id="install-rmate-optional">Install rmate (Optional)</h3>
+
+<p>For any TextMate users that prefer to use their host machine for editing:</p>
+
+<pre><code>sudo apt-get -y install ruby &amp;&amp; sudo gem install rmate
+</code></pre>
+
+<p>Textmate remote:</p>
+
+<pre><code>ssh -p8022 -R 52698:localhost:52698 127.0.0.1
+</code></pre>
+
+<p>So now a command in the VM such as:</p>
+
+<pre><code>rmate test.cc
+</code></pre>
+
+<p>Will open textmate locally if rmate is enabled under TextMate preferences.</p>
+
+<h3 id="testing-that-it-works">Testing that it works</h3>
+
+<p>Download the <code>hwserver</code> example from the ZeroMQ documentation and compile it:</p>
+
+<pre><code>gcc hwserver.c -o hwserver -lzmq
+</code></pre>
+
+<p>With the C++ bindings come in the box we should also be able to compile the hwserver C++ example:</p>
+
+<pre><code>g++ hwserver.cpp -o hwserver -lzmq
+</code></pre>
+
+<p>Remember to include the <code>zmq.hpp</code> cloned previously.</p>
+
+<h3 id="packaging-the-vm">Packaging the VM</h3>
+
+<p>Once we have verified that the VM will build a ZeroMQ project, we can package it using Vagrant for reuse.</p>
+
+<p>Create a box called NodeTemplate from a VM called BaseNode into the directory ~/Boxes:</p>
+
+<p><code>vagrant package --base BaseNode --output ~/Boxes/NodeTemplate.box</code></p>
+
+<p>Create a new directory containing a VagrantFile:</p>
+
+
+Vagrant.configure("2") do |config|
+  # Number of nodes to provision
+  numNodes = 2
+  # IP Address Base for private network
+  ipAddrPrefix = "172.16.0.0"
+  # Download the initial box from this url
+  config.vm.box_url = "file:///Users/nspool/Boxes/NodeTemplate.box"
+  # Provision Config for each of the nodes
+  1.upto(numNodes) do |num|
+    nodeName = ("node" + num.to_s).to_sym
+      config.vm.define nodeName do |node|
+        node.vm.box = "NodeTemplate"
+        node.vm.network :private_network, ip: ipAddrPrefix + num.to_s
+        node.vm.provider "virtualbox" do |v|
+          v.name = "Cluster Node " + num.to_s
+        end
+      end
+    end
+  end
+
+
+<p>It should now be possible to SSH into each box by name, ie.
+vagrant ssh node1</p>
+
+<hr>
+
+<h1 id="alternative-approaches">Alternative approaches</h1>
+
+<p>Here are some approached that I tried, but gave up on for one or another reason.</p>
+
+<h3 id="alternative-1-installing-from-source">Alternative 1. Installing from source</h3>
+
+<p>Add this to /etc/apt/sources.list:</p>
+
+<pre><code>deb http://us.archive.ubuntu.com/ubuntu vivid main universe 
+</code></pre>
+
+<p>Then run:</p>
+
+<pre><code>sudo apt-get update &amp;&amp;
+sudo apt-get -y upgrade &amp;&amp;
+sudo apt-get -y install ruby libtool pkg-config build-essential autoconf automake git libsodium-dev &amp;&amp;
+sudo gem install rmate &amp;&amp;
+wget -c http://download.zeromq.org/zeromq-4.1.4.tar.gz &amp;&amp;
+tar -xzf zeromq-4.1.4.tar.gz &amp;&amp; cd zeromq-4.1.4 &amp;&amp;
+./configure --prefix=/usr &amp;&amp; make &amp;&amp; sudo make install &amp;&amp;
+cd ~ &amp;&amp;
+git clone https://github.com/zeromq/cppzmq
+</code></pre>
+
+<p>Now reboot. Connect using:</p>
+
+<pre><code>ssh -i ~/.vagrant.d/insecure_private_key -p8022 -R 52698:localhost:52698 vagrant@127.0.0.1
+</code></pre>
+
+<p>This should compile the example without errors:</p>
+
+<pre><code>g++ hwserver.cpp -o hwserver -lzmq
+</code></pre>
+
+<p>Then run:</p>
+
+<pre><code>./hwserver 
+</code></pre>
+
+<p>Now shutdown and package the node.. Except that upgrading</p>
+
+<h3 id="alternative-2-using-ubuntu-server-15-10">Alternative 2. Using Ubuntu Server 15.10</h3>
+
+<p>Libsodium is available for in the 15.10 packages, meaning that it doesn&rsquo;t need to be built.</p>
+
+<p>Copy SSH public key into authorized_keys. Add to sources:</p>
+
+<pre><code>deb http://httpredir.debian.org/debian/ experimental main contrib non-free
+deb-src http://httpredir.debian.org/debian/ experimental main contrib non-free
+</code></pre>
+
+<p>Then:</p>
+
+<pre><code>apt-get update
+apt-get install libzmq5-dev ruby
+apt-get gem install rmate
+</code></pre>
+
+        
+      </div>
+    </div>
+    <footer class="site-footer">
+	<div class="container">
+		<h4>nspool&#39;s blog</h4>
+		<div class="row">
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>Programming to math.. and back again!</p>
+					<a href="mailto:"></a>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>
+						<span class="fa fa-fw fa-github"></span>
+						<a href="https://github.com/nspool">nspool</a>
+						<br>
+						<span class="fa fa-fw fa-twitter"></span>
+						<a href="https://twitter.com/"></a>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+
+    <script src="https://nspool.github.io/js/jquery-2.1.4.min.js"></script>
+<script src="https://nspool.github.io/js/bootstrap.min.js"></script>
+
+  </body>
+</html>

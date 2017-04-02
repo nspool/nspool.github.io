@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    
+    <title> Building OpenCV 3.1.0 on macOS </title>
+    
+	<link rel="stylesheet" href="https://nspool.github.io/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://nspool.github.io/css/theme.css" />
+    
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="nspool&#39;s blog" />
+</head>
+
+<body>
+	<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-right">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://nspool.github.io">nspool&#39;s blog</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-right">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li><a href="/contact/" >Contact</a></li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+	<div class="container page-wrap">
+		<h1>Building OpenCV 3.1.0 on macOS</h1>
+		<p>Clone the OpenCV and OpenCV_Contrib repos and checkout release 3.1.0:</p>
+
+<pre><code>git clone https://github.com/opencv/opencv.git
+git clone https://github.com/opencv/opencv_contrib.git
+cd opencv &amp;&amp; git checkout 3.1.0 &amp;&amp; cd ..
+cd opencv_contrib &amp;&amp; git checkout 3.1.0 &amp;&amp; cd ..
+</code></pre>
+
+<p>Create a build directory, configure and build the project:</p>
+
+<pre><code>mkdir opencv_build &amp;&amp; cd opencv_build
+cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON
+</code></pre>
+
+<p>-D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_CUDA=OFF -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ../opencv/
+    make -j7 # runs 7 jobs in parallel
+    cd ..</p>
+
+<p>Copy the contrib modules into the OpenCV project:</p>
+
+<pre><code>cp -ri opencv_contrib/modules opencv/modules
+</code></pre>
+
+<p>To build an iOS framework:</p>
+
+<pre><code>python opencv/platforms/ios/build_framework.py ios
+</code></pre>
+
+<p>Similarly, to build the macOS framework:</p>
+
+<pre><code>python opencv/platforms/osx/build_framework.py osx
+</code></pre>
+
+	</div>
+	<footer class="site-footer">
+	<div class="container">
+		<h4>nspool&#39;s blog</h4>
+		<div class="row">
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>Programming to math.. and back again!</p>
+					<a href="mailto:"></a>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>
+						<span class="fa fa-fw fa-github"></span>
+						<a href="https://github.com/nspool">nspool</a>
+						<br>
+						<span class="fa fa-fw fa-twitter"></span>
+						<a href="https://twitter.com/"></a>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+
+	<script src="https://nspool.github.io/js/jquery-2.1.4.min.js"></script>
+<script src="https://nspool.github.io/js/bootstrap.min.js"></script>
+
+</body>
+</html>
