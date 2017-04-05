@@ -11,10 +11,10 @@
     
     <item>
       <title>Building OpenCV 3.1.0 on macOS</title>
-      <link>https://nspool.github.io/2017/03/2017-03-18-building-opencv/</link>
+      <link>https://nspool.github.io/2017/03/building-opencv/</link>
       <pubDate>Sat, 18 Mar 2017 21:32:56 +1100</pubDate>
       
-      <guid>https://nspool.github.io/2017/03/2017-03-18-building-opencv/</guid>
+      <guid>https://nspool.github.io/2017/03/building-opencv/</guid>
       <description>&lt;p&gt;Clone the OpenCV and OpenCV_Contrib repos and checkout release 3.1.0:&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;git clone https://github.com/opencv/opencv.git

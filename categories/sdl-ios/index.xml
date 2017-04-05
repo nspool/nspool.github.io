@@ -11,10 +11,10 @@
     
     <item>
       <title>Making a fat libSDL.a for iOS development</title>
-      <link>https://nspool.github.io/2017/03/2017-03-19-building-fat-library/</link>
+      <link>https://nspool.github.io/2017/03/building-fat-library/</link>
       <pubDate>Sun, 19 Mar 2017 21:24:00 +1100</pubDate>
       
-      <guid>https://nspool.github.io/2017/03/2017-03-19-building-fat-library/</guid>
+      <guid>https://nspool.github.io/2017/03/building-fat-library/</guid>
       <description>&lt;p&gt;Building the SDL Xcode-iOS project will output for i386 if the simulator target is selected, or ARM for a physical device.
 This results in two output libraries named &lt;code&gt;libSDL2.a&lt;/code&gt;.&lt;/p&gt;
 
