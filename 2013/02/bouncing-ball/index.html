@@ -61,103 +61,103 @@ ga('send', 'pageview');
 
 <p>In either Sam or Acme, create a new file named <code>ball.c</code>. Add these headers:</p>
 
-
-#include <u.h>
-#include <libc.h>
-#include <draw.h>
-#include <event.h>
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span><span style="color: #008080">#include</span> <span style="color: #008800; font-style: italic">&lt;u.h&gt;</span><span style="color: #008080"></span>
+<span style="color: #008080">#include</span> <span style="color: #008800; font-style: italic">&lt;libc.h&gt;</span><span style="color: #008080"></span>
+<span style="color: #008080">#include</span> <span style="color: #008800; font-style: italic">&lt;draw.h&gt;</span><span style="color: #008080"></span>
+<span style="color: #008080">#include</span> <span style="color: #008800; font-style: italic">&lt;event.h&gt;</span><span style="color: #008080"></span>
+</pre></div>
 
 
 <p>The first two are standard headers for writing in the Plan 9 dialect of C instead of ANSI C, which use a <code>pragma</code> directive to also provide the necessary parameters to the linker. The headers <code>draw.h</code> and <code>event.h</code> both include the libdraw and libevent. In the main method we will initiate drawing on the current window as well as register our interest in mouse events for the window:</p>
 
-
-/* Initiate graphics and mouse */
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span><span style="color: #008800; font-style: italic">/* Initiate graphics and mouse */</span>
     
-if(initdraw(nil, nil, "bouncing ball demo") < 0) {
-  sysfatal("initdraw failed: %r");
+<span style="color: #000080; font-weight: bold">if</span>(initdraw(nil, nil, <span style="color: #0000FF">&quot;bouncing ball demo&quot;</span>) &lt; <span style="color: #0000FF">0</span>) {
+  sysfatal(<span style="color: #0000FF">&quot;initdraw failed: %r&quot;</span>);
 }
 
 einit(Emouse);
+</pre></div>
 
 
 <p>In Rio, the Plan 9 window manager, we do not create a new window but instead take over the terminal window that our program was spawned from. Just as the underlying shell forked, we take over the graphical context of the parent process.</p>
 
 <p>Libevent requires that we implement a method called eresized to handle when the window has been resized or the window is newly created. If this is the first time the program is run then it will need to connect to the display using <code>getwindow()</code> and then clear the screen by painting it white.</p>
 
-
-void
-eresized(int new)
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span><span style="color: #000080; font-weight: bold">void</span>
+eresized(<span style="color: #000080; font-weight: bold">int</span> new)
 {
-  if(new && getwindow(display, Refnone) < 0)
-    sysfatal("can't reattach to window");
+  <span style="color: #000080; font-weight: bold">if</span>(new &amp;&amp; getwindow(display, Refnone) &lt; <span style="color: #0000FF">0</span>)
+    sysfatal(<span style="color: #0000FF">&quot;can&#39;t reattach to window&quot;</span>);
 
-  /* Store new screen coordinates for collision detection */
-  p = Pt(Dx(screen->r), Dy(screen->r));
+  <span style="color: #008800; font-style: italic">/* Store new screen coordinates for collision detection */</span>
+  p = Pt(Dx(screen-&gt;r), Dy(screen-&gt;r));
 
-  /* Draw the background DWhite */
+  <span style="color: #008800; font-style: italic">/* Draw the background DWhite */</span>
   draw(screen, 
-    insetrect(screen->r, borderWidth), 
-    allocimage(display, Rect(0, 0, 1, 1), screen->chan, 1, DWhite), 
+    insetrect(screen-&gt;r, borderWidth), 
+    allocimage(display, Rect(<span style="color: #0000FF">0</span>, <span style="color: #0000FF">0</span>, <span style="color: #0000FF">1</span>, <span style="color: #0000FF">1</span>), screen-&gt;chan, <span style="color: #0000FF">1</span>, DWhite), 
     nil, ZP);
 }
+</pre></div>
 
 
 <p>Call this method by adding <code>eresized(0);</code>. The windowing system Rio will call this function for subsequent window resizes.</p>
 
 <p>So look at what we have done so far: we have created a new blank window by attaching to the current terminal window, specified a mouse handler and painted the terminal white. Now we can draw our ball. First set up a timer to move the ball every 5 milliseconds unless there is an Emouse event.</p>
 
-
-timer = etimer(0, 5);
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>timer = etimer(<span style="color: #0000FF">0</span>, <span style="color: #0000FF">5</span>);
+</pre></div>
 
 
 <p>Create a method <code>initball()</code> that allocates an image as a brush, and image to draw on and then an ellipse:</p>
 
-
-Image *brush;
-brush=allocimage(display, Rect(0,0,1,1), CMAP8, 1, DRed);
-ball=allocimage(display, (Rectangle){(Point){0,0},(Point){r*4,r*4}},
-screen->chan, 0, DWhite);
-fillellipse(ball, (Point){r*2,r*2}, r, r, brush, ZP);
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>Image *brush;
+brush=allocimage(display, Rect(<span style="color: #0000FF">0</span>,<span style="color: #0000FF">0</span>,<span style="color: #0000FF">1</span>,<span style="color: #0000FF">1</span>), CMAP8, <span style="color: #0000FF">1</span>, DRed);
+ball=allocimage(display, (Rectangle){(Point){<span style="color: #0000FF">0</span>,<span style="color: #0000FF">0</span>},(Point){r*<span style="color: #0000FF">4</span>,r*<span style="color: #0000FF">4</span>}},
+screen-&gt;chan, <span style="color: #0000FF">0</span>, DWhite);
+fillellipse(ball, (Point){r*<span style="color: #0000FF">2</span>,r*<span style="color: #0000FF">2</span>}, r, r, brush, ZP);
+</pre></div>
 
 
 <p>Also, we will need a method <code>moveball()</code> to move the ball. <a href="https://www.cl.cam.ac.uk/~mgk25/ucs/utf-8-history.txt">Plan 9 has supported UTF-8 since the very beginning</a> we can use symbols such as the greek letter delta to denote change.</p>
 
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span><span style="color: #000080; font-weight: bold">static</span> Point bp={<span style="color: #0000FF">6</span>, <span style="color: #0000FF">6</span>}; <span style="color: #008800; font-style: italic">/* Ball Position */</span>
+<span style="color: #000080; font-weight: bold">static</span> <span style="color: #000080; font-weight: bold">double</span> <span style="color: #a61717; background-color: #e3d2d2">Δ</span>i=<span style="color: #0000FF">4</span>, <span style="color: #a61717; background-color: #e3d2d2">Δ</span>j=<span style="color: #0000FF">4</span>;
 
-static Point bp={6, 6}; /* Ball Position */
-static double Δi=4, Δj=4;
+<span style="color: #008800; font-style: italic">/* Collision detection */</span>
+<span style="color: #000080; font-weight: bold">if</span>(bp.x &gt; p.x - (r*<span style="color: #0000FF">3</span>) || bp.x &lt; -r) <span style="color: #a61717; background-color: #e3d2d2">Δ</span>i = <span style="color: #a61717; background-color: #e3d2d2">Δ</span>i*-<span style="color: #0000FF">1</span>;
+<span style="color: #000080; font-weight: bold">if</span>(bp.y &gt; p.y - (r*<span style="color: #0000FF">3</span>) || bp.y &lt; -r) <span style="color: #a61717; background-color: #e3d2d2">Δ</span>j = <span style="color: #a61717; background-color: #e3d2d2">Δ</span>j*-<span style="color: #0000FF">1</span>;
 
-/* Collision detection */
-if(bp.x > p.x - (r*3) || bp.x < -r) Δi = Δi*-1;
-if(bp.y > p.y - (r*3) || bp.y < -r) Δj = Δj*-1;
+<span style="color: #008800; font-style: italic">/* Increment ball position */</span>
+bp.x = bp.x + <span style="color: #a61717; background-color: #e3d2d2">Δ</span>i;
+bp.y = bp.y + <span style="color: #a61717; background-color: #e3d2d2">Δ</span>j;
 
-/* Increment ball position */
-bp.x = bp.x + Δi;
-bp.y = bp.y + Δj;
-
-draw(screen, rectaddpt(screen->r, bp), ball, nil, ZP);
+draw(screen, rectaddpt(screen-&gt;r, bp), ball, nil, ZP);
+</pre></div>
 
 
 <p>Now add an event loop that will either move the ball if there are no mouse events, or will handle the mouse event:</p>
 
-
-char *buttons[] = {"exit", 0};
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span><span style="color: #000080; font-weight: bold">char</span> *buttons[] = {<span style="color: #0000FF">&quot;exit&quot;</span>, <span style="color: #0000FF">0</span>};
 Menu menu = { buttons };
 
-for(;;)
+<span style="color: #000080; font-weight: bold">for</span>(;;)
 {
-  e = event(&ev);
+  e = event(&amp;ev);
 
-  /* If there is a mouse event, the rightmost button
-   * pressed and the first menu option selected
-   * then exit.. */
+  <span style="color: #008800; font-style: italic">/* If there is a mouse event, the rightmost button</span>
+<span style="color: #008800; font-style: italic">   * pressed and the first menu option selected</span>
+<span style="color: #008800; font-style: italic">   * then exit.. */</span>
 
- if( (e == Emouse) &&
-    (ev.mouse.buttons & 4) && 
-    (emenuhit(3, &ev.mouse, &menu) == 0)) exits(nil);
-  else 
+ <span style="color: #000080; font-weight: bold">if</span>( (e == Emouse) &amp;&amp;
+    (ev.mouse.buttons &amp; <span style="color: #0000FF">4</span>) &amp;&amp; 
+    (emenuhit(<span style="color: #0000FF">3</span>, &amp;ev.mouse, &amp;menu) == <span style="color: #0000FF">0</span>)) exits(nil);
+  <span style="color: #000080; font-weight: bold">else</span> 
     if(e == timer)
       moveball();
 }
+</pre></div>
 
 
 <p>Putting this all together gives the bouncing ball demo!</p>

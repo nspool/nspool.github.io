@@ -55,19 +55,19 @@ ga('send', 'pageview');
 
 <p>In this example, fileHandle could represent an open socket, with the <em>SIGPIP</em> thrown if the client disconnects unexpectedly and the pipe is closed:</p>
 
-
-@try
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span><span style="color: #000080; font-weight: bold">@try</span>
 {
   [fileHandle writeData:fileData];
 }
-@catch (NSException *exception)
+<span style="color: #000080; font-weight: bold">@catch</span> (NSException *exception)
 {
-  // Ignore the SIGPIP
+  <span style="color: #008800; font-style: italic">// Ignore the SIGPIP</span>
 }
-@finally
+<span style="color: #000080; font-weight: bold">@finally</span>
 {
   CFRelease(fileData);
 }
+</pre></div>
 
 
 <p>Unfortunately in Swift 2.0 this isn&rsquo;t possible; the analogous <code>try-catch</code> doesn&rsquo;t capture signals.</p>
@@ -76,23 +76,23 @@ ga('send', 'pageview');
 
 <p>My solution has been to fall back to the native BSD APIs. When creating the socket with <code>CFSocketCreate</code> prevent <em>SIGPIP</em> from being thrown by setting the option:</p>
 
-
-var no_sig_pipe: Int32 = 1
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span><span style="color: #000080; font-weight: bold">var</span> no_sig_pipe: Int32 = <span style="color: #0000FF">1</span>
 setsockopt(CFSocketGetNative(socket),
 SOL_SOCKET,
 SO_NOSIGPIPE,
-&no_sig_pipe,
+&amp;no_sig_pipe,
 socklen_t(sizeof(Int32)))
+</pre></div>
 
 
 <p>Then assuming the write is performed in a separate method, we can use a guard to perform a dummy write before the socket is used:</p>
 
-
-guard (write(fileHandle.fileDescriptor, nil, 0) == 0) else {
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span><span style="color: #000080; font-weight: bold">guard</span> (write(fileHandle.fileDescriptor, <span style="color: #000080; font-weight: bold">nil</span>, <span style="color: #0000FF">0</span>) == <span style="color: #0000FF">0</span>) <span style="color: #000080; font-weight: bold">else</span> {
   CFRelease(fileData)
-    return false
+    <span style="color: #000080; font-weight: bold">return</span> <span style="color: #000080; font-weight: bold">false</span>
   }
 fileHandle.writeData(fileData)
+</pre></div>
 
 
 <p>If the socket is closed then the guard will cleanup and return.</p>

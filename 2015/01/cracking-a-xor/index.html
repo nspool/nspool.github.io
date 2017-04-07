@@ -53,28 +53,28 @@ ga('send', 'pageview');
       <div class="post-content">
         <p>In days part there were sites known to store login status in a client-side cookie obscured by a XOR cyper. When first visting the site some code like this would run:</p>
 
-
-$cookie = xor_crypt($json_encode(array("login"=>"false")));
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>$cookie = xor_crypt($json_encode(array(<span style="color: #0000FF">&quot;login&quot;</span>=&gt;<span style="color: #0000FF">&quot;false&quot;</span>)));
+</pre></div>
 
 
 <p>Then <code>$cookie</code> would be set on the client side, something like <code>data=GkAPXlVaD0BZE1RSDREGE08=</code>. A successful login would containg a similar:</p>
 
-
-$cookie = xor_crypt($json_encode(array("login"=>"true")));
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>$cookie = xor_crypt($json_encode(array(<span style="color: #0000FF">&quot;login&quot;</span>=&gt;<span style="color: #0000FF">&quot;true&quot;</span>)));
+</pre></div>
 
 
 <p>That would result in the cookie <code>data=GkAPXlVaD0BZE0ZBFAdBTA==</code>. Looking at there two values it is plain that they are very similar. That only a few positions have changed indicate a basic <a href="http://en.wikipedia.org/wiki/Symmetric-key_algorithm">symmetric cypher</a>, in this case just a simple XOR of the JSON value against a fixed key.</p>
 
 <p>While it is trivial to brute-force the key, it is more fun to guess. A website setting a single long key might indicate a serialized array and logging in and out gives some indicate to what is being set. Then we can determine the key:</p>
 
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>$ct = base64_decode(<span style="color: #0000FF">&quot;GkAPXlVaD0BZE1RSDREGE08=&quot;</span>);
+$pt = json_encode(array(<span style="color: #0000FF">&quot;login&quot;</span>=&gt;<span style="color: #0000FF">&quot;false&quot;</span>));
+$key = <span style="color: #0000FF">&quot;&quot;</span>;
 
-$ct = base64_decode("GkAPXlVaD0BZE1RSDREGE08=");
-$pt = json_encode(array("login"=>"false"));
-$key = "";
-
-for($i=0;$i<strlen($ct);$i++) {
+<span style="color: #000080; font-weight: bold">for</span>($i=<span style="color: #0000FF">0</span>;$i&lt;strlen($ct);$i++) {
   $key .= $ct[$i] ^ $pt[$i % strlen($pt)];
 }
+</pre></div>
 
 
 <p>This gives <code>abc123abc123abc123abc1 ..</code> which is both human readable and contains repetitive.</p>

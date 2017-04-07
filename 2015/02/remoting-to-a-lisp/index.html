@@ -59,47 +59,47 @@ ga('send', 'pageview');
 
 <p>Add the following to the <code>.sbclrc</code> on the remote box to load <em>Swank</em> when SBCL is started:</p>
 
-
-; Setup Swank
-(ql:quickload "swank")
-(require 'asdf)
-(asdf:oos 'asdf:load-op 'swank)
-(setf swank:*communication-style* :fd-handler)
-(swank:create-server :dont-close t)
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span><span style="color: #008800; font-style: italic">; Setup Swank</span>
+(ql:quickload <span style="color: #0000FF">&quot;swank&quot;</span>)
+(require <span style="color: #0000FF">&#39;asdf</span>)
+(asdf:oos <span style="color: #0000FF">&#39;asdf:load-op</span> <span style="color: #0000FF">&#39;swank</span>)
+(setf swank:*communication-style* <span style="color: #0000FF">:fd-handler</span>)
+(swank:create-server <span style="color: #0000FF">:dont-close</span> t)
+</pre></div>
 
 
 <p>Now in a seperate terminal window start a new instance of SSH to the remote machine, and forward the local port <code>4007</code> to the remote port <code>4005</code> which is used by <em>Swank</em>:
-
-ssh -C -L4007:127.0.0.1:4005 $USER@$REMOTEIP
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>ssh -C -L4007:127.0.0.1:4005 $USER@$REMOTEIP
+</pre></div>
 </p>
 
 <p>Now tell <em>SLIME</em> to connect to the remote machine. In Emacs type <code>M-x slime-connect</code> and choose <code>127.0.0.1</code> and port <code>4007</code>.</p>
 
 <p>And that&rsquo;s it! You will now be interacting with the REPL of the remote machine. For bonus points we can start a simple web server on the remote box just to prove we&rsquo;ve done it. If you type this into the REPL it will load the <a href="http://clacklisp.org/tutorial/02-getting-clack.html">Clack web framwork</a> and serve up a simple Hello, World on port 5000:</p>
 
-
-(ql:quickload :clack)
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>(ql:quickload <span style="color: #0000FF">:clack</span>)
 (clack:clackup
-  (lambda (env)
-    (declare (ignore env))
-    '(200 (:content-type "text/plain")(break) ("Hello, Clack!"))))
+  (<span style="color: #000080; font-weight: bold">lambda</span> (env)
+    (<span style="color: #000080; font-weight: bold">declare</span> (<span style="color: #000080; font-weight: bold">ignore</span> env))
+    &#39;(<span style="color: #0000FF">200</span> (<span style="color: #0000FF">:content-type</span> <span style="color: #0000FF">&quot;text/plain&quot;</span>)(break) (<span style="color: #0000FF">&quot;Hello, Clack!&quot;</span>))))
+</pre></div>
 
 
 <p>Use Curl on the development machine and you should see:</p>
 
-
-curl http://$REMOTEIP:5000
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>curl http://$REMOTEIP:5000
 Hello, Clack!
+</pre></div>
 
 
 <p>To change the server text to <code>Hello, World!</code>:</p>
 
-
-(clack:stop *)
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>(clack:stop *)
 (clack:clackup
-  (lambda (env)
-  (declare (ignore env))
-  '(200 (:content-type "text/plain")(break) ("Hello, World!"))))
+  (<span style="color: #000080; font-weight: bold">lambda</span> (env)
+  (<span style="color: #000080; font-weight: bold">declare</span> (<span style="color: #000080; font-weight: bold">ignore</span> env))
+  &#39;(<span style="color: #0000FF">200</span> (<span style="color: #0000FF">:content-type</span> <span style="color: #0000FF">&quot;text/plain&quot;</span>)(break) (<span style="color: #0000FF">&quot;Hello, World!&quot;</span>))))
+</pre></div>
 
 
 <p>Enjoy!</p>

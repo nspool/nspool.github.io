@@ -55,40 +55,40 @@ ga('send', 'pageview');
 For example: <code>http://localhost:4567/image?index=0</code> would return the first image in the directory.
 This is easy to accomplish in Ruby by using Sinatra:</p>
 
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>require <span style="color: #0000FF">&#39;sinatra&#39;</span>
+get <span style="color: #0000FF">&#39;/image&#39;</span> <span style="color: #000080; font-weight: bold">do</span>
 
-require 'sinatra'
-get '/image' do
+  <span style="color: #008800; font-style: italic"># Read all the JPEG files from a given directory</span>
+  @images = Dir.glob(<span style="color: #0000FF">&quot;/Users/nspool/Pictures/*.jpg&quot;</span>)
 
-  # Read all the JPEG files from a given directory
-  @images = Dir.glob("/Users/nspool/Pictures/*.jpg")
-
-  # Take the path at the supplied index
-  index = params['index'].to_i
+  <span style="color: #008800; font-style: italic"># Take the path at the supplied index</span>
+  index = params[<span style="color: #0000FF">&#39;index&#39;</span>].to_i
   path = @images[index]
 
-  # Return the image
-  send_file open(path, type: 'image/jpeg', disposition: 'inline')
-end 
+  <span style="color: #008800; font-style: italic"># Return the image</span>
+  send_file open(path, <span style="color: #0000FF">type</span>: <span style="color: #0000FF">&#39;image/jpeg&#39;</span>, <span style="color: #0000FF">disposition</span>: <span style="color: #0000FF">&#39;inline&#39;</span>)
+<span style="color: #000080; font-weight: bold">end</span> 
+</pre></div>
 
 
 <p>If we just want to serve a different image for each index and not worry about running out of images by choosing an image index that is too high, we can return the image at index modulo the number of available images.</p>
 
 <p>Here is a more complete example that does just that:</p>
 
-
-require 'sinatra'
-get '/' do
-	'Usage: /image?index=123'
-end
-get '/image' do
-	@images = Dir.glob("/Users/nspool/Pictures/*.jpg")
-	index = params['index'].to_i % @images.count
+<p><div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>require <span style="color: #0000FF">&#39;sinatra&#39;</span>
+get <span style="color: #0000FF">&#39;/&#39;</span> <span style="color: #000080; font-weight: bold">do</span>
+	<span style="color: #0000FF">&#39;Usage: /image?index=123&#39;</span>
+<span style="color: #000080; font-weight: bold">end</span>
+get <span style="color: #0000FF">&#39;/image&#39;</span> <span style="color: #000080; font-weight: bold">do</span>
+	@images = Dir.glob(<span style="color: #0000FF">&quot;/Users/nspool/Pictures/*.jpg&quot;</span>)
+	index = params[<span style="color: #0000FF">&#39;index&#39;</span>].to_i % @images.count
 	path = @images[index]
-	redirect 404 unless File.readable?(path)
-	content_type 'image/jpeg'
-	send_file open(path, type: 'image/jpeg', disposition: 'inline')
-end
-
+	redirect <span style="color: #0000FF">404</span> <span style="color: #000080; font-weight: bold">unless</span> File.readable?(path)
+	content_type <span style="color: #0000FF">&#39;image/jpeg&#39;</span>
+	send_file open(path, <span style="color: #0000FF">type</span>: <span style="color: #0000FF">&#39;image/jpeg&#39;</span>, <span style="color: #0000FF">disposition</span>: <span style="color: #0000FF">&#39;inline&#39;</span>)
+<span style="color: #000080; font-weight: bold">end</span>
+</pre></div>
+</p>
 
 <p>Run with <code>ruby server.rb</code> then use URLs of the form <code>http://localhost:4567/image?index=123</code>.</p>
 

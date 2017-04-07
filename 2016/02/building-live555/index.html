@@ -122,14 +122,14 @@ g this 'RTPSink'.  (Current value is 100000.)
 
 <p>Edit the file <code>DynamicRTSPServer.cpp</code> and any time this appears:</p>
 
-
-  OutPacketBuffer::maxSize = 100000;
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>  OutPacketBuffer::maxSize = <span style="color: #0000FF">100000</span>;
+</pre></div>
 
 
 <p>change it to:</p>
 
-
-  OutPacketBuffer::maxSize = 200000;
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>  OutPacketBuffer::maxSize = <span style="color: #0000FF">200000</span>;
+</pre></div>
 
 
 <p>Then rebuild the Live555MediaServer with these commands:</p>

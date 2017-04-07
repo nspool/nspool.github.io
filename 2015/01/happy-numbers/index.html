@@ -53,9 +53,9 @@ ga('send', 'pageview');
       <div class="post-content">
         <p>Here is a Mathematica snippit to count the number of <a href="http://oeis.org/A007770">Happy Numbers</a> up to 1000:</p>
 
-
-Length[Select[Range[1000], 
-FixedPoint[Total[IntegerDigits[#]^2] &, #, 10] == 1 &]]
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>Length[Select[Range[<span style="color: #0000FF">1000</span>],<span style="color: #bbbbbb"> </span>
+FixedPoint[Total[IntegerDigits[#]^<span style="color: #0000FF">2</span>]<span style="color: #bbbbbb"> </span>&amp;,<span style="color: #bbbbbb"> </span>#,<span style="color: #bbbbbb"> </span><span style="color: #0000FF">10</span>]<span style="color: #bbbbbb"> </span>==<span style="color: #bbbbbb"> </span><span style="color: #0000FF">1</span><span style="color: #bbbbbb"> </span>&amp;]]<span style="color: #bbbbbb"></span>
+</pre></div>
 
 
         

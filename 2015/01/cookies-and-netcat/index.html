@@ -57,11 +57,11 @@ ga('send', 'pageview');
 
 <p>In the meantime here&rsquo;s an example of using <code>netcat</code> to do a HTTP request containing a cookie. For good measure parameter <code>-p 24</code> forces the server to reply to the client on port 42.</p>
 
-
-#!/bin/bash
-head="GET http://www.example.org HTTP/1.1\r\nHost: .example.org\r\nCookie: VALUE=ABC123;\r\nAccept: */*\r\nConnection: Close\r\n\r\n";
-echo -ne $head | nc -p42 www.example.org 80
-#=> Using port 42 for the reply.
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span><span style="color: #008800; font-style: italic">#!/bin/bash</span>
+head=<span style="color: #0000FF">&quot;GET http://www.example.org HTTP/1.1\r\nHost: .example.org\r\nCookie: VALUE=ABC123;\r\nAccept: */*\r\nConnection: Close\r\n\r\n&quot;</span>;
+echo -ne $head | nc -p42 www.example.org <span style="color: #0000FF">80</span>
+<span style="color: #008800; font-style: italic">#=&gt; Using port 42 for the reply.</span>
+</pre></div>
 
 
         

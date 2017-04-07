@@ -55,21 +55,21 @@ ga('send', 'pageview');
 
 <p>Uploading the certificate to AWS requires the CA certificate chain. This isn&rsquo;t always always provided by the CA, but can be generated from the command line. For example, Comodo provides the certificates in the chain, so all that&rsquo;s necessary to create the file is to concatenate the certs in PEM format into one file:</p>
 
-
-(openssl x509 -inform PEM -in COMODORSADomainValidationSecureServerCA.crt; 
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>(openssl x509 -inform PEM -in COMODORSADomainValidationSecureServerCA.crt; 
 openssl x509 -inform PEM -in COMODORSAAddTrustCA.crt; 
-openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) > ca_chain.pem
+openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) &gt; ca_chain.pem
+</pre></div>
 
 
 <p>This will provide a file that is suitable for the <code>--certificate-chain</code> parameter of <code>aws iam upload-server-certificate</code>:</p>
 
-
-aws iam upload-server-certificate \
-  --server-certificate-name mycert \
-  --certificate-body file://mycert.crt \
-  --private-key file://mycert.key \
-  --certificate-chain file://ca_chain.pem \
+<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>aws iam upload-server-certificate <span style="color: #0000FF">\</span>
+  --server-certificate-name mycert <span style="color: #0000FF">\</span>
+  --certificate-body file://mycert.crt <span style="color: #0000FF">\</span>
+  --private-key file://mycert.key <span style="color: #0000FF">\</span>
+  --certificate-chain file://ca_chain.pem <span style="color: #0000FF">\</span>
   --path /cloudfront/
+</pre></div>
 
 
         

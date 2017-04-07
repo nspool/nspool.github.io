@@ -148,14 +148,14 @@ g this &#39;RTPSink&#39;.  (Current value is 100000.)
 
 &lt;p&gt;Edit the file &lt;code&gt;DynamicRTSPServer.cpp&lt;/code&gt; and any time this appears:&lt;/p&gt;
 
-
-  OutPacketBuffer::maxSize = 100000;
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;  OutPacketBuffer::maxSize = &lt;span style=&#34;color: #0000FF&#34;&gt;100000&lt;/span&gt;;
+&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;change it to:&lt;/p&gt;
 
-
-  OutPacketBuffer::maxSize = 200000;
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;  OutPacketBuffer::maxSize = &lt;span style=&#34;color: #0000FF&#34;&gt;200000&lt;/span&gt;;
+&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;Then rebuild the Live555MediaServer with these commands:&lt;/p&gt;
@@ -271,26 +271,26 @@ git clone https://github.com/zeromq/cppzmq
 
 &lt;p&gt;Create a new directory containing a VagrantFile:&lt;/p&gt;
 
-
-Vagrant.configure(&#34;2&#34;) do |config|
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;Vagrant.configure(&amp;quot;2&amp;quot;) do |config|
   # Number of nodes to provision
   numNodes = 2
   # IP Address Base for private network
-  ipAddrPrefix = &#34;172.16.0.0&#34;
+  ipAddrPrefix = &amp;quot;172.16.0.0&amp;quot;
   # Download the initial box from this url
-  config.vm.box_url = &#34;file:///Users/nspool/Boxes/NodeTemplate.box&#34;
+  config.vm.box_url = &amp;quot;file:///Users/nspool/Boxes/NodeTemplate.box&amp;quot;
   # Provision Config for each of the nodes
   1.upto(numNodes) do |num|
-    nodeName = (&#34;node&#34; + num.to_s).to_sym
+    nodeName = (&amp;quot;node&amp;quot; + num.to_s).to_sym
       config.vm.define nodeName do |node|
-        node.vm.box = &#34;NodeTemplate&#34;
+        node.vm.box = &amp;quot;NodeTemplate&amp;quot;
         node.vm.network :private_network, ip: ipAddrPrefix + num.to_s
-        node.vm.provider &#34;virtualbox&#34; do |v|
-          v.name = &#34;Cluster Node &#34; + num.to_s
+        node.vm.provider &amp;quot;virtualbox&amp;quot; do |v|
+          v.name = &amp;quot;Cluster Node &amp;quot; + num.to_s
         end
       end
     end
   end
+&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;It should now be possible to SSH into each box by name, ie.
@@ -501,40 +501,40 @@ $ cpulimit -l 90 bitcoind &amp;amp;
 For example: &lt;code&gt;http://localhost:4567/image?index=0&lt;/code&gt; would return the first image in the directory.
 This is easy to accomplish in Ruby by using Sinatra:&lt;/p&gt;
 
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;require &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;sinatra&amp;#39;&lt;/span&gt;
+get &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;/image&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;do&lt;/span&gt;
 
-require &#39;sinatra&#39;
-get &#39;/image&#39; do
+  &lt;span style=&#34;color: #008800; font-style: italic&#34;&gt;# Read all the JPEG files from a given directory&lt;/span&gt;
+  @images = Dir.glob(&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;/Users/nspool/Pictures/*.jpg&amp;quot;&lt;/span&gt;)
 
-  # Read all the JPEG files from a given directory
-  @images = Dir.glob(&#34;/Users/nspool/Pictures/*.jpg&#34;)
-
-  # Take the path at the supplied index
-  index = params[&#39;index&#39;].to_i
+  &lt;span style=&#34;color: #008800; font-style: italic&#34;&gt;# Take the path at the supplied index&lt;/span&gt;
+  index = params[&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;index&amp;#39;&lt;/span&gt;].to_i
   path = @images[index]
 
-  # Return the image
-  send_file open(path, type: &#39;image/jpeg&#39;, disposition: &#39;inline&#39;)
-end 
+  &lt;span style=&#34;color: #008800; font-style: italic&#34;&gt;# Return the image&lt;/span&gt;
+  send_file open(path, &lt;span style=&#34;color: #0000FF&#34;&gt;type&lt;/span&gt;: &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color: #0000FF&#34;&gt;disposition&lt;/span&gt;: &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;inline&amp;#39;&lt;/span&gt;)
+&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;end&lt;/span&gt; 
+&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;If we just want to serve a different image for each index and not worry about running out of images by choosing an image index that is too high, we can return the image at index modulo the number of available images.&lt;/p&gt;
 
 &lt;p&gt;Here is a more complete example that does just that:&lt;/p&gt;
 
-
-require &#39;sinatra&#39;
-get &#39;/&#39; do
-	&#39;Usage: /image?index=123&#39;
-end
-get &#39;/image&#39; do
-	@images = Dir.glob(&#34;/Users/nspool/Pictures/*.jpg&#34;)
-	index = params[&#39;index&#39;].to_i % @images.count
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;require &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;sinatra&amp;#39;&lt;/span&gt;
+get &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;/&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;do&lt;/span&gt;
+	&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;Usage: /image?index=123&amp;#39;&lt;/span&gt;
+&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;end&lt;/span&gt;
+get &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;/image&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;do&lt;/span&gt;
+	@images = Dir.glob(&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;/Users/nspool/Pictures/*.jpg&amp;quot;&lt;/span&gt;)
+	index = params[&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;index&amp;#39;&lt;/span&gt;].to_i % @images.count
 	path = @images[index]
-	redirect 404 unless File.readable?(path)
-	content_type &#39;image/jpeg&#39;
-	send_file open(path, type: &#39;image/jpeg&#39;, disposition: &#39;inline&#39;)
-end
-
+	redirect &lt;span style=&#34;color: #0000FF&#34;&gt;404&lt;/span&gt; &lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;unless&lt;/span&gt; File.readable?(path)
+	content_type &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;
+	send_file open(path, &lt;span style=&#34;color: #0000FF&#34;&gt;type&lt;/span&gt;: &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color: #0000FF&#34;&gt;disposition&lt;/span&gt;: &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;inline&amp;#39;&lt;/span&gt;)
+&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
 
 &lt;p&gt;Run with &lt;code&gt;ruby server.rb&lt;/code&gt; then use URLs of the form &lt;code&gt;http://localhost:4567/image?index=123&lt;/code&gt;.&lt;/p&gt;
 </description>
@@ -550,19 +550,19 @@ end
 
 &lt;p&gt;In this example, fileHandle could represent an open socket, with the &lt;em&gt;SIGPIP&lt;/em&gt; thrown if the client disconnects unexpectedly and the pipe is closed:&lt;/p&gt;
 
-
-@try
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;@try&lt;/span&gt;
 {
   [fileHandle writeData:fileData];
 }
-@catch (NSException *exception)
+&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;@catch&lt;/span&gt; (NSException *exception)
 {
-  // Ignore the SIGPIP
+  &lt;span style=&#34;color: #008800; font-style: italic&#34;&gt;// Ignore the SIGPIP&lt;/span&gt;
 }
-@finally
+&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;@finally&lt;/span&gt;
 {
   CFRelease(fileData);
 }
+&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;Unfortunately in Swift 2.0 this isn&amp;rsquo;t possible; the analogous &lt;code&gt;try-catch&lt;/code&gt; doesn&amp;rsquo;t capture signals.&lt;/p&gt;
@@ -571,23 +571,23 @@ end
 
 &lt;p&gt;My solution has been to fall back to the native BSD APIs. When creating the socket with &lt;code&gt;CFSocketCreate&lt;/code&gt; prevent &lt;em&gt;SIGPIP&lt;/em&gt; from being thrown by setting the option:&lt;/p&gt;
 
-
-var no_sig_pipe: Int32 = 1
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;var&lt;/span&gt; no_sig_pipe: Int32 = &lt;span style=&#34;color: #0000FF&#34;&gt;1&lt;/span&gt;
 setsockopt(CFSocketGetNative(socket),
 SOL_SOCKET,
 SO_NOSIGPIPE,
-&amp;no_sig_pipe,
+&amp;amp;no_sig_pipe,
 socklen_t(sizeof(Int32)))
+&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;Then assuming the write is performed in a separate method, we can use a guard to perform a dummy write before the socket is used:&lt;/p&gt;
 
-
-guard (write(fileHandle.fileDescriptor, nil, 0) == 0) else {
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;guard&lt;/span&gt; (write(fileHandle.fileDescriptor, &lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;nil&lt;/span&gt;, &lt;span style=&#34;color: #0000FF&#34;&gt;0&lt;/span&gt;) == &lt;span style=&#34;color: #0000FF&#34;&gt;0&lt;/span&gt;) &lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;else&lt;/span&gt; {
   CFRelease(fileData)
-    return false
+    &lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;false&lt;/span&gt;
   }
 fileHandle.writeData(fileData)
+&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;If the socket is closed then the guard will cleanup and return.&lt;/p&gt;
@@ -604,21 +604,21 @@ fileHandle.writeData(fileData)
 
 &lt;p&gt;Uploading the certificate to AWS requires the CA certificate chain. This isn&amp;rsquo;t always always provided by the CA, but can be generated from the command line. For example, Comodo provides the certificates in the chain, so all that&amp;rsquo;s necessary to create the file is to concatenate the certs in PEM format into one file:&lt;/p&gt;
 
-
-(openssl x509 -inform PEM -in COMODORSADomainValidationSecureServerCA.crt; 
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;(openssl x509 -inform PEM -in COMODORSADomainValidationSecureServerCA.crt; 
 openssl x509 -inform PEM -in COMODORSAAddTrustCA.crt; 
-openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) &gt; ca_chain.pem
+openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) &amp;gt; ca_chain.pem
+&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;This will provide a file that is suitable for the &lt;code&gt;--certificate-chain&lt;/code&gt; parameter of &lt;code&gt;aws iam upload-server-certificate&lt;/code&gt;:&lt;/p&gt;
 
-
-aws iam upload-server-certificate \
-  --server-certificate-name mycert \
-  --certificate-body file://mycert.crt \
-  --private-key file://mycert.key \
-  --certificate-chain file://ca_chain.pem \
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;aws iam upload-server-certificate &lt;span style=&#34;color: #0000FF&#34;&gt;\&lt;/span&gt;
+  --server-certificate-name mycert &lt;span style=&#34;color: #0000FF&#34;&gt;\&lt;/span&gt;
+  --certificate-body file://mycert.crt &lt;span style=&#34;color: #0000FF&#34;&gt;\&lt;/span&gt;
+  --private-key file://mycert.key &lt;span style=&#34;color: #0000FF&#34;&gt;\&lt;/span&gt;
+  --certificate-chain file://ca_chain.pem &lt;span style=&#34;color: #0000FF&#34;&gt;\&lt;/span&gt;
   --path /cloudfront/
+&lt;/pre&gt;&lt;/div&gt;
 
 </description>
     </item>
@@ -637,47 +637,47 @@ aws iam upload-server-certificate \
 
 &lt;p&gt;Add the following to the &lt;code&gt;.sbclrc&lt;/code&gt; on the remote box to load &lt;em&gt;Swank&lt;/em&gt; when SBCL is started:&lt;/p&gt;
 
-
-; Setup Swank
-(ql:quickload &#34;swank&#34;)
-(require &#39;asdf)
-(asdf:oos &#39;asdf:load-op &#39;swank)
-(setf swank:*communication-style* :fd-handler)
-(swank:create-server :dont-close t)
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #008800; font-style: italic&#34;&gt;; Setup Swank&lt;/span&gt;
+(ql:quickload &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;swank&amp;quot;&lt;/span&gt;)
+(require &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;asdf&lt;/span&gt;)
+(asdf:oos &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;asdf:load-op&lt;/span&gt; &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;swank&lt;/span&gt;)
+(setf swank:*communication-style* &lt;span style=&#34;color: #0000FF&#34;&gt;:fd-handler&lt;/span&gt;)
+(swank:create-server &lt;span style=&#34;color: #0000FF&#34;&gt;:dont-close&lt;/span&gt; t)
+&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;Now in a seperate terminal window start a new instance of SSH to the remote machine, and forward the local port &lt;code&gt;4007&lt;/code&gt; to the remote port &lt;code&gt;4005&lt;/code&gt; which is used by &lt;em&gt;Swank&lt;/em&gt;:
-
-ssh -C -L4007:127.0.0.1:4005 $USER@$REMOTEIP
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;ssh -C -L4007:127.0.0.1:4005 $USER@$REMOTEIP
+&lt;/pre&gt;&lt;/div&gt;
 &lt;/p&gt;
 
 &lt;p&gt;Now tell &lt;em&gt;SLIME&lt;/em&gt; to connect to the remote machine. In Emacs type &lt;code&gt;M-x slime-connect&lt;/code&gt; and choose &lt;code&gt;127.0.0.1&lt;/code&gt; and port &lt;code&gt;4007&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;And that&amp;rsquo;s it! You will now be interacting with the REPL of the remote machine. For bonus points we can start a simple web server on the remote box just to prove we&amp;rsquo;ve done it. If you type this into the REPL it will load the &lt;a href=&#34;http://clacklisp.org/tutorial/02-getting-clack.html&#34;&gt;Clack web framwork&lt;/a&gt; and serve up a simple Hello, World on port 5000:&lt;/p&gt;
 
-
-(ql:quickload :clack)
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;(ql:quickload &lt;span style=&#34;color: #0000FF&#34;&gt;:clack&lt;/span&gt;)
 (clack:clackup
-  (lambda (env)
-    (declare (ignore env))
-    &#39;(200 (:content-type &#34;text/plain&#34;)(break) (&#34;Hello, Clack!&#34;))))
+  (&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;lambda&lt;/span&gt; (env)
+    (&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;declare&lt;/span&gt; (&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;ignore&lt;/span&gt; env))
+    &amp;#39;(&lt;span style=&#34;color: #0000FF&#34;&gt;200&lt;/span&gt; (&lt;span style=&#34;color: #0000FF&#34;&gt;:content-type&lt;/span&gt; &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;text/plain&amp;quot;&lt;/span&gt;)(break) (&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;Hello, Clack!&amp;quot;&lt;/span&gt;))))
+&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;Use Curl on the development machine and you should see:&lt;/p&gt;
 
-
-curl http://$REMOTEIP:5000
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;curl http://$REMOTEIP:5000
 Hello, Clack!
+&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;To change the server text to &lt;code&gt;Hello, World!&lt;/code&gt;:&lt;/p&gt;
 
-
-(clack:stop *)
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;(clack:stop *)
 (clack:clackup
-  (lambda (env)
-  (declare (ignore env))
-  &#39;(200 (:content-type &#34;text/plain&#34;)(break) (&#34;Hello, World!&#34;))))
+  (&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;lambda&lt;/span&gt; (env)
+  (&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;declare&lt;/span&gt; (&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;ignore&lt;/span&gt; env))
+  &amp;#39;(&lt;span style=&#34;color: #0000FF&#34;&gt;200&lt;/span&gt; (&lt;span style=&#34;color: #0000FF&#34;&gt;:content-type&lt;/span&gt; &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;text/plain&amp;quot;&lt;/span&gt;)(break) (&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;Hello, World!&amp;quot;&lt;/span&gt;))))
+&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;Enjoy!&lt;/p&gt;
@@ -692,9 +692,9 @@ Hello, Clack!
       <guid>https://nspool.github.io/2015/01/happy-numbers/</guid>
       <description>&lt;p&gt;Here is a Mathematica snippit to count the number of &lt;a href=&#34;http://oeis.org/A007770&#34;&gt;Happy Numbers&lt;/a&gt; up to 1000:&lt;/p&gt;
 
-
-Length[Select[Range[1000], 
-FixedPoint[Total[IntegerDigits[#]^2] &amp;, #, 10] == 1 &amp;]]
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;Length[Select[Range[&lt;span style=&#34;color: #0000FF&#34;&gt;1000&lt;/span&gt;],&lt;span style=&#34;color: #bbbbbb&#34;&gt; &lt;/span&gt;
+FixedPoint[Total[IntegerDigits[#]^&lt;span style=&#34;color: #0000FF&#34;&gt;2&lt;/span&gt;]&lt;span style=&#34;color: #bbbbbb&#34;&gt; &lt;/span&gt;&amp;amp;,&lt;span style=&#34;color: #bbbbbb&#34;&gt; &lt;/span&gt;#,&lt;span style=&#34;color: #bbbbbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color: #0000FF&#34;&gt;10&lt;/span&gt;]&lt;span style=&#34;color: #bbbbbb&#34;&gt; &lt;/span&gt;==&lt;span style=&#34;color: #bbbbbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color: #0000FF&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color: #bbbbbb&#34;&gt; &lt;/span&gt;&amp;amp;]]&lt;span style=&#34;color: #bbbbbb&#34;&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
 </description>
     </item>
@@ -726,28 +726,28 @@ FixedPoint[Total[IntegerDigits[#]^2] &amp;, #, 10] == 1 &amp;]]
       <guid>https://nspool.github.io/2015/01/cracking-a-xor/</guid>
       <description>&lt;p&gt;In days part there were sites known to store login status in a client-side cookie obscured by a XOR cyper. When first visting the site some code like this would run:&lt;/p&gt;
 
-
-$cookie = xor_crypt($json_encode(array(&#34;login&#34;=&gt;&#34;false&#34;)));
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;$cookie = xor_crypt($json_encode(array(&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;login&amp;quot;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;false&amp;quot;&lt;/span&gt;)));
+&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;Then &lt;code&gt;$cookie&lt;/code&gt; would be set on the client side, something like &lt;code&gt;data=GkAPXlVaD0BZE1RSDREGE08=&lt;/code&gt;. A successful login would containg a similar:&lt;/p&gt;
 
-
-$cookie = xor_crypt($json_encode(array(&#34;login&#34;=&gt;&#34;true&#34;)));
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;$cookie = xor_crypt($json_encode(array(&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;login&amp;quot;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;true&amp;quot;&lt;/span&gt;)));
+&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;That would result in the cookie &lt;code&gt;data=GkAPXlVaD0BZE0ZBFAdBTA==&lt;/code&gt;. Looking at there two values it is plain that they are very similar. That only a few positions have changed indicate a basic &lt;a href=&#34;http://en.wikipedia.org/wiki/Symmetric-key_algorithm&#34;&gt;symmetric cypher&lt;/a&gt;, in this case just a simple XOR of the JSON value against a fixed key.&lt;/p&gt;
 
 &lt;p&gt;While it is trivial to brute-force the key, it is more fun to guess. A website setting a single long key might indicate a serialized array and logging in and out gives some indicate to what is being set. Then we can determine the key:&lt;/p&gt;
 
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;$ct = base64_decode(&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;GkAPXlVaD0BZE1RSDREGE08=&amp;quot;&lt;/span&gt;);
+$pt = json_encode(array(&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;login&amp;quot;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;false&amp;quot;&lt;/span&gt;));
+$key = &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;&amp;quot;&lt;/span&gt;;
 
-$ct = base64_decode(&#34;GkAPXlVaD0BZE1RSDREGE08=&#34;);
-$pt = json_encode(array(&#34;login&#34;=&gt;&#34;false&#34;));
-$key = &#34;&#34;;
-
-for($i=0;$i&lt;strlen($ct);$i++) {
+&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;for&lt;/span&gt;($i=&lt;span style=&#34;color: #0000FF&#34;&gt;0&lt;/span&gt;;$i&amp;lt;strlen($ct);$i++) {
   $key .= $ct[$i] ^ $pt[$i % strlen($pt)];
 }
+&lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;This gives &lt;code&gt;abc123abc123abc123abc1 ..&lt;/code&gt; which is both human readable and contains repetitive.&lt;/p&gt;
@@ -768,11 +768,11 @@ for($i=0;$i&lt;strlen($ct);$i++) {
 
 &lt;p&gt;In the meantime here&amp;rsquo;s an example of using &lt;code&gt;netcat&lt;/code&gt; to do a HTTP request containing a cookie. For good measure parameter &lt;code&gt;-p 24&lt;/code&gt; forces the server to reply to the client on port 42.&lt;/p&gt;
 
-
-#!/bin/bash
-head=&#34;GET http://www.example.org HTTP/1.1\r\nHost: .example.org\r\nCookie: VALUE=ABC123;\r\nAccept: */*\r\nConnection: Close\r\n\r\n&#34;;
-echo -ne $head | nc -p42 www.example.org 80
-#=&gt; Using port 42 for the reply.
+&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #008800; font-style: italic&#34;&gt;#!/bin/bash&lt;/span&gt;
+head=&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;GET http://www.example.org HTTP/1.1\r\nHost: .example.org\r\nCookie: VALUE=ABC123;\r\nAccept: */*\r\nConnection: Close\r\n\r\n&amp;quot;&lt;/span&gt;;
+echo -ne $head | nc -p42 www.example.org &lt;span style=&#34;color: #0000FF&#34;&gt;80&lt;/span&gt;
+&lt;span style=&#34;color: #008800; font-style: italic&#34;&gt;#=&amp;gt; Using port 42 for the reply.&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
 </description>
     </item>
