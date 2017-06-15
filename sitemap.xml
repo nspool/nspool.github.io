@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
     <loc>https://nspool.github.io/2017/03/building-fat-library/</loc>
@@ -110,6 +111,11 @@
   <url>
     <loc>https://nspool.github.io/categories/sdl-ios/</loc>
     <lastmod>2017-03-19T21:24:00+11:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://nspool.github.io/tags/</loc>
     <priority>0</priority>
   </url>
   

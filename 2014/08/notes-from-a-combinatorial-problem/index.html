@@ -48,30 +48,30 @@
 
 <p>We have a program that performs a comparison of every pair of elements in a database, and then compares the result with the median value of all values. It was suggested that the program should instead make pairwise comparisons within every possible combination of subsets. How many comparisons would we end up making?</p>
 
-<p>For this example, each element in our database will be represented by an integer. We call these elements <img src="P_in_Z.svg" alt="$P \in \mathbb{Z}$" /> the <em>population</em> which is then partitioned into all possible distinct pairwise disjoint subsets <img src="P_set.svg" alt="$\{P_1, P_2, .. , P_k\}$" />. Each <img src="P_i.svg" alt="$P_i$" /> is called a <em>block</em> of  <img src="P.svg" alt="\emph{P}" /> and is distinct; the program should not enumerate the same block multiple times. As an extra complication, each pairwise comparison will need to be also made against the block median. So for each block <img src="P_i.svg" alt="$P_i$" /> there are two operations performed:</p>
+<p>For this example, each element in our database will be represented by an integer. We call these elements <img src="/P_in_Z.svg" alt="$P \in \mathbb{Z}$" /> the <em>population</em> which is then partitioned into all possible distinct pairwise disjoint subsets <img src="/P_set.svg" alt="$\{P_1, P_2, .. , P_k\}$" />. Each <img src="/P_i.svg" alt="$P_i$" /> is called a <em>block</em> of  <img src="/P.svg" alt="\emph{P}" /> and is distinct; the program should not enumerate the same block multiple times. As an extra complication, each pairwise comparison will need to be also made against the block median. So for each block <img src="/P_i.svg" alt="$P_i$" /> there are two operations performed:</p>
 
 <ul>
-<li>Take the median value of each <img src="P_i.svg" alt="$P_i$" /></li>
-<li>Take the euclidean distance between the median and every element <img src="e_in_P_i.svg" alt="$e \in P_i$" />.</li>
+<li>Take the median value of each <img src="/P_i.svg" alt="$P_i$" /></li>
+<li>Take the euclidean distance between the median and every element <img src="/e_in_P_i.svg" alt="$e \in P_i$" />.</li>
 </ul>
 
-<p>The first operation need only be performed once per block and the second will need to be performed exactly <img src="abs_P_i.svg" alt="$\|P_i\|$" /> times, as each block is also a subset and cannot contain duplicates.</p>
+<p>The first operation need only be performed once per block and the second will need to be performed exactly <img src="/abs_P_i.svg" alt="$\|P_i\|$" /> times, as each block is also a subset and cannot contain duplicates.</p>
 
-<p>The number of ways can the population <img src="P.svg" alt="\emph{P}" /> be divided into <img src="n.svg" alt="$n$" /> disjoint non-empty subsets is known as a Stirling number of the second kind, or simply a Stirling partition number.  (see [1]) This is defined as:</p>
+<p>The number of ways can the population <img src="/P.svg" alt="\emph{P}" /> be divided into <img src="/n.svg" alt="$n$" /> disjoint non-empty subsets is known as a Stirling number of the second kind, or simply a Stirling partition number.  (see [1]) This is defined as:</p>
 
-<p><img src="def_sterling.svg" alt="$\stirling{n}{k} =\frac{1}{k!}\sum\limits_{j=0}{k}(-1)^{k-j}\binom{k}{j}j^n$" /></p>
+<p><img src="/def_sterling.svg" alt="$\stirling{n}{k} =\frac{1}{k!}\sum\limits_{j=0}{k}(-1)^{k-j}\binom{k}{j}j^n$" /></p>
 
-<p>So when <img src="P.svg" alt="\emph{P}" /> is divided with <img src="k.svg" alt="$k$" /> partitions where <img src="n.svg" alt="$n$" /> is the cardinality of the block it follows that the program will need to obtain <img src="k.svg" alt="$k$" /> median values and then perform <img src="n.svg" alt="$n$" /> pairwise comparisons:[sterling]</p>
+<p>So when <img src="/P.svg" alt="\emph{P}" /> is divided with <img src="/k.svg" alt="$k$" /> partitions where <img src="/n.svg" alt="$n$" /> is the cardinality of the block it follows that the program will need to obtain <img src="/k.svg" alt="$k$" /> median values and then perform <img src="/n.svg" alt="$n$" /> pairwise comparisons:[sterling]</p>
 
-<p><img src="n_sterling_k.svg" alt="$C^k_{total} = n\stirling{n}{k} + k$" /></p>
+<p><img src="/n_sterling_k.svg" alt="$C^k_{total} = n\stirling{n}{k} + k$" /></p>
 
-<p>which is the number of ways a set with n elements can be partitioned into disjoint, non-empty subsets. <img src="S.svg" alt="$S$" /> the number of ways a set with <img src="n.svg" alt="$n$" /> elements can be partitioned into <img src="k.svg" alt="$k$" /> disjoint, non-empty subsets. As the partition changes, all of <img src="n.svg" alt="$n$" /> needs to be recalculated as does the score of the partition <img src="k.svg" alt="$k$" />. For every different set of partitions we perform <img src="n.svg" alt="$n$" /> operations plus <img src="k.svg" alt="$k$" /> operations as it is possible to have anywhere from 0 to <img src="n.svg" alt="&quot;$n$&quot;" /> partitions in the set.</p>
+<p>which is the number of ways a set with n elements can be partitioned into disjoint, non-empty subsets. <img src="/S.svg" alt="$S$" /> the number of ways a set with <img src="/n.svg" alt="$n$" /> elements can be partitioned into <img src="/k.svg" alt="$k$" /> disjoint, non-empty subsets. As the partition changes, all of <img src="/n.svg" alt="$n$" /> needs to be recalculated as does the score of the partition <img src="/k.svg" alt="$k$" />. For every different set of partitions we perform <img src="/n.svg" alt="$n$" /> operations plus <img src="/k.svg" alt="$k$" /> operations as it is possible to have anywhere from 0 to <img src="/n.svg" alt="&quot;$n$&quot;" /> partitions in the set.</p>
 
 <p>Then the total number of operations over all possible partitions is:
-        <img src="C_total_1.svg" alt="C_{total} = \sum_{k=0}^{|P|}{( n\stirling{n}{k} + k)}" />
-        <img src="C_total_1.svg" alt="C_{total} = n\sum_{k=0}^{n}{\stirling{n}{k}} + \frac{n(n+1)}{2}&quot;" />
-        <img src="C_total_final.svg" alt="C_{total} = nB_n + \frac{n(n+1)}{2}" />
-        Where <img src="B_n.svg" alt="B_n" /> is the nth <em>Bell number</em>. We can now use this formula to calculate the exact number of comparisons made during the execution of the program</p>
+        <img src="/C_total_1.svg" alt="C_{total} = \sum_{k=0}^{|P|}{( n\stirling{n}{k} + k)}" />
+        <img src="/C_total_1.svg" alt="C_{total} = n\sum_{k=0}^{n}{\stirling{n}{k}} + \frac{n(n+1)}{2}&quot;" />
+        <img src="/C_total_final.svg" alt="C_{total} = nB_n + \frac{n(n+1)}{2}" />
+        Where <img src="/B_n.svg" alt="B_n" /> is the nth <em>Bell number</em>. We can now use this formula to calculate the exact number of comparisons made during the execution of the program</p>
 
 <h3 id="further-reading">Further Reading</h3>
 
