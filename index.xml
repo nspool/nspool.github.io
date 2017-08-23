@@ -79,6 +79,12 @@ cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON
       <guid>https://nspool.github.io/2016/02/building-live555/</guid>
       <description>
 
+&lt;h3 id=&#34;update-2017-08-23&#34;&gt;Update 2017-08-23&lt;/h3&gt;
+
+&lt;p&gt;Thanks to &lt;a href=&#34;https://github.com/kwikwag&#34;&gt;@kwikwag&lt;/a&gt; for making a Windows batch file to simplify all this! Find it &lt;a href=&#34;https://gist.github.com/kwikwag/c8b715a056b69b5fc07efe05e42187b1&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;hr&gt;
+
 &lt;p&gt;Live555 is an excellent RTSP library for Windows, but can be a bit tricky to build. These are the instructions that I follow to build it in Visual Studio 2015 in Windows 10 Professional.&lt;/p&gt;
 
 &lt;h3 id=&#34;1-extract-the-live555-latest-tar-gz-into-your-source-directory&#34;&gt;1) Extract the &lt;code&gt;live555-latest.tar.gz&lt;/code&gt; into your source directory.&lt;/h3&gt;
