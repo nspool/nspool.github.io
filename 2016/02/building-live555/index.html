@@ -45,9 +45,9 @@
 
 <p>Live555 is an excellent RTSP library for Windows, but can be a bit tricky to build. These are the instructions that I follow to build it in Visual Studio 2015 in Windows 10 Professional.</p>
 
-<h3 id="1-extract-the-live555-latest-tar-gz-into-your-source-directory">1) Extract the <code>live555-latest.tar.gz</code> into your source directory.</h3>
+<h2 id="1-extract-the-live555-latest-tar-gz-into-your-source-directory">1) Extract the <code>live555-latest.tar.gz</code> into your source directory.</h2>
 
-<h3 id="2-make-the-following-changes-to-the-win32config-file">2) Make the following changes to the win32config file:</h3>
+<h2 id="2-make-the-following-changes-to-the-win32config-file">2) Make the following changes to the win32config file:</h2>
 
 <ul>
 <li>Change <code>msvcirt.lib</code> to <code>msvcrt.lib</code>.</li>
@@ -61,7 +61,7 @@
 <code>TOOLS32 = C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC</code></li>
 </ul>
 
-<h3 id="3-run-vsvars32-bat-and-build-the-make-files">3) Run <code>vsvars32.bat</code> and build the make files</h3>
+<h2 id="3-run-vsvars32-bat-and-build-the-make-files">3) Run <code>vsvars32.bat</code> and build the make files</h2>
 
 <p>Open an MSBuild for Visual Studio 2015 command prompt. Set the environment variables by running this batch file:</p>
 
@@ -73,7 +73,7 @@
 <pre><code>genWindowsMakefiles
 </code></pre>
 
-<h3 id="4-build-the-project">4) Build the project!</h3>
+<h2 id="4-build-the-project">4) Build the project!</h2>
 
 <p>Now you’re ready to build! Build each of the components of the project in this order:</p>
 
@@ -112,15 +112,13 @@ g this 'RTPSink'.  (Current value is 100000.)
 
 <p>Edit the file <code>DynamicRTSPServer.cpp</code> and any time this appears:</p>
 
-<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>  OutPacketBuffer::maxSize = <span style="color: #0000FF">100000</span>;
-</pre></div>
-
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">  OutPacketBuffer::maxSize = <span style="color:#00f">100000</span>;</code></pre>
+</div>
 
 <p>change it to:</p>
 
-<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>  OutPacketBuffer::maxSize = <span style="color: #0000FF">200000</span>;
-</pre></div>
-
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">  OutPacketBuffer::maxSize = <span style="color:#00f">200000</span>;</code></pre>
+</div>
 
 <p>Then rebuild the Live555MediaServer with these commands:</p>
 

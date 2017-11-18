@@ -37,10 +37,9 @@
       <div class="post-content">
         <p>Here is a Mathematica snippit to count the number of <a href="http://oeis.org/A007770">Happy Numbers</a> up to 1000:</p>
 
-<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>Length[Select[Range[<span style="color: #0000FF">1000</span>],<span style="color: #bbbbbb"> </span>
-FixedPoint[Total[IntegerDigits[#]^<span style="color: #0000FF">2</span>]<span style="color: #bbbbbb"> </span>&amp;,<span style="color: #bbbbbb"> </span>#,<span style="color: #bbbbbb"> </span><span style="color: #0000FF">10</span>]<span style="color: #bbbbbb"> </span>==<span style="color: #bbbbbb"> </span><span style="color: #0000FF">1</span><span style="color: #bbbbbb"> </span>&amp;]]<span style="color: #bbbbbb"></span>
-</pre></div>
-
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mathematica" data-lang="mathematica">Length[Select[Range[<span style="color:#00f">1000</span>],<span style="color:#bbb"> 
+</span><span style="color:#bbb"></span>FixedPoint[Total[IntegerDigits[#]^<span style="color:#00f">2</span>]<span style="color:#bbb"> </span>&amp;,<span style="color:#bbb"> </span>#,<span style="color:#bbb"> </span><span style="color:#00f">10</span>]<span style="color:#bbb"> </span>==<span style="color:#bbb"> </span><span style="color:#00f">1</span><span style="color:#bbb"> </span>&amp;]]</code></pre>
+</div>
 
         
       </div>

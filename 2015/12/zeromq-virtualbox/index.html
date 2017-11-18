@@ -133,27 +133,26 @@ git clone https://github.com/zeromq/cppzmq
 
 <p>Create a new directory containing a VagrantFile:</p>
 
-<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span>Vagrant.configure(&quot;2&quot;) do |config|
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">Vagrant.configure(&#34;2&#34;) do |config|
   # Number of nodes to provision
   numNodes = 2
   # IP Address Base for private network
-  ipAddrPrefix = &quot;172.16.0.0&quot;
+  ipAddrPrefix = &#34;172.16.0.0&#34;
   # Download the initial box from this url
-  config.vm.box_url = &quot;file:///Users/nspool/Boxes/NodeTemplate.box&quot;
+  config.vm.box_url = &#34;file:///Users/nspool/Boxes/NodeTemplate.box&#34;
   # Provision Config for each of the nodes
   1.upto(numNodes) do |num|
-    nodeName = (&quot;node&quot; + num.to_s).to_sym
+    nodeName = (&#34;node&#34; + num.to_s).to_sym
       config.vm.define nodeName do |node|
-        node.vm.box = &quot;NodeTemplate&quot;
+        node.vm.box = &#34;NodeTemplate&#34;
         node.vm.network :private_network, ip: ipAddrPrefix + num.to_s
-        node.vm.provider &quot;virtualbox&quot; do |v|
-          v.name = &quot;Cluster Node &quot; + num.to_s
+        node.vm.provider &#34;virtualbox&#34; do |v|
+          v.name = &#34;Cluster Node &#34; + num.to_s
         end
       end
     end
-  end
-</pre></div>
-
+  end</code></pre>
+</div>
 
 <p>It should now be possible to SSH into each box by name, ie.
 vagrant ssh node1</p>

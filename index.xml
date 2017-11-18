@@ -11,22 +11,43 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>Making a fat libSDL.a for iOS development</title>
+      <title>Building a fat libSDL.a for iOS development</title>
       <link>https://nspool.github.io/2017/03/building-fat-library/</link>
       <pubDate>Sun, 19 Mar 2017 21:24:00 +1100</pubDate>
       
       <guid>https://nspool.github.io/2017/03/building-fat-library/</guid>
-      <description>&lt;p&gt;Building the SDL Xcode-iOS project will output for i386 if the simulator target is selected, or ARM for a physical device.
-This results in two output libraries named &lt;code&gt;libSDL2.a&lt;/code&gt;.&lt;/p&gt;
+      <description>
 
-&lt;p&gt;For development it is handy to have a single fat library that supports both platforms.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Updated 2017-11-19: Rewrote for clarity and removed references to the 32-bit simulator which has been removed from the default install as of Xcode 9&lt;/em&gt;&lt;/p&gt;
 
-&lt;p&gt;Enter the macOS &lt;code&gt;lipo&lt;/code&gt; command.&lt;/p&gt;
+&lt;hr/&gt;
 
-&lt;p&gt;Copy each library from the &lt;code&gt;Debug-iphoneos&lt;/code&gt; and &lt;code&gt;Debug-iphonesimulator&lt;/code&gt; in the derived data and combine them:&lt;/p&gt;
+&lt;p&gt;For iOS development it is handy to have a single SDL2 library that supports both the simulator and the physical device. This is how to create a libSDL2.a that can be used for both.&lt;/p&gt;
 
-&lt;pre&gt;&lt;code&gt;lipo -create libSDL2arm.a libSDL2i386.a -output libSDL2.a
+&lt;h2 id=&#34;step-1-build-libsdl2-a-for-each-target&#34;&gt;Step 1: Build libSDL2.a for each target&lt;/h2&gt;
+
+&lt;p&gt;Download the SDL2 source from &lt;a href=&#34;https://libsdl.org/download-2.0.php&#34;&gt;the official SDL website&lt;/a&gt; and verify the integrity of the source package using GPG.&lt;/p&gt;
+
+&lt;p&gt;Extract the source. There will be a folder named Xcode-iOS that is used to build the iOS version of the library.&lt;/p&gt;
+
+&lt;p&gt;Now build the project twice, once against the simulator and then against an actual device. This will build a version of the library for each architecture.&lt;/p&gt;
+
+&lt;p&gt;In the project navigator right-click the Product folder. There will be two output libraries named &lt;code&gt;libSDL2.a&lt;/code&gt;.  Select one of them and choose &lt;code&gt;Show in Finder&lt;/code&gt;. Go up a directory and there should be two folders: &lt;code&gt;Debug-iphoneos&lt;/code&gt; and &lt;code&gt;Debug-iphonesimulator&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;step-2-combine-into-a-single-library&#34;&gt;Step 2: Combine into a single library&lt;/h2&gt;
+
+&lt;p&gt;Use the macOS &lt;code&gt;lipo&lt;/code&gt; command command to combine the two output libraries into a single library.&lt;/p&gt;
+
+&lt;p&gt;Open Terminal and cd to the Build/Projects directory containing the two folders listed above.&lt;/p&gt;
+
+&lt;p&gt;The following &lt;code&gt;lipo&lt;/code&gt; command can be used to combine them and but the resulting library in the home directory:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;lipo -create Debug-iphoneos/libSDL2.a Debug-iphonesimulator/libSDL2.a -output ~/libSDL2.a
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Linking against this libSDL2.a will allow the project to run in either the simulator or the physical device.&lt;/p&gt;
+
+&lt;p&gt;For App Store submission you may wish to replace this with the SDL2 framework without debugging symbols so that the binary size is smaller.&lt;/p&gt;
 </description>
     </item>
     
@@ -87,9 +108,9 @@ cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON
 
 &lt;p&gt;Live555 is an excellent RTSP library for Windows, but can be a bit tricky to build. These are the instructions that I follow to build it in Visual Studio 2015 in Windows 10 Professional.&lt;/p&gt;
 
-&lt;h3 id=&#34;1-extract-the-live555-latest-tar-gz-into-your-source-directory&#34;&gt;1) Extract the &lt;code&gt;live555-latest.tar.gz&lt;/code&gt; into your source directory.&lt;/h3&gt;
+&lt;h2 id=&#34;1-extract-the-live555-latest-tar-gz-into-your-source-directory&#34;&gt;1) Extract the &lt;code&gt;live555-latest.tar.gz&lt;/code&gt; into your source directory.&lt;/h2&gt;
 
-&lt;h3 id=&#34;2-make-the-following-changes-to-the-win32config-file&#34;&gt;2) Make the following changes to the win32config file:&lt;/h3&gt;
+&lt;h2 id=&#34;2-make-the-following-changes-to-the-win32config-file&#34;&gt;2) Make the following changes to the win32config file:&lt;/h2&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Change &lt;code&gt;msvcirt.lib&lt;/code&gt; to &lt;code&gt;msvcrt.lib&lt;/code&gt;.&lt;/li&gt;
@@ -103,7 +124,7 @@ cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON
 &lt;code&gt;TOOLS32 = C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;h3 id=&#34;3-run-vsvars32-bat-and-build-the-make-files&#34;&gt;3) Run &lt;code&gt;vsvars32.bat&lt;/code&gt; and build the make files&lt;/h3&gt;
+&lt;h2 id=&#34;3-run-vsvars32-bat-and-build-the-make-files&#34;&gt;3) Run &lt;code&gt;vsvars32.bat&lt;/code&gt; and build the make files&lt;/h2&gt;
 
 &lt;p&gt;Open an MSBuild for Visual Studio 2015 command prompt. Set the environment variables by running this batch file:&lt;/p&gt;
 
@@ -115,7 +136,7 @@ cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON
 &lt;pre&gt;&lt;code&gt;genWindowsMakefiles
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;h3 id=&#34;4-build-the-project&#34;&gt;4) Build the project!&lt;/h3&gt;
+&lt;h2 id=&#34;4-build-the-project&#34;&gt;4) Build the project!&lt;/h2&gt;
 
 &lt;p&gt;Now you’re ready to build! Build each of the components of the project in this order:&lt;/p&gt;
 
@@ -154,15 +175,13 @@ g this &#39;RTPSink&#39;.  (Current value is 100000.)
 
 &lt;p&gt;Edit the file &lt;code&gt;DynamicRTSPServer.cpp&lt;/code&gt; and any time this appears:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;  OutPacketBuffer::maxSize = &lt;span style=&#34;color: #0000FF&#34;&gt;100000&lt;/span&gt;;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;  OutPacketBuffer::maxSize = &lt;span style=&#34;color:#00f&#34;&gt;100000&lt;/span&gt;;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;change it to:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;  OutPacketBuffer::maxSize = &lt;span style=&#34;color: #0000FF&#34;&gt;200000&lt;/span&gt;;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;  OutPacketBuffer::maxSize = &lt;span style=&#34;color:#00f&#34;&gt;200000&lt;/span&gt;;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Then rebuild the Live555MediaServer with these commands:&lt;/p&gt;
 
@@ -277,27 +296,26 @@ git clone https://github.com/zeromq/cppzmq
 
 &lt;p&gt;Create a new directory containing a VagrantFile:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;Vagrant.configure(&amp;quot;2&amp;quot;) do |config|
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;Vagrant.configure(&amp;#34;2&amp;#34;) do |config|
   # Number of nodes to provision
   numNodes = 2
   # IP Address Base for private network
-  ipAddrPrefix = &amp;quot;172.16.0.0&amp;quot;
+  ipAddrPrefix = &amp;#34;172.16.0.0&amp;#34;
   # Download the initial box from this url
-  config.vm.box_url = &amp;quot;file:///Users/nspool/Boxes/NodeTemplate.box&amp;quot;
+  config.vm.box_url = &amp;#34;file:///Users/nspool/Boxes/NodeTemplate.box&amp;#34;
   # Provision Config for each of the nodes
   1.upto(numNodes) do |num|
-    nodeName = (&amp;quot;node&amp;quot; + num.to_s).to_sym
+    nodeName = (&amp;#34;node&amp;#34; + num.to_s).to_sym
       config.vm.define nodeName do |node|
-        node.vm.box = &amp;quot;NodeTemplate&amp;quot;
+        node.vm.box = &amp;#34;NodeTemplate&amp;#34;
         node.vm.network :private_network, ip: ipAddrPrefix + num.to_s
-        node.vm.provider &amp;quot;virtualbox&amp;quot; do |v|
-          v.name = &amp;quot;Cluster Node &amp;quot; + num.to_s
+        node.vm.provider &amp;#34;virtualbox&amp;#34; do |v|
+          v.name = &amp;#34;Cluster Node &amp;#34; + num.to_s
         end
       end
     end
-  end
-&lt;/pre&gt;&lt;/div&gt;
-
+  end&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;It should now be possible to SSH into each box by name, ie.
 vagrant ssh node1&lt;/p&gt;
@@ -507,40 +525,38 @@ $ cpulimit -l 90 bitcoind &amp;amp;
 For example: &lt;code&gt;http://localhost:4567/image?index=0&lt;/code&gt; would return the first image in the directory.
 This is easy to accomplish in Ruby by using Sinatra:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;require &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;sinatra&amp;#39;&lt;/span&gt;
-get &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;/image&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;do&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-ruby&#34; data-lang=&#34;ruby&#34;&gt;require &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;sinatra&amp;#39;&lt;/span&gt;
+get &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;/image&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;do&lt;/span&gt;
 
-  &lt;span style=&#34;color: #008800; font-style: italic&#34;&gt;# Read all the JPEG files from a given directory&lt;/span&gt;
-  @images = Dir.glob(&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;/Users/nspool/Pictures/*.jpg&amp;quot;&lt;/span&gt;)
+  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Read all the JPEG files from a given directory&lt;/span&gt;
+  @images = Dir.glob(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;/Users/nspool/Pictures/*.jpg&amp;#34;&lt;/span&gt;)
 
-  &lt;span style=&#34;color: #008800; font-style: italic&#34;&gt;# Take the path at the supplied index&lt;/span&gt;
-  index = params[&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;index&amp;#39;&lt;/span&gt;].to_i
+  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Take the path at the supplied index&lt;/span&gt;
+  index = params[&lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;index&amp;#39;&lt;/span&gt;].to_i
   path = @images[index]
 
-  &lt;span style=&#34;color: #008800; font-style: italic&#34;&gt;# Return the image&lt;/span&gt;
-  send_file open(path, &lt;span style=&#34;color: #0000FF&#34;&gt;type&lt;/span&gt;: &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color: #0000FF&#34;&gt;disposition&lt;/span&gt;: &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;inline&amp;#39;&lt;/span&gt;)
-&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;end&lt;/span&gt; 
-&lt;/pre&gt;&lt;/div&gt;
-
+  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Return the image&lt;/span&gt;
+  send_file open(path, &lt;span style=&#34;color:#00f&#34;&gt;type&lt;/span&gt;: &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;disposition&lt;/span&gt;: &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;inline&amp;#39;&lt;/span&gt;)
+&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;end&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;If we just want to serve a different image for each index and not worry about running out of images by choosing an image index that is too high, we can return the image at index modulo the number of available images.&lt;/p&gt;
 
 &lt;p&gt;Here is a more complete example that does just that:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;require &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;sinatra&amp;#39;&lt;/span&gt;
-get &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;/&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;do&lt;/span&gt;
-	&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;Usage: /image?index=123&amp;#39;&lt;/span&gt;
-&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;end&lt;/span&gt;
-get &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;/image&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;do&lt;/span&gt;
-	@images = Dir.glob(&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;/Users/nspool/Pictures/*.jpg&amp;quot;&lt;/span&gt;)
-	index = params[&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;index&amp;#39;&lt;/span&gt;].to_i % @images.count
-	path = @images[index]
-	redirect &lt;span style=&#34;color: #0000FF&#34;&gt;404&lt;/span&gt; &lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;unless&lt;/span&gt; File.readable?(path)
-	content_type &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;
-	send_file open(path, &lt;span style=&#34;color: #0000FF&#34;&gt;type&lt;/span&gt;: &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color: #0000FF&#34;&gt;disposition&lt;/span&gt;: &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;inline&amp;#39;&lt;/span&gt;)
-&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;end&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
+&lt;p&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-ruby&#34; data-lang=&#34;ruby&#34;&gt;require &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;sinatra&amp;#39;&lt;/span&gt;
+get &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;/&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;do&lt;/span&gt;
+	&lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;Usage: /image?index=123&amp;#39;&lt;/span&gt;
+&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;end&lt;/span&gt;
+get &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;/image&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;do&lt;/span&gt;
+	@images = Dir.glob(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;/Users/nspool/Pictures/*.jpg&amp;#34;&lt;/span&gt;)
+	index = params[&lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;index&amp;#39;&lt;/span&gt;].to_i &lt;span style=&#34;color:#00f&#34;&gt;% @images.count
+&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;	path &lt;/span&gt; = @images[index]
+	redirect &lt;span style=&#34;color:#00f&#34;&gt;404&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;unless&lt;/span&gt; File.readable?(path)
+	content_type &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;
+	send_file open(path, &lt;span style=&#34;color:#00f&#34;&gt;type&lt;/span&gt;: &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;disposition&lt;/span&gt;: &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;inline&amp;#39;&lt;/span&gt;)
+&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;&lt;/p&gt;
 
 &lt;p&gt;Run with &lt;code&gt;ruby server.rb&lt;/code&gt; then use URLs of the form &lt;code&gt;http://localhost:4567/image?index=123&lt;/code&gt;.&lt;/p&gt;
 </description>
@@ -556,20 +572,19 @@ get &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;/image&amp;#39;&lt;/span
 
 &lt;p&gt;In this example, fileHandle could represent an open socket, with the &lt;em&gt;SIGPIP&lt;/em&gt; thrown if the client disconnects unexpectedly and the pipe is closed:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;@try&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-objective-c&#34; data-lang=&#34;objective-c&#34;&gt;@try
 {
   [fileHandle writeData:fileData];
 }
-&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;@catch&lt;/span&gt; (NSException *exception)
+@catch (NSException *exception)
 {
-  &lt;span style=&#34;color: #008800; font-style: italic&#34;&gt;// Ignore the SIGPIP&lt;/span&gt;
+  // Ignore the SIGPIP
 }
-&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;@finally&lt;/span&gt;
+@finally
 {
   CFRelease(fileData);
-}
-&lt;/pre&gt;&lt;/div&gt;
-
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Unfortunately in Swift 2.0 this isn&amp;rsquo;t possible; the analogous &lt;code&gt;try-catch&lt;/code&gt; doesn&amp;rsquo;t capture signals.&lt;/p&gt;
 
@@ -577,24 +592,22 @@ get &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;/image&amp;#39;&lt;/span
 
 &lt;p&gt;My solution has been to fall back to the native BSD APIs. When creating the socket with &lt;code&gt;CFSocketCreate&lt;/code&gt; prevent &lt;em&gt;SIGPIP&lt;/em&gt; from being thrown by setting the option:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;var&lt;/span&gt; no_sig_pipe: Int32 = &lt;span style=&#34;color: #0000FF&#34;&gt;1&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;var&lt;/span&gt; no_sig_pipe: Int32 = &lt;span style=&#34;color:#00f&#34;&gt;1&lt;/span&gt;
 setsockopt(CFSocketGetNative(socket),
 SOL_SOCKET,
 SO_NOSIGPIPE,
 &amp;amp;no_sig_pipe,
-socklen_t(sizeof(Int32)))
-&lt;/pre&gt;&lt;/div&gt;
-
+socklen_t(sizeof(Int32)))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Then assuming the write is performed in a separate method, we can use a guard to perform a dummy write before the socket is used:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;guard&lt;/span&gt; (write(fileHandle.fileDescriptor, &lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;nil&lt;/span&gt;, &lt;span style=&#34;color: #0000FF&#34;&gt;0&lt;/span&gt;) == &lt;span style=&#34;color: #0000FF&#34;&gt;0&lt;/span&gt;) &lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;else&lt;/span&gt; {
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;guard&lt;/span&gt; (write(fileHandle.fileDescriptor, &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;nil&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;) == &lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;) &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;else&lt;/span&gt; {
   CFRelease(fileData)
-    &lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;false&lt;/span&gt;
+    &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;false&lt;/span&gt;
   }
-fileHandle.writeData(fileData)
-&lt;/pre&gt;&lt;/div&gt;
-
+fileHandle.writeData(fileData)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;If the socket is closed then the guard will cleanup and return.&lt;/p&gt;
 </description>
@@ -610,22 +623,20 @@ fileHandle.writeData(fileData)
 
 &lt;p&gt;Uploading the certificate to AWS requires the CA certificate chain. This isn&amp;rsquo;t always always provided by the CA, but can be generated from the command line. For example, Comodo provides the certificates in the chain, so all that&amp;rsquo;s necessary to create the file is to concatenate the certs in PEM format into one file:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;(openssl x509 -inform PEM -in COMODORSADomainValidationSecureServerCA.crt; 
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;(openssl x509 -inform PEM -in COMODORSADomainValidationSecureServerCA.crt; 
 openssl x509 -inform PEM -in COMODORSAAddTrustCA.crt; 
-openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) &amp;gt; ca_chain.pem
-&lt;/pre&gt;&lt;/div&gt;
-
+openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) &amp;gt; ca_chain.pem&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;This will provide a file that is suitable for the &lt;code&gt;--certificate-chain&lt;/code&gt; parameter of &lt;code&gt;aws iam upload-server-certificate&lt;/code&gt;:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;aws iam upload-server-certificate &lt;span style=&#34;color: #0000FF&#34;&gt;\&lt;/span&gt;
-  --server-certificate-name mycert &lt;span style=&#34;color: #0000FF&#34;&gt;\&lt;/span&gt;
-  --certificate-body file://mycert.crt &lt;span style=&#34;color: #0000FF&#34;&gt;\&lt;/span&gt;
-  --private-key file://mycert.key &lt;span style=&#34;color: #0000FF&#34;&gt;\&lt;/span&gt;
-  --certificate-chain file://ca_chain.pem &lt;span style=&#34;color: #0000FF&#34;&gt;\&lt;/span&gt;
-  --path /cloudfront/
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;aws iam upload-server-certificate &lt;span style=&#34;color:#00f&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --server-certificate-name mycert &lt;span style=&#34;color:#00f&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --certificate-body file://mycert.crt &lt;span style=&#34;color:#00f&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --private-key file://mycert.key &lt;span style=&#34;color:#00f&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --certificate-chain file://ca_chain.pem &lt;span style=&#34;color:#00f&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --path /cloudfront/&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 </description>
     </item>
     
@@ -643,48 +654,43 @@ openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) &amp;gt; ca_chain.pem
 
 &lt;p&gt;Add the following to the &lt;code&gt;.sbclrc&lt;/code&gt; on the remote box to load &lt;em&gt;Swank&lt;/em&gt; when SBCL is started:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #008800; font-style: italic&#34;&gt;; Setup Swank&lt;/span&gt;
-(ql:quickload &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;swank&amp;quot;&lt;/span&gt;)
-(require &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;asdf&lt;/span&gt;)
-(asdf:oos &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;asdf:load-op&lt;/span&gt; &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;#39;swank&lt;/span&gt;)
-(setf swank:*communication-style* &lt;span style=&#34;color: #0000FF&#34;&gt;:fd-handler&lt;/span&gt;)
-(swank:create-server &lt;span style=&#34;color: #0000FF&#34;&gt;:dont-close&lt;/span&gt; t)
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-lisp&#34; data-lang=&#34;lisp&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;; Setup Swank&lt;/span&gt;
+(ql:quickload &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;swank&amp;#34;&lt;/span&gt;)
+(require &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;asdf&lt;/span&gt;)
+(asdf:oos &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;asdf:load-op&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;swank&lt;/span&gt;)
+(setf swank:*communication-style* &lt;span style=&#34;color:#00f&#34;&gt;:fd-handler&lt;/span&gt;)
+(swank:create-server &lt;span style=&#34;color:#00f&#34;&gt;:dont-close&lt;/span&gt; t)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Now in a seperate terminal window start a new instance of SSH to the remote machine, and forward the local port &lt;code&gt;4007&lt;/code&gt; to the remote port &lt;code&gt;4005&lt;/code&gt; which is used by &lt;em&gt;Swank&lt;/em&gt;:
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;ssh -C -L4007:127.0.0.1:4005 $USER@$REMOTEIP
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ssh -C -L4007:127.0.0.1:4005 $USER@$REMOTEIP&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;&lt;/p&gt;
 
 &lt;p&gt;Now tell &lt;em&gt;SLIME&lt;/em&gt; to connect to the remote machine. In Emacs type &lt;code&gt;M-x slime-connect&lt;/code&gt; and choose &lt;code&gt;127.0.0.1&lt;/code&gt; and port &lt;code&gt;4007&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;And that&amp;rsquo;s it! You will now be interacting with the REPL of the remote machine. For bonus points we can start a simple web server on the remote box just to prove we&amp;rsquo;ve done it. If you type this into the REPL it will load the &lt;a href=&#34;http://clacklisp.org/tutorial/02-getting-clack.html&#34;&gt;Clack web framwork&lt;/a&gt; and serve up a simple Hello, World on port 5000:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;(ql:quickload &lt;span style=&#34;color: #0000FF&#34;&gt;:clack&lt;/span&gt;)
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-lisp&#34; data-lang=&#34;lisp&#34;&gt;(ql:quickload &lt;span style=&#34;color:#00f&#34;&gt;:clack&lt;/span&gt;)
 (clack:clackup
-  (&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;lambda&lt;/span&gt; (env)
-    (&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;declare&lt;/span&gt; (&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;ignore&lt;/span&gt; env))
-    &amp;#39;(&lt;span style=&#34;color: #0000FF&#34;&gt;200&lt;/span&gt; (&lt;span style=&#34;color: #0000FF&#34;&gt;:content-type&lt;/span&gt; &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;text/plain&amp;quot;&lt;/span&gt;)(break) (&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;Hello, Clack!&amp;quot;&lt;/span&gt;))))
-&lt;/pre&gt;&lt;/div&gt;
-
+  (lambda (env)
+    (declare (ignore env))
+    &amp;#39;(&lt;span style=&#34;color:#00f&#34;&gt;200&lt;/span&gt; (&lt;span style=&#34;color:#00f&#34;&gt;:content-type&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;text/plain&amp;#34;&lt;/span&gt;)(break) (&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;Hello, Clack!&amp;#34;&lt;/span&gt;))))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Use Curl on the development machine and you should see:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;curl http://$REMOTEIP:5000
-Hello, Clack!
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;curl http://$REMOTEIP:5000
+Hello, Clack!&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;To change the server text to &lt;code&gt;Hello, World!&lt;/code&gt;:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;(clack:stop *)
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-lisp&#34; data-lang=&#34;lisp&#34;&gt;(clack:stop *)
 (clack:clackup
-  (&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;lambda&lt;/span&gt; (env)
-  (&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;declare&lt;/span&gt; (&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;ignore&lt;/span&gt; env))
-  &amp;#39;(&lt;span style=&#34;color: #0000FF&#34;&gt;200&lt;/span&gt; (&lt;span style=&#34;color: #0000FF&#34;&gt;:content-type&lt;/span&gt; &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;text/plain&amp;quot;&lt;/span&gt;)(break) (&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;Hello, World!&amp;quot;&lt;/span&gt;))))
-&lt;/pre&gt;&lt;/div&gt;
-
+  (lambda (env)
+  (declare (ignore env))
+  &amp;#39;(&lt;span style=&#34;color:#00f&#34;&gt;200&lt;/span&gt; (&lt;span style=&#34;color:#00f&#34;&gt;:content-type&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;text/plain&amp;#34;&lt;/span&gt;)(break) (&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;Hello, World!&amp;#34;&lt;/span&gt;))))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Enjoy!&lt;/p&gt;
 </description>
@@ -698,10 +704,9 @@ Hello, Clack!
       <guid>https://nspool.github.io/2015/01/happy-numbers/</guid>
       <description>&lt;p&gt;Here is a Mathematica snippit to count the number of &lt;a href=&#34;http://oeis.org/A007770&#34;&gt;Happy Numbers&lt;/a&gt; up to 1000:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;Length[Select[Range[&lt;span style=&#34;color: #0000FF&#34;&gt;1000&lt;/span&gt;],&lt;span style=&#34;color: #bbbbbb&#34;&gt; &lt;/span&gt;
-FixedPoint[Total[IntegerDigits[#]^&lt;span style=&#34;color: #0000FF&#34;&gt;2&lt;/span&gt;]&lt;span style=&#34;color: #bbbbbb&#34;&gt; &lt;/span&gt;&amp;amp;,&lt;span style=&#34;color: #bbbbbb&#34;&gt; &lt;/span&gt;#,&lt;span style=&#34;color: #bbbbbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color: #0000FF&#34;&gt;10&lt;/span&gt;]&lt;span style=&#34;color: #bbbbbb&#34;&gt; &lt;/span&gt;==&lt;span style=&#34;color: #bbbbbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color: #0000FF&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color: #bbbbbb&#34;&gt; &lt;/span&gt;&amp;amp;]]&lt;span style=&#34;color: #bbbbbb&#34;&gt;&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-mathematica&#34; data-lang=&#34;mathematica&#34;&gt;Length[Select[Range[&lt;span style=&#34;color:#00f&#34;&gt;1000&lt;/span&gt;],&lt;span style=&#34;color:#bbb&#34;&gt; 
+&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;FixedPoint[Total[IntegerDigits[#]^&lt;span style=&#34;color:#00f&#34;&gt;2&lt;/span&gt;]&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&amp;amp;,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;#,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;10&lt;/span&gt;]&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;==&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&amp;amp;]]&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 </description>
     </item>
     
@@ -732,29 +737,26 @@ FixedPoint[Total[IntegerDigits[#]^&lt;span style=&#34;color: #0000FF&#34;&gt;2&l
       <guid>https://nspool.github.io/2015/01/cracking-a-xor/</guid>
       <description>&lt;p&gt;In days part there were sites known to store login status in a client-side cookie obscured by a XOR cyper. When first visting the site some code like this would run:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;$cookie = xor_crypt($json_encode(array(&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;login&amp;quot;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;false&amp;quot;&lt;/span&gt;)));
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-perl&#34; data-lang=&#34;perl&#34;&gt;$cookie = xor_crypt($json_encode(array(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;login&amp;#34;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;false&amp;#34;&lt;/span&gt;)));&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;Then &lt;code&gt;$cookie&lt;/code&gt; would be set on the client side, something like &lt;code&gt;data=GkAPXlVaD0BZE1RSDREGE08=&lt;/code&gt;. A successful login would containg a similar:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;$cookie = xor_crypt($json_encode(array(&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;login&amp;quot;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;true&amp;quot;&lt;/span&gt;)));
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-perl&#34; data-lang=&#34;perl&#34;&gt;$cookie = xor_crypt($json_encode(array(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;login&amp;#34;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;true&amp;#34;&lt;/span&gt;)));&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;That would result in the cookie &lt;code&gt;data=GkAPXlVaD0BZE0ZBFAdBTA==&lt;/code&gt;. Looking at there two values it is plain that they are very similar. That only a few positions have changed indicate a basic &lt;a href=&#34;http://en.wikipedia.org/wiki/Symmetric-key_algorithm&#34;&gt;symmetric cypher&lt;/a&gt;, in this case just a simple XOR of the JSON value against a fixed key.&lt;/p&gt;
 
 &lt;p&gt;While it is trivial to brute-force the key, it is more fun to guess. A website setting a single long key might indicate a serialized array and logging in and out gives some indicate to what is being set. Then we can determine the key:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;$ct = base64_decode(&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;GkAPXlVaD0BZE1RSDREGE08=&amp;quot;&lt;/span&gt;);
-$pt = json_encode(array(&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;login&amp;quot;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;false&amp;quot;&lt;/span&gt;));
-$key = &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;&amp;quot;&lt;/span&gt;;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-perl&#34; data-lang=&#34;perl&#34;&gt;$ct = base64_decode(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;GkAPXlVaD0BZE1RSDREGE08=&amp;#34;&lt;/span&gt;);
+$pt = json_encode(array(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;login&amp;#34;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;false&amp;#34;&lt;/span&gt;));
+$key = &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;;
 
-&lt;span style=&#34;color: #000080; font-weight: bold&#34;&gt;for&lt;/span&gt;($i=&lt;span style=&#34;color: #0000FF&#34;&gt;0&lt;/span&gt;;$i&amp;lt;strlen($ct);$i++) {
+&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;for&lt;/span&gt;($i=&lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;;$i&amp;lt;strlen($ct);$i++) {
   $key .= $ct[$i] ^ $pt[$i % strlen($pt)];
-}
-&lt;/pre&gt;&lt;/div&gt;
-
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 
 &lt;p&gt;This gives &lt;code&gt;abc123abc123abc123abc1 ..&lt;/code&gt; which is both human readable and contains repetitive.&lt;/p&gt;
 
@@ -774,12 +776,11 @@ $key = &lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;&amp;quot;&lt;/span&
 
 &lt;p&gt;In the meantime here&amp;rsquo;s an example of using &lt;code&gt;netcat&lt;/code&gt; to do a HTTP request containing a cookie. For good measure parameter &lt;code&gt;-p 24&lt;/code&gt; forces the server to reply to the client on port 42.&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34; style=&#34;background: #ffffff&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span&gt;&lt;/span&gt;&lt;span style=&#34;color: #008800; font-style: italic&#34;&gt;#!/bin/bash&lt;/span&gt;
-head=&lt;span style=&#34;color: #0000FF&#34;&gt;&amp;quot;GET http://www.example.org HTTP/1.1\r\nHost: .example.org\r\nCookie: VALUE=ABC123;\r\nAccept: */*\r\nConnection: Close\r\n\r\n&amp;quot;&lt;/span&gt;;
-echo -ne $head | nc -p42 www.example.org &lt;span style=&#34;color: #0000FF&#34;&gt;80&lt;/span&gt;
-&lt;span style=&#34;color: #008800; font-style: italic&#34;&gt;#=&amp;gt; Using port 42 for the reply.&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;#!/bin/bash
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;head=&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;GET http://www.example.org HTTP/1.1\r\nHost: .example.org\r\nCookie: VALUE=ABC123;\r\nAccept: */*\r\nConnection: Close\r\n\r\n&amp;#34;&lt;/span&gt;;
+echo -ne $head | nc -p42 www.example.org &lt;span style=&#34;color:#00f&#34;&gt;80&lt;/span&gt;
+#=&amp;gt; Using port &lt;span style=&#34;color:#00f&#34;&gt;42&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;for&lt;/span&gt; the reply.&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 </description>
     </item>
     

@@ -41,12 +41,11 @@
 
 <p>In the meantime here&rsquo;s an example of using <code>netcat</code> to do a HTTP request containing a cookie. For good measure parameter <code>-p 24</code> forces the server to reply to the client on port 42.</p>
 
-<div class="highlight" style="background: #ffffff"><pre style="line-height: 125%"><span></span><span style="color: #008800; font-style: italic">#!/bin/bash</span>
-head=<span style="color: #0000FF">&quot;GET http://www.example.org HTTP/1.1\r\nHost: .example.org\r\nCookie: VALUE=ABC123;\r\nAccept: */*\r\nConnection: Close\r\n\r\n&quot;</span>;
-echo -ne $head | nc -p42 www.example.org <span style="color: #0000FF">80</span>
-<span style="color: #008800; font-style: italic">#=&gt; Using port 42 for the reply.</span>
-</pre></div>
-
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#080;font-style:italic">#!/bin/bash
+</span><span style="color:#080;font-style:italic"></span>head=<span style="color:#00f">&#34;GET http://www.example.org HTTP/1.1\r\nHost: .example.org\r\nCookie: VALUE=ABC123;\r\nAccept: */*\r\nConnection: Close\r\n\r\n&#34;</span>;
+echo -ne $head | nc -p42 www.example.org <span style="color:#00f">80</span>
+#=&gt; Using port <span style="color:#00f">42</span> <span style="color:#000080;font-weight:bold">for</span> the reply.</code></pre>
+</div>
 
         
       </div>

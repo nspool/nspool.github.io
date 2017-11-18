@@ -5,7 +5,7 @@ body {
     color: #111;
     background-color: #fdfdfd;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 14px;
+    font-size: 12px;
     color: #333;
     background-color: #fff
 }
@@ -71,7 +71,7 @@ a:focus {
 }
 
 p {
-    margin: 0 0 10px
+    margin: 10px 0px 10px 5px; 
 }
 
 .lead {
@@ -170,12 +170,13 @@ li {
 }
 
 h1 {
-    font-size: 20px;
+    font-size: 18px;
 }
 
-h3 {
-  font-size: 12px;
+h2 {
+  font-size: 14px;
   font-weight: bold;
+  margin-bottom: 5px;
 }
 
 code, pre, samp {
@@ -185,7 +186,7 @@ code, pre, samp {
 code {
     padding: 2px 4px;
     font-size: 90%;
-    color: #c7254e;
+    color: darkblue;
     background-color: #f9f2f4;
     border-radius: 4px
 }
@@ -200,9 +201,9 @@ pre {
     display: block;
     padding: 9.5px;
     margin: 0 0 10px;
-    font-size: 13px;
+    font-size: 11px;
     line-height: 1.42857143;
-    color: #333;
+    color: darkblue;
     word-break: break-all;
     word-wrap: break-word;
     background-color: #f5f5f5;
