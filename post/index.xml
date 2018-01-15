@@ -7,8 +7,44 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
-    <lastBuildDate>Sun, 19 Mar 2017 21:24:00 +1100</lastBuildDate>
+    <lastBuildDate>Mon, 15 Jan 2018 21:24:00 +1100</lastBuildDate>
     <atom:link href="/post/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>NSUndoManager in a storyboard-based macOS app</title>
+      <link>https://nspool.github.io/2018/01/nsundomanager/</link>
+      <pubDate>Mon, 15 Jan 2018 21:24:00 +1100</pubDate>
+      
+      <guid>https://nspool.github.io/2018/01/nsundomanager/</guid>
+      <description>&lt;p&gt;The MacOS application template in a newer version of Xcode defaults to using storyboards. To implement custom Undo and Redo operations it is necessary to implement to have  your NSView implement &lt;code&gt;NSWindowDelegate&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Create an &lt;code&gt;NSUndoManager&lt;/code&gt; for the view:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;NSUndoManager* undoManager;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Assign the delegate programmatically within &lt;code&gt;initWithFrame&lt;/code&gt; and set your view as the first responder:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;NSWindow* mainWindow = [[[NSApplication sharedApplication] windows] objectAtIndex:0];
+mainWindow.delegate = self;
+undoManager = [[NSUndoManager alloc] init];
+    [self becomeFirstResponder];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then in the method where the undoable action takes place&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[[undoManager prepareWithInvocationTarget:self] undoAction];
+
+if(![undoManager isUndoing]) {
+    [undoManager setActionName:@&amp;quot;Select&amp;quot;];
+} 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Where &lt;code&gt;undoAction&lt;/code&gt; is the method on your view.&lt;/p&gt;
+
+&lt;p&gt;For a working example see &lt;a href=&#34;https://github.com/nspool/pocket-life/blob/master/Pocket%20Life/LifeView.m&#34;&gt;this LifeView.m in my Game of Life cocoa app&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Building a fat libSDL.a for iOS development</title>
@@ -825,31 +861,6 @@ echo -ne $head | nc -p42 www.example.org &lt;span style=&#34;color:#00f&#34;&gt;
 &lt;li&gt;Stirling numbers &lt;a href=&#34;https://oeis.org/A008277&#34;&gt;https://oeis.org/A008277&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;Bell numbers &lt;a href=&#34;https://oeis.org/A008277&#34;&gt;https://oeis.org/A008277&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>StatusNet on MAMP</title>
-      <link>https://nspool.github.io/2013/12/status.net-on-mamp/</link>
-      <pubDate>Wed, 11 Dec 2013 09:00:00 +0000</pubDate>
-      
-      <guid>https://nspool.github.io/2013/12/status.net-on-mamp/</guid>
-      <description>&lt;p&gt;(Update: StatusNet is now &lt;a href=&#34;http://www.gnu.org/software/social/merge.html&#34;&gt;merged into GNU social&lt;/a&gt;)&lt;/p&gt;
-
-&lt;p&gt;StatusNet is a federated microblogging service. This is how I managed to setup a local server on my laptop under &lt;a href=&#34;https://www.mamp.info/&#34;&gt;MAMP&lt;/a&gt;.&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;Set MAMP PHP version to 5.2.*&lt;/li&gt;
-&lt;li&gt;Extract tar into htdocs&lt;/li&gt;
-&lt;li&gt;Fix permissions&lt;/li&gt;
-&lt;li&gt;Replace .htaccess with the htaccess.sample, filling out the values manually&lt;/li&gt;
-&lt;li&gt;Add statusnet database using phpmyadmin&lt;/li&gt;
-&lt;li&gt;Make sure statusnet database user has all the permissions.&lt;/li&gt;
-&lt;li&gt;Apply &lt;a href=&#34;http://pastebin.com/usWAGgB9&#34;&gt;this patch&lt;/a&gt;. If this isn&amp;rsquo;t applied doing a tweet status update will result in a HTTP 500.&lt;/li&gt;
-&lt;li&gt;Run the install script&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;StatusNet should now be running locally and be fully functional.&lt;/p&gt;
 </description>
     </item>
     

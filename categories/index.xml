@@ -10,6 +10,24 @@
     <atom:link href="/categories/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Cocoa</title>
+      <link>https://nspool.github.io/categories/cocoa/</link>
+      <pubDate>Mon, 15 Jan 2018 21:24:00 +1100</pubDate>
+      
+      <guid>https://nspool.github.io/categories/cocoa/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Macos</title>
+      <link>https://nspool.github.io/categories/macos/</link>
+      <pubDate>Mon, 15 Jan 2018 21:24:00 +1100</pubDate>
+      
+      <guid>https://nspool.github.io/categories/macos/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Opencv</title>
       <link>https://nspool.github.io/categories/opencv/</link>
       <pubDate>Sat, 18 Mar 2017 21:32:56 +1100</pubDate>
