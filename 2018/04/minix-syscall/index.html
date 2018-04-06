@@ -1,0 +1,174 @@
+  <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="Description" content="How to add a syscall to the Minix 2 kernel">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    
+    <title> Adding a syscall to Minix 2 </title>
+    
+    <link rel="stylesheet" href="/css/theme.css" />
+    
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+    <link rel="shortcut icon" href="/favicon.ico">
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="nspool&#39;s blog" />
+</head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="https://nspool.github.io">nspool&#39;s blog</a>
+        <div class="collapse navbar-collapse" id="navbar-right">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li><a href="/contact/" >Contact</a></li>
+                
+                
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <div class="container page-wrap">
+      <h1>Adding a syscall to Minix 2</h1>
+      <small class="post-meta">Apr 6, 2018</small>
+      <div class="post-content">
+        
+
+<h2 id="getting-minix-2">Getting Minix 2</h2>
+
+<p>Older Minix versions are available from the <a href="http://wiki.minix3.org/doku.php?id=www:download:previousversions">Minix 3 official website</a>.
+If using a VM I would recommend the HD image from the <a href="https://github.com/davidgiven/minix2">Minix 2 Quick and Dirty edition</a>. This is what I used for this blog post.</p>
+
+<h2 id="running-in-virtualbox">Running in VirtualBox</h2>
+
+<p>If using the Quick and Dirty edition HDD image from the link above, first convert it to VDI format:</p>
+
+<pre><code>VBoxManage convertdd minix-2.0-hd-64MB.img minix-2.0-hd-64MB.vdi  --format VDI
+</code></pre>
+
+<p>Create a Linux 2.4 32-bit VM with 64mb of RAM. Make sure that the storage controller is IDE.</p>
+
+<h2 id="building-the-kernel">Building the kernel</h2>
+
+<pre><code>cd /usr/src/tools
+make
+</code></pre>
+
+<p>This should build the kernel and out bootable kernel file named <code>image</code>. Copy it into the directory containing the kernel:</p>
+
+<pre><code>cp image /minix/custom
+</code></pre>
+
+<p>Now reboot Minix with the new kernel image. Perform a clean shutdown of the OS:</p>
+
+<pre><code>shutdown
+</code></pre>
+
+<p>From the Supervisor, set our custom kernel image as the kernel and boot back into Minix:</p>
+
+<pre><code>name=/minix/custom
+boot
+</code></pre>
+
+<h2 id="adding-a-syscall-to-the-memory-manager-server">Adding a syscall to the memory manager server</h2>
+
+<h3 id="usr-include-minix-callnr-h">/usr/include/minix/callnr.h</h3>
+
+<p>increment NCALLS and allocate an number for the new syscall:</p>
+
+<pre><code>#define HELLOWORLD 78
+</code></pre>
+
+<h3 id="usr-src-mm-main-c">/usr/src/mm/main.c</h3>
+
+<pre><code>PUBLIC void do_helloworld()
+{
+    message msg;
+    msg = mm_in;
+    _taskcall(SYSTASK, SYS_HELLO, &amp;msg);
+}
+</code></pre>
+
+<h3 id="usr-src-mm-proto-h">/usr/src/mm/proto.h</h3>
+
+<pre><code>_PROTOTYPE(void do_helloworld, (void));
+</code></pre>
+
+<h3 id="usr-src-mm-table-c">/usr/src/mm/table.c</h3>
+
+<pre><code>do_helloworld, /* 78 = HELLOWORLD */
+</code></pre>
+
+<h3 id="usr-src-fs-table-c">/usr/src/fs/table.c</h3>
+
+<pre><code>no_sys , /* 78 = HELLOWORLD */
+</code></pre>
+
+<h3 id="usr-include-minix-com-h">/usr/include/minix/com.h</h3>
+
+<pre><code>#define SYS_HELLOWORLD 22 
+</code></pre>
+
+<h3 id="usr-src-kernel-system-c">/usr/src/kernel/system.c</h3>
+
+<pre><code>case SYS_HELLOWORLD: r = do_helloworld(&amp;m); break;
+
+PRIVATE int do_helloworld(m_ptr)
+register message *m_ptr;
+{
+    printf(&quot;Hello, World\n&quot;);
+    return(OK);
+}
+</code></pre>
+
+<h2 id="calling-the-syscall-from-user-land">Calling the syscall from user land</h2>
+
+<pre><code>#include &lt;lib.h&gt;
+
+int main(int argc, char** argv)
+{
+    int ret;
+    message msg;
+    ret = _syscall(MM, HELLOWORLD, &amp;msg);
+    return ret;
+}
+</code></pre>
+
+<p>Build this program with <code>cc -o hello hello.c</code>. Running <code>./hello</code> should output <em>Hello, World</em> from the new syscall.</p>
+
+        
+      </div>
+    </div>
+    <footer class="site-footer">
+	<div class="container">
+		<h4>nspool&#39;s blog</h4>
+		<div class="row">
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>Programming to math.. and back again!</p>
+					<a href="mailto:"></a>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="form-group">
+					<p>
+						<span class="fa fa-fw fa-github"></span>
+						<a href="https://github.com/nspool">nspool</a>
+						<br>
+						<span class="fa fa-fw fa-twitter"></span>
+						<a href="https://twitter.com/@nsautopool">@nsautopool</a>
+                                                
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+
+    
+
+  </body>
+</html>

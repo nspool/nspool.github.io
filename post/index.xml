@@ -7,8 +7,120 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
-    <lastBuildDate>Mon, 15 Jan 2018 21:24:00 +1100</lastBuildDate>
+    <lastBuildDate>Fri, 06 Apr 2018 21:11:00 +1000</lastBuildDate>
     <atom:link href="/post/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Adding a syscall to Minix 2</title>
+      <link>https://nspool.github.io/2018/04/minix-syscall/</link>
+      <pubDate>Fri, 06 Apr 2018 21:11:00 +1000</pubDate>
+      
+      <guid>https://nspool.github.io/2018/04/minix-syscall/</guid>
+      <description>
+
+&lt;h2 id=&#34;getting-minix-2&#34;&gt;Getting Minix 2&lt;/h2&gt;
+
+&lt;p&gt;Older Minix versions are available from the &lt;a href=&#34;http://wiki.minix3.org/doku.php?id=www:download:previousversions&#34;&gt;Minix 3 official website&lt;/a&gt;.
+If using a VM I would recommend the HD image from the &lt;a href=&#34;https://github.com/davidgiven/minix2&#34;&gt;Minix 2 Quick and Dirty edition&lt;/a&gt;. This is what I used for this blog post.&lt;/p&gt;
+
+&lt;h2 id=&#34;running-in-virtualbox&#34;&gt;Running in VirtualBox&lt;/h2&gt;
+
+&lt;p&gt;If using the Quick and Dirty edition HDD image from the link above, first convert it to VDI format:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;VBoxManage convertdd minix-2.0-hd-64MB.img minix-2.0-hd-64MB.vdi  --format VDI
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Create a Linux 2.4 32-bit VM with 64mb of RAM. Make sure that the storage controller is IDE.&lt;/p&gt;
+
+&lt;h2 id=&#34;building-the-kernel&#34;&gt;Building the kernel&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;cd /usr/src/tools
+make
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This should build the kernel and out bootable kernel file named &lt;code&gt;image&lt;/code&gt;. Copy it into the directory containing the kernel:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cp image /minix/custom
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now reboot Minix with the new kernel image. Perform a clean shutdown of the OS:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;shutdown
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;From the Supervisor, set our custom kernel image as the kernel and boot back into Minix:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;name=/minix/custom
+boot
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;adding-a-syscall-to-the-memory-manager-server&#34;&gt;Adding a syscall to the memory manager server&lt;/h2&gt;
+
+&lt;h3 id=&#34;usr-include-minix-callnr-h&#34;&gt;/usr/include/minix/callnr.h&lt;/h3&gt;
+
+&lt;p&gt;increment NCALLS and allocate an number for the new syscall:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;#define HELLOWORLD 78
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;usr-src-mm-main-c&#34;&gt;/usr/src/mm/main.c&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;PUBLIC void do_helloworld()
+{
+    message msg;
+    msg = mm_in;
+    _taskcall(SYSTASK, SYS_HELLO, &amp;amp;msg);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;usr-src-mm-proto-h&#34;&gt;/usr/src/mm/proto.h&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;_PROTOTYPE(void do_helloworld, (void));
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;usr-src-mm-table-c&#34;&gt;/usr/src/mm/table.c&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;do_helloworld, /* 78 = HELLOWORLD */
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;usr-src-fs-table-c&#34;&gt;/usr/src/fs/table.c&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;no_sys , /* 78 = HELLOWORLD */
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;usr-include-minix-com-h&#34;&gt;/usr/include/minix/com.h&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;#define SYS_HELLOWORLD 22 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;usr-src-kernel-system-c&#34;&gt;/usr/src/kernel/system.c&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;case SYS_HELLOWORLD: r = do_helloworld(&amp;amp;m); break;
+
+PRIVATE int do_helloworld(m_ptr)
+register message *m_ptr;
+{
+    printf(&amp;quot;Hello, World\n&amp;quot;);
+    return(OK);
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;calling-the-syscall-from-user-land&#34;&gt;Calling the syscall from user land&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;#include &amp;lt;lib.h&amp;gt;
+
+int main(int argc, char** argv)
+{
+    int ret;
+    message msg;
+    ret = _syscall(MM, HELLOWORLD, &amp;amp;msg);
+    return ret;
+}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Build this program with &lt;code&gt;cc -o hello hello.c&lt;/code&gt;. Running &lt;code&gt;./hello&lt;/code&gt; should output &lt;em&gt;Hello, World&lt;/em&gt; from the new syscall.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>NSUndoManager in a storyboard-based macOS app</title>
@@ -817,50 +929,6 @@ $key = &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;;
 echo -ne $head | nc -p42 www.example.org &lt;span style=&#34;color:#00f&#34;&gt;80&lt;/span&gt;
 #=&amp;gt; Using port &lt;span style=&#34;color:#00f&#34;&gt;42&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;for&lt;/span&gt; the reply.&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Partitioning Sets</title>
-      <link>https://nspool.github.io/2014/08/notes-from-a-combinatorial-problem/</link>
-      <pubDate>Fri, 01 Aug 2014 09:00:00 +0000</pubDate>
-      
-      <guid>https://nspool.github.io/2014/08/notes-from-a-combinatorial-problem/</guid>
-      <description>
-
-&lt;p&gt;We have a program that performs a comparison of every pair of elements in a database, and then compares the result with the median value of all values. It was suggested that the program should instead make pairwise comparisons within every possible combination of subsets. How many comparisons would we end up making?&lt;/p&gt;
-
-&lt;p&gt;For this example, each element in our database will be represented by an integer. We call these elements &lt;img src=&#34;https://nspool.github.io/P_in_Z.svg&#34; alt=&#34;$P \in \mathbb{Z}$&#34; /&gt; the &lt;em&gt;population&lt;/em&gt; which is then partitioned into all possible distinct pairwise disjoint subsets &lt;img src=&#34;https://nspool.github.io/P_set.svg&#34; alt=&#34;$\{P_1, P_2, .. , P_k\}$&#34; /&gt;. Each &lt;img src=&#34;https://nspool.github.io/P_i.svg&#34; alt=&#34;$P_i$&#34; /&gt; is called a &lt;em&gt;block&lt;/em&gt; of  &lt;img src=&#34;https://nspool.github.io/P.svg&#34; alt=&#34;\emph{P}&#34; /&gt; and is distinct; the program should not enumerate the same block multiple times. As an extra complication, each pairwise comparison will need to be also made against the block median. So for each block &lt;img src=&#34;https://nspool.github.io/P_i.svg&#34; alt=&#34;$P_i$&#34; /&gt; there are two operations performed:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Take the median value of each &lt;img src=&#34;https://nspool.github.io/P_i.svg&#34; alt=&#34;$P_i$&#34; /&gt;&lt;/li&gt;
-&lt;li&gt;Take the euclidean distance between the median and every element &lt;img src=&#34;https://nspool.github.io/e_in_P_i.svg&#34; alt=&#34;$e \in P_i$&#34; /&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The first operation need only be performed once per block and the second will need to be performed exactly &lt;img src=&#34;https://nspool.github.io/abs_P_i.svg&#34; alt=&#34;$\|P_i\|$&#34; /&gt; times, as each block is also a subset and cannot contain duplicates.&lt;/p&gt;
-
-&lt;p&gt;The number of ways can the population &lt;img src=&#34;https://nspool.github.io/P.svg&#34; alt=&#34;\emph{P}&#34; /&gt; be divided into &lt;img src=&#34;https://nspool.github.io/n.svg&#34; alt=&#34;$n$&#34; /&gt; disjoint non-empty subsets is known as a Stirling number of the second kind, or simply a Stirling partition number.  (see [1]) This is defined as:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://nspool.github.io/def_sterling.svg&#34; alt=&#34;$\stirling{n}{k} =\frac{1}{k!}\sum\limits_{j=0}{k}(-1)^{k-j}\binom{k}{j}j^n$&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;So when &lt;img src=&#34;https://nspool.github.io/P.svg&#34; alt=&#34;\emph{P}&#34; /&gt; is divided with &lt;img src=&#34;https://nspool.github.io/k.svg&#34; alt=&#34;$k$&#34; /&gt; partitions where &lt;img src=&#34;https://nspool.github.io/n.svg&#34; alt=&#34;$n$&#34; /&gt; is the cardinality of the block it follows that the program will need to obtain &lt;img src=&#34;https://nspool.github.io/k.svg&#34; alt=&#34;$k$&#34; /&gt; median values and then perform &lt;img src=&#34;https://nspool.github.io/n.svg&#34; alt=&#34;$n$&#34; /&gt; pairwise comparisons:[sterling]&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://nspool.github.io/n_sterling_k.svg&#34; alt=&#34;$C^k_{total} = n\stirling{n}{k} + k$&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;which is the number of ways a set with n elements can be partitioned into disjoint, non-empty subsets. &lt;img src=&#34;https://nspool.github.io/S.svg&#34; alt=&#34;$S$&#34; /&gt; the number of ways a set with &lt;img src=&#34;https://nspool.github.io/n.svg&#34; alt=&#34;$n$&#34; /&gt; elements can be partitioned into &lt;img src=&#34;https://nspool.github.io/k.svg&#34; alt=&#34;$k$&#34; /&gt; disjoint, non-empty subsets. As the partition changes, all of &lt;img src=&#34;https://nspool.github.io/n.svg&#34; alt=&#34;$n$&#34; /&gt; needs to be recalculated as does the score of the partition &lt;img src=&#34;https://nspool.github.io/k.svg&#34; alt=&#34;$k$&#34; /&gt;. For every different set of partitions we perform &lt;img src=&#34;https://nspool.github.io/n.svg&#34; alt=&#34;$n$&#34; /&gt; operations plus &lt;img src=&#34;https://nspool.github.io/k.svg&#34; alt=&#34;$k$&#34; /&gt; operations as it is possible to have anywhere from 0 to &lt;img src=&#34;https://nspool.github.io/n.svg&#34; alt=&#34;&amp;quot;$n$&amp;quot;&#34; /&gt; partitions in the set.&lt;/p&gt;
-
-&lt;p&gt;Then the total number of operations over all possible partitions is:
-        &lt;img src=&#34;https://nspool.github.io/C_total_1.svg&#34; alt=&#34;C_{total} = \sum_{k=0}^{|P|}{( n\stirling{n}{k} + k)}&#34; /&gt;
-        &lt;img src=&#34;https://nspool.github.io/C_total_1.svg&#34; alt=&#34;C_{total} = n\sum_{k=0}^{n}{\stirling{n}{k}} + \frac{n(n+1)}{2}&amp;quot;&#34; /&gt;
-        &lt;img src=&#34;https://nspool.github.io/C_total_final.svg&#34; alt=&#34;C_{total} = nB_n + \frac{n(n+1)}{2}&#34; /&gt;
-        Where &lt;img src=&#34;https://nspool.github.io/B_n.svg&#34; alt=&#34;B_n&#34; /&gt; is the nth &lt;em&gt;Bell number&lt;/em&gt;. We can now use this formula to calculate the exact number of comparisons made during the execution of the program&lt;/p&gt;
-
-&lt;h3 id=&#34;further-reading&#34;&gt;Further Reading&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Stirling numbers &lt;a href=&#34;https://oeis.org/A008277&#34;&gt;https://oeis.org/A008277&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Bell numbers &lt;a href=&#34;https://oeis.org/A008277&#34;&gt;https://oeis.org/A008277&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     

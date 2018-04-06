@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nspool&#39;s blog</title>
+    <link>https://nspool.github.io/categories/macos-cocoa/</link>
+    <description>Recent content in Macos Cocoa on nspool&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
+    <lastBuildDate>Mon, 15 Jan 2018 21:24:00 +1100</lastBuildDate>
+    <atom:link href="/categories/macos-cocoa/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>NSUndoManager in a storyboard-based macOS app</title>
+      <link>https://nspool.github.io/2018/01/nsundomanager/</link>
+      <pubDate>Mon, 15 Jan 2018 21:24:00 +1100</pubDate>
+      
+      <guid>https://nspool.github.io/2018/01/nsundomanager/</guid>
+      <description>&lt;p&gt;The MacOS application template in a newer version of Xcode defaults to using storyboards. To implement custom Undo and Redo operations it is necessary to implement to have  your NSView implement &lt;code&gt;NSWindowDelegate&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Create an &lt;code&gt;NSUndoManager&lt;/code&gt; for the view:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;NSUndoManager* undoManager;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Assign the delegate programmatically within &lt;code&gt;initWithFrame&lt;/code&gt; and set your view as the first responder:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;NSWindow* mainWindow = [[[NSApplication sharedApplication] windows] objectAtIndex:0];
+mainWindow.delegate = self;
+undoManager = [[NSUndoManager alloc] init];
+    [self becomeFirstResponder];
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Then in the method where the undoable action takes place&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;[[undoManager prepareWithInvocationTarget:self] undoAction];
+
+if(![undoManager isUndoing]) {
+    [undoManager setActionName:@&amp;quot;Select&amp;quot;];
+} 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Where &lt;code&gt;undoAction&lt;/code&gt; is the method on your view.&lt;/p&gt;
+
+&lt;p&gt;For a working example see &lt;a href=&#34;https://github.com/nspool/pocket-life/blob/master/Pocket%20Life/LifeView.m&#34;&gt;this LifeView.m in my Game of Life cocoa app&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

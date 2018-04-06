@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://nspool.github.io/2018/04/minix-syscall/</loc>
+    <lastmod>2018-04-06T21:11:00+10:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://nspool.github.io/2018/01/nsundomanager/</loc>
     <lastmod>2018-01-15T21:24:00+11:00</lastmod>
   </url>
@@ -114,6 +119,12 @@
   </url>
   
   <url>
+    <loc>https://nspool.github.io/categories/minix/</loc>
+    <lastmod>2018-04-06T21:11:00+10:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://nspool.github.io/categories/opencv/</loc>
     <lastmod>2017-03-18T21:32:56+11:00</lastmod>
     <priority>0</priority>
@@ -121,7 +132,7 @@
   
   <url>
     <loc>https://nspool.github.io/post/</loc>
-    <lastmod>2018-01-15T21:24:00+11:00</lastmod>
+    <lastmod>2018-04-06T21:11:00+10:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -137,8 +148,14 @@
   </url>
   
   <url>
+    <loc>https://nspool.github.io/categories/unix/</loc>
+    <lastmod>2018-04-06T21:11:00+10:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://nspool.github.io/</loc>
-    <lastmod>2018-01-15T21:24:00+11:00</lastmod>
+    <lastmod>2018-04-06T21:11:00+10:00</lastmod>
     <priority>0</priority>
   </url>
   
