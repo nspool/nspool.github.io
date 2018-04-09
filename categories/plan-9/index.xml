@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nspool&#39;s blog</title>
+    <link>https://nspool.github.io/categories/plan-9/</link>
+    <description>Recent content in Plan 9 on nspool&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
+    <lastBuildDate>Fri, 22 Feb 2013 09:00:00 +0000</lastBuildDate>
+    <atom:link href="/categories/plan-9/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Getting Started with Plan 9 graphics programming</title>
+      <link>https://nspool.github.io/2013/02/bouncing-ball/</link>
+      <pubDate>Fri, 22 Feb 2013 09:00:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2013/02/bouncing-ball/</guid>
+      <description>&lt;p&gt;&lt;img src=&#34;https://nspool.github.io/ball.png&#34; alt=&#34;Plan 9 bouncing ball demo&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Where to start writing apps for Plan 9 from Bell Labs? Most of the documentation around focuses on the shell and the file system. The tutorial explains how to write a simple bouncing ball app for the Plan 9 UI.&lt;/p&gt;
+
+&lt;p&gt;First, install either &lt;a href=&#34;http://plan9.bell-labs.com/plan9/&#34;&gt;the official Plan 9 distribution&lt;/a&gt; or the &lt;a href=&#34;http://code.google.com/p/plan9front/&#34;&gt;community fork 9front&lt;/a&gt;. If you are only interested in experimenting with the Plan 9 GUI, I would recommend 9front. However if you intend on understanding Plan 9 as an operating systems research project &lt;em&gt;in the way that it was intended&lt;/em&gt; then start with the official distribution, set up the prerequisite file, CPU and auth servers and go from there.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s create a simple bouncing ball demo with an exit menu to demonstrate drawing graphics directly and also use the builtin Plan 9 UI functions. Not as impressive as the &lt;a href=&#34;http://www.youtube.com/watch?v=-ga41edXw3A&#34;&gt;canonical bouncing ball demo&lt;/a&gt;, but it&amp;rsquo;s a start.&lt;/p&gt;
+
+&lt;p&gt;In either Sam or Acme, create a new file named &lt;code&gt;ball.c&lt;/code&gt;. Add these headers:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;color:#008080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#008080&#34;&gt;&amp;lt;u.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#008080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#008080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#008080&#34;&gt;&amp;lt;libc.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#008080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#008080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#008080&#34;&gt;&amp;lt;draw.h&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#008080&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#008080&#34;&gt;#include&lt;/span&gt; &lt;span style=&#34;color:#008080&#34;&gt;&amp;lt;event.h&amp;gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The first two are standard headers for writing in the Plan 9 dialect of C instead of ANSI C, which use a &lt;code&gt;pragma&lt;/code&gt; directive to also provide the necessary parameters to the linker. The headers &lt;code&gt;draw.h&lt;/code&gt; and &lt;code&gt;event.h&lt;/code&gt; both include the libdraw and libevent. In the main method we will initiate drawing on the current window as well as register our interest in mouse events for the window:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;/* Initiate graphics and mouse */&lt;/span&gt;
+    
+&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;if&lt;/span&gt;(initdraw(nil, nil, &lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;bouncing ball demo&amp;#34;&lt;/span&gt;) &amp;lt; &lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;) {
+  sysfatal(&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;initdraw failed: %r&amp;#34;&lt;/span&gt;);
+}
+
+einit(Emouse);&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;In Rio, the Plan 9 window manager, we do not create a new window but instead take over the terminal window that our program was spawned from. Just as the underlying shell forked, we take over the graphical context of the parent process.&lt;/p&gt;
+
+&lt;p&gt;Libevent requires that we implement a method called eresized to handle when the window has been resized or the window is newly created. If this is the first time the program is run then it will need to connect to the display using &lt;code&gt;getwindow()&lt;/code&gt; and then clear the screen by painting it white.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;void&lt;/span&gt;
+eresized(&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;int&lt;/span&gt; new)
+{
+  &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;if&lt;/span&gt;(new &amp;amp;&amp;amp; getwindow(display, Refnone) &amp;lt; &lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;)
+    sysfatal(&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;can&amp;#39;t reattach to window&amp;#34;&lt;/span&gt;);
+
+  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;/* Store new screen coordinates for collision detection */&lt;/span&gt;
+  p = Pt(Dx(screen-&amp;gt;r), Dy(screen-&amp;gt;r));
+
+  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;/* Draw the background DWhite */&lt;/span&gt;
+  draw(screen, 
+    insetrect(screen-&amp;gt;r, borderWidth), 
+    allocimage(display, Rect(&lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;1&lt;/span&gt;), screen-&amp;gt;chan, &lt;span style=&#34;color:#00f&#34;&gt;1&lt;/span&gt;, DWhite), 
+    nil, ZP);
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Call this method by adding &lt;code&gt;eresized(0);&lt;/code&gt;. The windowing system Rio will call this function for subsequent window resizes.&lt;/p&gt;
+
+&lt;p&gt;So look at what we have done so far: we have created a new blank window by attaching to the current terminal window, specified a mouse handler and painted the terminal white. Now we can draw our ball. First set up a timer to move the ball every 5 milliseconds unless there is an Emouse event.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;timer = etimer(&lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;5&lt;/span&gt;);&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Create a method &lt;code&gt;initball()&lt;/code&gt; that allocates an image as a brush, and image to draw on and then an ellipse:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;Image *brush;
+brush=allocimage(display, Rect(&lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#00f&#34;&gt;1&lt;/span&gt;,&lt;span style=&#34;color:#00f&#34;&gt;1&lt;/span&gt;), CMAP8, &lt;span style=&#34;color:#00f&#34;&gt;1&lt;/span&gt;, DRed);
+ball=allocimage(display, (Rectangle){(Point){&lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;,&lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;},(Point){r*&lt;span style=&#34;color:#00f&#34;&gt;4&lt;/span&gt;,r*&lt;span style=&#34;color:#00f&#34;&gt;4&lt;/span&gt;}},
+screen-&amp;gt;chan, &lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;, DWhite);
+fillellipse(ball, (Point){r*&lt;span style=&#34;color:#00f&#34;&gt;2&lt;/span&gt;,r*&lt;span style=&#34;color:#00f&#34;&gt;2&lt;/span&gt;}, r, r, brush, ZP);&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Also, we will need a method &lt;code&gt;moveball()&lt;/code&gt; to move the ball. &lt;a href=&#34;https://www.cl.cam.ac.uk/~mgk25/ucs/utf-8-history.txt&#34;&gt;Plan 9 has supported UTF-8 since the very beginning&lt;/a&gt; we can use symbols such as the greek letter delta to denote change.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;static&lt;/span&gt; Point bp={&lt;span style=&#34;color:#00f&#34;&gt;6&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;6&lt;/span&gt;}; &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;/* Ball Position */&lt;/span&gt;
+&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;static&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;double&lt;/span&gt; &lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;Δ&lt;/span&gt;i=&lt;span style=&#34;color:#00f&#34;&gt;4&lt;/span&gt;, &lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;Δ&lt;/span&gt;j=&lt;span style=&#34;color:#00f&#34;&gt;4&lt;/span&gt;;
+
+&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;/* Collision detection */&lt;/span&gt;
+&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;if&lt;/span&gt;(bp.x &amp;gt; p.x - (r*&lt;span style=&#34;color:#00f&#34;&gt;3&lt;/span&gt;) || bp.x &amp;lt; -r) &lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;Δ&lt;/span&gt;i = &lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;Δ&lt;/span&gt;i*-&lt;span style=&#34;color:#00f&#34;&gt;1&lt;/span&gt;;
+&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;if&lt;/span&gt;(bp.y &amp;gt; p.y - (r*&lt;span style=&#34;color:#00f&#34;&gt;3&lt;/span&gt;) || bp.y &amp;lt; -r) &lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;Δ&lt;/span&gt;j = &lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;Δ&lt;/span&gt;j*-&lt;span style=&#34;color:#00f&#34;&gt;1&lt;/span&gt;;
+
+&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;/* Increment ball position */&lt;/span&gt;
+bp.x = bp.x + &lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;Δ&lt;/span&gt;i;
+bp.y = bp.y + &lt;span style=&#34;color:#a61717;background-color:#e3d2d2&#34;&gt;Δ&lt;/span&gt;j;
+
+draw(screen, rectaddpt(screen-&amp;gt;r, bp), ball, nil, ZP);&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Now add an event loop that will either move the ball if there are no mouse events, or will handle the mouse event:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;char&lt;/span&gt; *buttons[] = {&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;exit&amp;#34;&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;};
+Menu menu = { buttons };
+
+&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;for&lt;/span&gt;(;;)
+{
+  e = event(&amp;amp;ev);
+
+  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;/* If there is a mouse event, the rightmost button
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;   * pressed and the first menu option selected
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;   * then exit.. */&lt;/span&gt;
+
+ &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;if&lt;/span&gt;( (e == Emouse) &amp;amp;&amp;amp;
+    (ev.mouse.buttons &amp;amp; &lt;span style=&#34;color:#00f&#34;&gt;4&lt;/span&gt;) &amp;amp;&amp;amp; 
+    (emenuhit(&lt;span style=&#34;color:#00f&#34;&gt;3&lt;/span&gt;, &amp;amp;ev.mouse, &amp;amp;menu) == &lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;)) exits(nil);
+  &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;else&lt;/span&gt; 
+    if(e == timer)
+      moveball();
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Putting this all together gives the bouncing ball demo!&lt;/p&gt;
+
+&lt;p&gt;There are a number of ways this program can be improved:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Change the ball radius and color&lt;/li&gt;
+&lt;li&gt;Change the ball speed and accelleration&lt;/li&gt;
+&lt;li&gt;Add multiple balls to the window and implement collision detection&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Source: &lt;a href=&#34;https://github.com/nspool/hello-plan9&#34;&gt;https://github.com/nspool/hello-plan9&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

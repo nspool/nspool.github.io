@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nspool&#39;s blog</title>
+    <link>https://nspool.github.io/categories/ios/</link>
+    <description>Recent content in Ios on nspool&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
+    <lastBuildDate>Sun, 19 Mar 2017 21:24:00 +1100</lastBuildDate>
+    <atom:link href="/categories/ios/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Building a fat libSDL.a for iOS development</title>
+      <link>https://nspool.github.io/2017/03/building-fat-library/</link>
+      <pubDate>Sun, 19 Mar 2017 21:24:00 +1100</pubDate>
+      
+      <guid>https://nspool.github.io/2017/03/building-fat-library/</guid>
+      <description>
+
+&lt;p&gt;&lt;em&gt;Updated 2017-11-19: Rewrote for clarity and removed references to the 32-bit simulator which has been removed from the default install as of Xcode 9&lt;/em&gt;&lt;/p&gt;
+
+&lt;hr/&gt;
+
+&lt;p&gt;For iOS development it is handy to have a single SDL2 library that supports both the simulator and the physical device. This is how to create a libSDL2.a that can be used for both.&lt;/p&gt;
+
+&lt;h2 id=&#34;step-1-build-libsdl2-a-for-each-target&#34;&gt;Step 1: Build libSDL2.a for each target&lt;/h2&gt;
+
+&lt;p&gt;Download the SDL2 source from &lt;a href=&#34;https://libsdl.org/download-2.0.php&#34;&gt;the official SDL website&lt;/a&gt; and verify the integrity of the source package using GPG.&lt;/p&gt;
+
+&lt;p&gt;Extract the source. There will be a folder named Xcode-iOS that is used to build the iOS version of the library.&lt;/p&gt;
+
+&lt;p&gt;Now build the project twice, once against the simulator and then against an actual device. This will build a version of the library for each architecture.&lt;/p&gt;
+
+&lt;p&gt;In the project navigator right-click the Product folder. There will be two output libraries named &lt;code&gt;libSDL2.a&lt;/code&gt;.  Select one of them and choose &lt;code&gt;Show in Finder&lt;/code&gt;. Go up a directory and there should be two folders: &lt;code&gt;Debug-iphoneos&lt;/code&gt; and &lt;code&gt;Debug-iphonesimulator&lt;/code&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;step-2-combine-into-a-single-library&#34;&gt;Step 2: Combine into a single library&lt;/h2&gt;
+
+&lt;p&gt;Use the macOS &lt;code&gt;lipo&lt;/code&gt; command command to combine the two output libraries into a single library.&lt;/p&gt;
+
+&lt;p&gt;Open Terminal and cd to the Build/Projects directory containing the two folders listed above.&lt;/p&gt;
+
+&lt;p&gt;The following &lt;code&gt;lipo&lt;/code&gt; command can be used to combine them and but the resulting library in the home directory:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;lipo -create Debug-iphoneos/libSDL2.a Debug-iphonesimulator/libSDL2.a -output ~/libSDL2.a
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Linking against this libSDL2.a will allow the project to run in either the simulator or the physical device.&lt;/p&gt;
+
+&lt;p&gt;For App Store submission you may wish to replace this with the SDL2 framework without debugging symbols so that the binary size is smaller.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

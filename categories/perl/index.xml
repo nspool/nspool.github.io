@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nspool&#39;s blog</title>
+    <link>https://nspool.github.io/categories/perl/</link>
+    <description>Recent content in Perl on nspool&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
+    <lastBuildDate>Tue, 13 Jan 2015 21:16:11 +0000</lastBuildDate>
+    <atom:link href="/categories/perl/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Bruteforcing XOR encrypted PHP cookies</title>
+      <link>https://nspool.github.io/2015/01/cracking-a-xor/</link>
+      <pubDate>Tue, 13 Jan 2015 21:16:11 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2015/01/cracking-a-xor/</guid>
+      <description>&lt;p&gt;In days part there were sites known to store login status in a client-side cookie obscured by a XOR cyper. When first visting the site some code like this would run:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-perl&#34; data-lang=&#34;perl&#34;&gt;$cookie = xor_crypt($json_encode(array(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;login&amp;#34;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;false&amp;#34;&lt;/span&gt;)));&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Then &lt;code&gt;$cookie&lt;/code&gt; would be set on the client side, something like &lt;code&gt;data=GkAPXlVaD0BZE1RSDREGE08=&lt;/code&gt;. A successful login would containg a similar:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-perl&#34; data-lang=&#34;perl&#34;&gt;$cookie = xor_crypt($json_encode(array(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;login&amp;#34;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;true&amp;#34;&lt;/span&gt;)));&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;That would result in the cookie &lt;code&gt;data=GkAPXlVaD0BZE0ZBFAdBTA==&lt;/code&gt;. Looking at there two values it is plain that they are very similar. That only a few positions have changed indicate a basic &lt;a href=&#34;http://en.wikipedia.org/wiki/Symmetric-key_algorithm&#34;&gt;symmetric cypher&lt;/a&gt;, in this case just a simple XOR of the JSON value against a fixed key.&lt;/p&gt;
+
+&lt;p&gt;While it is trivial to brute-force the key, it is more fun to guess. A website setting a single long key might indicate a serialized array and logging in and out gives some indicate to what is being set. Then we can determine the key:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-perl&#34; data-lang=&#34;perl&#34;&gt;$ct = base64_decode(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;GkAPXlVaD0BZE1RSDREGE08=&amp;#34;&lt;/span&gt;);
+$pt = json_encode(array(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;login&amp;#34;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;false&amp;#34;&lt;/span&gt;));
+$key = &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;;
+
+&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;for&lt;/span&gt;($i=&lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;;$i&amp;lt;strlen($ct);$i++) {
+  $key .= $ct[$i] ^ $pt[$i % strlen($pt)];
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;This gives &lt;code&gt;abc123abc123abc123abc1 ..&lt;/code&gt; which is both human readable and contains repetitive.&lt;/p&gt;
+
+&lt;p&gt;Now it is just a matter of determining the value of &lt;code&gt;login&lt;/code&gt; that we desire and re-encoding the cookie.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

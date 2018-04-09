@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nspool&#39;s blog</title>
+    <link>https://nspool.github.io/categories/live555/</link>
+    <description>Recent content in Live555 on nspool&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
+    <lastBuildDate>Mon, 01 Feb 2016 20:10:00 +0000</lastBuildDate>
+    <atom:link href="/categories/live555/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Building Live555 RTSP library in Visual Studio 2015</title>
+      <link>https://nspool.github.io/2016/02/building-live555/</link>
+      <pubDate>Mon, 01 Feb 2016 20:10:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2016/02/building-live555/</guid>
+      <description>
+
+&lt;h3 id=&#34;update-2017-08-23&#34;&gt;Update 2017-08-23&lt;/h3&gt;
+
+&lt;p&gt;Thanks to &lt;a href=&#34;https://github.com/kwikwag&#34;&gt;@kwikwag&lt;/a&gt; for making a Windows batch file to simplify all this! Find it &lt;a href=&#34;https://gist.github.com/kwikwag/c8b715a056b69b5fc07efe05e42187b1&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;p&gt;Live555 is an excellent RTSP library for Windows, but can be a bit tricky to build. These are the instructions that I follow to build it in Visual Studio 2015 in Windows 10 Professional.&lt;/p&gt;
+
+&lt;h2 id=&#34;1-extract-the-live555-latest-tar-gz-into-your-source-directory&#34;&gt;1) Extract the &lt;code&gt;live555-latest.tar.gz&lt;/code&gt; into your source directory.&lt;/h2&gt;
+
+&lt;h2 id=&#34;2-make-the-following-changes-to-the-win32config-file&#34;&gt;2) Make the following changes to the win32config file:&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Change &lt;code&gt;msvcirt.lib&lt;/code&gt; to &lt;code&gt;msvcrt.lib&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;Comment out the &lt;code&gt;ntwin32.mak&lt;/code&gt; include. ie:&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;code&gt;#!include &amp;lt;ntwin32.mak&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;If you&amp;rsquo;ve installed Visual Studio in the default location then change TOOLS32 to:
+&lt;code&gt;TOOLS32 = C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;3-run-vsvars32-bat-and-build-the-make-files&#34;&gt;3) Run &lt;code&gt;vsvars32.bat&lt;/code&gt; and build the make files&lt;/h2&gt;
+
+&lt;p&gt;Open an MSBuild for Visual Studio 2015 command prompt. Set the environment variables by running this batch file:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;quot;\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\vsvars32.bat&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Build the make files run running:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;genWindowsMakefiles
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;4-build-the-project&#34;&gt;4) Build the project!&lt;/h2&gt;
+
+&lt;p&gt;Now you’re ready to build! Build each of the components of the project in this order:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cd liveMedia
+nmake /B -f liveMedia.mak
+cd ..\groupsock
+nmake /B -f groupsock.mak
+cd ..\UsageEnvironment
+nmake /B -f UsageEnvironment.mak
+cd ..\BasicUsageEnvironment
+nmake /B -f BasicUsageEnvironment.mak
+cd ..\testProgs
+nmake /B -f testProgs.mak
+cd ..\mediaServer
+nmake /B -f mediaServer.mak
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you encounter a linker errors when compiling any of the executable projects (like the Live555MediaServer) then build that project manually by entering the command displayed by nmake, but without the &lt;code&gt;out:&lt;/code&gt; parameter and including the ws2_32 library, for example:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;cl ws2_32.lib msvcrt.lib live555MediaServer.obj DynamicRTSPServer.obj ../liveMedia/libliveMedia.lib ../groupsock/libgroupsock.lib  ../BasicUsageEnvironment/libBasicUsageEnvironment.lib ../UsageEnvironment/libUsageEnvironment.lib
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This should give a valid &lt;code&gt;Live555MediaServer.exe&lt;/code&gt; that is ready to run!&lt;/p&gt;
+
+&lt;hr&gt;
+
+&lt;h1 id=&#34;extending-live555mediaserver-to-cope-with-large-frames&#34;&gt;Extending Live555MediaServer to cope with large frames&lt;/h1&gt;
+
+&lt;p&gt;Live555MediaServer sometimes cannot handle large 1080p frames and will throw this error:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;MultiFramedRTPSink::afterGettingFrame1(): The input frame data was too large for
+our buffer size (100452).  3712 bytes of trailing data was dropped!  Correct th
+is by increasing &#34;OutPacketBuffer::maxSize&#34; to at least 103712, *before* creatin
+g this &#39;RTPSink&#39;.  (Current value is 100000.)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Edit the file &lt;code&gt;DynamicRTSPServer.cpp&lt;/code&gt; and any time this appears:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;  OutPacketBuffer::maxSize = &lt;span style=&#34;color:#00f&#34;&gt;100000&lt;/span&gt;;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;change it to:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;  OutPacketBuffer::maxSize = &lt;span style=&#34;color:#00f&#34;&gt;200000&lt;/span&gt;;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Then rebuild the Live555MediaServer with these commands:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;del *.obj
+del Live555MediaServer.exe
+cl ws2_32.lib msvcrt.lib live555MediaServer.obj DynamicRTSPServer.obj ../liveMedia/libliveMedia.lib ../groupsock/libgroupsock.lib  ../BasicUsageEnvironment/libBasicUsageEnvironment.lib ../UsageEnvironment/libUsageEnvironment.lib
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nspool&#39;s blog</title>
+    <link>https://nspool.github.io/categories/swift/</link>
+    <description>Recent content in Swift on nspool&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
+    <lastBuildDate>Wed, 16 Sep 2015 20:30:00 +0000</lastBuildDate>
+    <atom:link href="/categories/swift/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Handling an NSFileHandle SIGPIPE in Swift</title>
+      <link>https://nspool.github.io/2015/09/nsfilehandle/</link>
+      <pubDate>Wed, 16 Sep 2015 20:30:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2015/09/nsfilehandle/</guid>
+      <description>&lt;p&gt;If you are working with an NSFileHandle that encapsulated a pipe, it was possible to use a &lt;code&gt;@try-@catch&lt;/code&gt; block to handle a failed write.&lt;/p&gt;
+
+&lt;p&gt;In this example, fileHandle could represent an open socket, with the &lt;em&gt;SIGPIP&lt;/em&gt; thrown if the client disconnects unexpectedly and the pipe is closed:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-objective-c&#34; data-lang=&#34;objective-c&#34;&gt;@try
+{
+  [fileHandle writeData:fileData];
+}
+@catch (NSException *exception)
+{
+  // Ignore the SIGPIP
+}
+@finally
+{
+  CFRelease(fileData);
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Unfortunately in Swift 2.0 this isn&amp;rsquo;t possible; the analogous &lt;code&gt;try-catch&lt;/code&gt; doesn&amp;rsquo;t capture signals.&lt;/p&gt;
+
+&lt;p&gt;How can we can handle this in Swift?&lt;/p&gt;
+
+&lt;p&gt;My solution has been to fall back to the native BSD APIs. When creating the socket with &lt;code&gt;CFSocketCreate&lt;/code&gt; prevent &lt;em&gt;SIGPIP&lt;/em&gt; from being thrown by setting the option:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;var&lt;/span&gt; no_sig_pipe: Int32 = &lt;span style=&#34;color:#00f&#34;&gt;1&lt;/span&gt;
+setsockopt(CFSocketGetNative(socket),
+SOL_SOCKET,
+SO_NOSIGPIPE,
+&amp;amp;no_sig_pipe,
+socklen_t(sizeof(Int32)))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Then assuming the write is performed in a separate method, we can use a guard to perform a dummy write before the socket is used:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;guard&lt;/span&gt; (write(fileHandle.fileDescriptor, &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;nil&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;) == &lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;) &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;else&lt;/span&gt; {
+  CFRelease(fileData)
+    &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;false&lt;/span&gt;
+  }
+fileHandle.writeData(fileData)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;If the socket is closed then the guard will cleanup and return.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

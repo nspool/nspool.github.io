@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nspool&#39;s blog</title>
+    <link>https://nspool.github.io/categories/ssl/</link>
+    <description>Recent content in Ssl on nspool&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
+    <lastBuildDate>Mon, 20 Jul 2015 09:00:00 +0000</lastBuildDate>
+    <atom:link href="/categories/ssl/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Creating a Certificate Chain for AWS</title>
+      <link>https://nspool.github.io/2015/07/moving/</link>
+      <pubDate>Mon, 20 Jul 2015 09:00:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2015/07/moving/</guid>
+      <description>&lt;p&gt;GitHub Pages doesn&amp;rsquo;t (yet) allow an SSL certificate for a custom domain, so I&amp;rsquo;ve moved this blog to S3.&lt;/p&gt;
+
+&lt;p&gt;Uploading the certificate to AWS requires the CA certificate chain. This isn&amp;rsquo;t always always provided by the CA, but can be generated from the command line. For example, Comodo provides the certificates in the chain, so all that&amp;rsquo;s necessary to create the file is to concatenate the certs in PEM format into one file:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;(openssl x509 -inform PEM -in COMODORSADomainValidationSecureServerCA.crt; 
+openssl x509 -inform PEM -in COMODORSAAddTrustCA.crt; 
+openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) &amp;gt; ca_chain.pem&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;This will provide a file that is suitable for the &lt;code&gt;--certificate-chain&lt;/code&gt; parameter of &lt;code&gt;aws iam upload-server-certificate&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;aws iam upload-server-certificate &lt;span style=&#34;color:#00f&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --server-certificate-name mycert &lt;span style=&#34;color:#00f&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --certificate-body file://mycert.crt &lt;span style=&#34;color:#00f&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --private-key file://mycert.key &lt;span style=&#34;color:#00f&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --certificate-chain file://ca_chain.pem &lt;span style=&#34;color:#00f&#34;&gt;\
+&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --path /cloudfront/&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

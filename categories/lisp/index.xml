@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>nspool&#39;s blog</title>
+    <link>https://nspool.github.io/categories/lisp/</link>
+    <description>Recent content in Lisp on nspool&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
+    <lastBuildDate>Wed, 04 Feb 2015 22:00:00 +0000</lastBuildDate>
+    <atom:link href="/categories/lisp/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Write a Lisp web app over SSH with Emacs</title>
+      <link>https://nspool.github.io/2015/02/remoting-to-a-lisp/</link>
+      <pubDate>Wed, 04 Feb 2015 22:00:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2015/02/remoting-to-a-lisp/</guid>
+      <description>&lt;p&gt;After reading about &lt;a href=&#34;http://www.flownet.com/gat/jpl-lisp.html&#34;&gt;the rise and fall of Lisp at the Jet Propulsion Lab JPL&lt;/a&gt; I refresh my Lisp experience. Now I can hack on a Lisp web service hosted on a remote server from within Emacs from my laptop.&lt;/p&gt;
+
+&lt;p&gt;Setting up a Lisp dev environment is easy: the instructions at &lt;a href=&#34;http://www.cliki.net/Getting%20Started&#34;&gt;Common Lisp Wiki&lt;/a&gt; will give you a GNU/Emacs with &lt;a href=&#34;http://common-lisp.net/project/slime/&#34;&gt;SLIME mode&lt;/a&gt; package installed. For a remote development setup, both the remote server and local dev machine should have &lt;a href=&#34;http://www.sbcl.org/&#34;&gt;Steel Bank Common Lisp&lt;/a&gt; along with the &lt;a href=&#34;http://www.quicklisp.org/&#34;&gt;QuickLisp&lt;/a&gt; package manager installed.&lt;/p&gt;
+
+&lt;p&gt;The &lt;em&gt;SLIME&lt;/em&gt; package provides an Emacs major-mode for Common Lisp development. Similar to the &lt;a href=&#34;http://en.wikipedia.org/wiki/Sam_(text_editor)&#34;&gt;Sam text editor&lt;/a&gt;, the SLIME uses a seperate backend server that it communicates with over a network port. It is that server, named &lt;em&gt;Swank&lt;/em&gt;, that is loaded into the Lisp interpreter. This means that on the target box we can just install the &lt;em&gt;Swank&lt;/em&gt; backend and then communicate with it over SSH.&lt;/p&gt;
+
+&lt;p&gt;Add the following to the &lt;code&gt;.sbclrc&lt;/code&gt; on the remote box to load &lt;em&gt;Swank&lt;/em&gt; when SBCL is started:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-lisp&#34; data-lang=&#34;lisp&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;; Setup Swank&lt;/span&gt;
+(ql:quickload &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;swank&amp;#34;&lt;/span&gt;)
+(require &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;asdf&lt;/span&gt;)
+(asdf:oos &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;asdf:load-op&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;swank&lt;/span&gt;)
+(setf swank:*communication-style* &lt;span style=&#34;color:#00f&#34;&gt;:fd-handler&lt;/span&gt;)
+(swank:create-server &lt;span style=&#34;color:#00f&#34;&gt;:dont-close&lt;/span&gt; t)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Now in a seperate terminal window start a new instance of SSH to the remote machine, and forward the local port &lt;code&gt;4007&lt;/code&gt; to the remote port &lt;code&gt;4005&lt;/code&gt; which is used by &lt;em&gt;Swank&lt;/em&gt;:
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ssh -C -L4007:127.0.0.1:4005 $USER@$REMOTEIP&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;&lt;/p&gt;
+
+&lt;p&gt;Now tell &lt;em&gt;SLIME&lt;/em&gt; to connect to the remote machine. In Emacs type &lt;code&gt;M-x slime-connect&lt;/code&gt; and choose &lt;code&gt;127.0.0.1&lt;/code&gt; and port &lt;code&gt;4007&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;And that&amp;rsquo;s it! You will now be interacting with the REPL of the remote machine. For bonus points we can start a simple web server on the remote box just to prove we&amp;rsquo;ve done it. If you type this into the REPL it will load the &lt;a href=&#34;http://clacklisp.org/tutorial/02-getting-clack.html&#34;&gt;Clack web framwork&lt;/a&gt; and serve up a simple Hello, World on port 5000:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-lisp&#34; data-lang=&#34;lisp&#34;&gt;(ql:quickload &lt;span style=&#34;color:#00f&#34;&gt;:clack&lt;/span&gt;)
+(clack:clackup
+  (lambda (env)
+    (declare (ignore env))
+    &amp;#39;(&lt;span style=&#34;color:#00f&#34;&gt;200&lt;/span&gt; (&lt;span style=&#34;color:#00f&#34;&gt;:content-type&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;text/plain&amp;#34;&lt;/span&gt;)(break) (&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;Hello, Clack!&amp;#34;&lt;/span&gt;))))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Use Curl on the development machine and you should see:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;curl http://$REMOTEIP:5000
+Hello, Clack!&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;To change the server text to &lt;code&gt;Hello, World!&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-lisp&#34; data-lang=&#34;lisp&#34;&gt;(clack:stop *)
+(clack:clackup
+  (lambda (env)
+  (declare (ignore env))
+  &amp;#39;(&lt;span style=&#34;color:#00f&#34;&gt;200&lt;/span&gt; (&lt;span style=&#34;color:#00f&#34;&gt;:content-type&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;text/plain&amp;#34;&lt;/span&gt;)(break) (&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;Hello, World!&amp;#34;&lt;/span&gt;))))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Enjoy!&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
