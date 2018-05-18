@@ -106,7 +106,6 @@ li {
 }
 
 .navbar-fixed-bottom, .navbar-fixed-top {
-    position: fixed;
     right: 0;
     left: 0;
     z-index: 1030
@@ -140,7 +139,7 @@ li {
 }
 
 .navbar-default {
-    background-color: #fff;
+    background-color: #eee;
 }
 
 .navbar-default .navbar-brand {
@@ -244,7 +243,6 @@ html, body {
   min-height: 100%;
   /* should be equal to footer height */
 	margin-bottom: -122px; 
-        padding-top: 75px;
 }
 .page-wrap:after {
   content: "";

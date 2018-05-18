@@ -41,18 +41,16 @@
 
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">(openssl x509 -inform PEM -in COMODORSADomainValidationSecureServerCA.crt; 
 openssl x509 -inform PEM -in COMODORSAAddTrustCA.crt; 
-openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) &gt; ca_chain.pem</code></pre>
-</div>
+openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) &gt; ca_chain.pem</code></pre></div>
 
 <p>This will provide a file that is suitable for the <code>--certificate-chain</code> parameter of <code>aws iam upload-server-certificate</code>:</p>
 
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">aws iam upload-server-certificate <span style="color:#00f">\
-</span><span style="color:#00f"></span>  --server-certificate-name mycert <span style="color:#00f">\
-</span><span style="color:#00f"></span>  --certificate-body file://mycert.crt <span style="color:#00f">\
-</span><span style="color:#00f"></span>  --private-key file://mycert.key <span style="color:#00f">\
-</span><span style="color:#00f"></span>  --certificate-chain file://ca_chain.pem <span style="color:#00f">\
-</span><span style="color:#00f"></span>  --path /cloudfront/</code></pre>
-</div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">aws iam upload-server-certificate <span style="color:#00f">\</span>
+  --server-certificate-name mycert <span style="color:#00f">\</span>
+  --certificate-body file://mycert.crt <span style="color:#00f">\</span>
+  --private-key file://mycert.key <span style="color:#00f">\</span>
+  --certificate-chain file://ca_chain.pem <span style="color:#00f">\</span>
+  --path /cloudfront/</code></pre></div>
 
         
       </div>

@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>nspool&#39;s blog</title>
+    <title>Math on nspool&#39;s blog</title>
     <link>https://nspool.github.io/categories/math/</link>
     <description>Recent content in Math on nspool&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
     <lastBuildDate>Wed, 28 Jan 2015 22:18:56 +0000</lastBuildDate>
-    <atom:link href="/categories/math/" rel="self" type="application/rss+xml" />
+    
+	<atom:link href="https://nspool.github.io/categories/math/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Counting Happy Numbers in Mathematica</title>
@@ -16,12 +18,8 @@
       <pubDate>Wed, 28 Jan 2015 22:18:56 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/01/happy-numbers/</guid>
-      <description>&lt;p&gt;Here is a Mathematica snippit to count the number of &lt;a href=&#34;http://oeis.org/A007770&#34;&gt;Happy Numbers&lt;/a&gt; up to 1000:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-mathematica&#34; data-lang=&#34;mathematica&#34;&gt;Length[Select[Range[&lt;span style=&#34;color:#00f&#34;&gt;1000&lt;/span&gt;],&lt;span style=&#34;color:#bbb&#34;&gt; 
-&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;FixedPoint[Total[IntegerDigits[#]^&lt;span style=&#34;color:#00f&#34;&gt;2&lt;/span&gt;]&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&amp;amp;,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;#,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;10&lt;/span&gt;]&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;==&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&amp;amp;]]&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-</description>
+      <description>Here is a Mathematica snippit to count the number of Happy Numbers up to 1000:
+Length[Select[Range[1000],FixedPoint[Total[IntegerDigits[#]^2]&amp;amp;,#,10]==1&amp;amp;]] </description>
     </item>
     
     <item>
@@ -30,42 +28,8 @@
       <pubDate>Fri, 01 Aug 2014 09:00:00 +0000</pubDate>
       
       <guid>https://nspool.github.io/2014/08/notes-from-a-combinatorial-problem/</guid>
-      <description>
-
-&lt;p&gt;We have a program that performs a comparison of every pair of elements in a database, and then compares the result with the median value of all values. It was suggested that the program should instead make pairwise comparisons within every possible combination of subsets. How many comparisons would we end up making?&lt;/p&gt;
-
-&lt;p&gt;For this example, each element in our database will be represented by an integer. We call these elements &lt;img src=&#34;https://nspool.github.io/P_in_Z.svg&#34; alt=&#34;$P \in \mathbb{Z}$&#34; /&gt; the &lt;em&gt;population&lt;/em&gt; which is then partitioned into all possible distinct pairwise disjoint subsets &lt;img src=&#34;https://nspool.github.io/P_set.svg&#34; alt=&#34;$\{P_1, P_2, .. , P_k\}$&#34; /&gt;. Each &lt;img src=&#34;https://nspool.github.io/P_i.svg&#34; alt=&#34;$P_i$&#34; /&gt; is called a &lt;em&gt;block&lt;/em&gt; of  &lt;img src=&#34;https://nspool.github.io/P.svg&#34; alt=&#34;\emph{P}&#34; /&gt; and is distinct; the program should not enumerate the same block multiple times. As an extra complication, each pairwise comparison will need to be also made against the block median. So for each block &lt;img src=&#34;https://nspool.github.io/P_i.svg&#34; alt=&#34;$P_i$&#34; /&gt; there are two operations performed:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Take the median value of each &lt;img src=&#34;https://nspool.github.io/P_i.svg&#34; alt=&#34;$P_i$&#34; /&gt;&lt;/li&gt;
-&lt;li&gt;Take the euclidean distance between the median and every element &lt;img src=&#34;https://nspool.github.io/e_in_P_i.svg&#34; alt=&#34;$e \in P_i$&#34; /&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;The first operation need only be performed once per block and the second will need to be performed exactly &lt;img src=&#34;https://nspool.github.io/abs_P_i.svg&#34; alt=&#34;$\|P_i\|$&#34; /&gt; times, as each block is also a subset and cannot contain duplicates.&lt;/p&gt;
-
-&lt;p&gt;The number of ways can the population &lt;img src=&#34;https://nspool.github.io/P.svg&#34; alt=&#34;\emph{P}&#34; /&gt; be divided into &lt;img src=&#34;https://nspool.github.io/n.svg&#34; alt=&#34;$n$&#34; /&gt; disjoint non-empty subsets is known as a Stirling number of the second kind, or simply a Stirling partition number.  (see [1]) This is defined as:&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://nspool.github.io/def_sterling.svg&#34; alt=&#34;$\stirling{n}{k} =\frac{1}{k!}\sum\limits_{j=0}{k}(-1)^{k-j}\binom{k}{j}j^n$&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;So when &lt;img src=&#34;https://nspool.github.io/P.svg&#34; alt=&#34;\emph{P}&#34; /&gt; is divided with &lt;img src=&#34;https://nspool.github.io/k.svg&#34; alt=&#34;$k$&#34; /&gt; partitions where &lt;img src=&#34;https://nspool.github.io/n.svg&#34; alt=&#34;$n$&#34; /&gt; is the cardinality of the block it follows that the program will need to obtain &lt;img src=&#34;https://nspool.github.io/k.svg&#34; alt=&#34;$k$&#34; /&gt; median values and then perform &lt;img src=&#34;https://nspool.github.io/n.svg&#34; alt=&#34;$n$&#34; /&gt; pairwise comparisons:[sterling]&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;https://nspool.github.io/n_sterling_k.svg&#34; alt=&#34;$C^k_{total} = n\stirling{n}{k} + k$&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;which is the number of ways a set with n elements can be partitioned into disjoint, non-empty subsets. &lt;img src=&#34;https://nspool.github.io/S.svg&#34; alt=&#34;$S$&#34; /&gt; the number of ways a set with &lt;img src=&#34;https://nspool.github.io/n.svg&#34; alt=&#34;$n$&#34; /&gt; elements can be partitioned into &lt;img src=&#34;https://nspool.github.io/k.svg&#34; alt=&#34;$k$&#34; /&gt; disjoint, non-empty subsets. As the partition changes, all of &lt;img src=&#34;https://nspool.github.io/n.svg&#34; alt=&#34;$n$&#34; /&gt; needs to be recalculated as does the score of the partition &lt;img src=&#34;https://nspool.github.io/k.svg&#34; alt=&#34;$k$&#34; /&gt;. For every different set of partitions we perform &lt;img src=&#34;https://nspool.github.io/n.svg&#34; alt=&#34;$n$&#34; /&gt; operations plus &lt;img src=&#34;https://nspool.github.io/k.svg&#34; alt=&#34;$k$&#34; /&gt; operations as it is possible to have anywhere from 0 to &lt;img src=&#34;https://nspool.github.io/n.svg&#34; alt=&#34;&amp;quot;$n$&amp;quot;&#34; /&gt; partitions in the set.&lt;/p&gt;
-
-&lt;p&gt;Then the total number of operations over all possible partitions is:
-        &lt;img src=&#34;https://nspool.github.io/C_total_1.svg&#34; alt=&#34;C_{total} = \sum_{k=0}^{|P|}{( n\stirling{n}{k} + k)}&#34; /&gt;
-        &lt;img src=&#34;https://nspool.github.io/C_total_1.svg&#34; alt=&#34;C_{total} = n\sum_{k=0}^{n}{\stirling{n}{k}} + \frac{n(n+1)}{2}&amp;quot;&#34; /&gt;
-        &lt;img src=&#34;https://nspool.github.io/C_total_final.svg&#34; alt=&#34;C_{total} = nB_n + \frac{n(n+1)}{2}&#34; /&gt;
-        Where &lt;img src=&#34;https://nspool.github.io/B_n.svg&#34; alt=&#34;B_n&#34; /&gt; is the nth &lt;em&gt;Bell number&lt;/em&gt;. We can now use this formula to calculate the exact number of comparisons made during the execution of the program&lt;/p&gt;
-
-&lt;h3 id=&#34;further-reading&#34;&gt;Further Reading&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Stirling numbers &lt;a href=&#34;https://oeis.org/A008277&#34;&gt;https://oeis.org/A008277&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Bell numbers &lt;a href=&#34;https://oeis.org/A008277&#34;&gt;https://oeis.org/A008277&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</description>
+      <description>We have a program that performs a comparison of every pair of elements in a database, and then compares the result with the median value of all values. It was suggested that the program should instead make pairwise comparisons within every possible combination of subsets. How many comparisons would we end up making?
+For this example, each element in our database will be represented by an integer. We call these elements the population which is then partitioned into all possible distinct pairwise disjoint subsets .</description>
     </item>
     
   </channel>

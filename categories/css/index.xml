@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>nspool&#39;s blog</title>
+    <title>Css on nspool&#39;s blog</title>
     <link>https://nspool.github.io/categories/css/</link>
     <description>Recent content in Css on nspool&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
     <lastBuildDate>Sat, 23 Nov 2013 09:00:00 +0000</lastBuildDate>
-    <atom:link href="/categories/css/" rel="self" type="application/rss+xml" />
+    
+	<atom:link href="https://nspool.github.io/categories/css/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>WebKit Keyframe Animations</title>
@@ -16,19 +18,10 @@
       <pubDate>Sat, 23 Nov 2013 09:00:00 +0000</pubDate>
       
       <guid>https://nspool.github.io/2013/11/odradek/</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/The_Cares_of_a_Family_Man&#34;&gt;Odradek&lt;/a&gt; doesn&amp;rsquo;t need Javascript to move around thanks to CSS3 and WebKit keyframe animations.&lt;/p&gt;
-A simple transition &lt;code&gt;move-odradek&lt;/code&gt; can be defined in pure CSS as:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-css&#34; data-lang=&#34;css&#34;&gt;@&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;-webkit-keyframes&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;move-odradek&lt;/span&gt; {
-  &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;from&lt;/span&gt; { &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;margin-left&lt;/span&gt;:&lt;span style=&#34;color:#00f&#34;&gt;100&lt;/span&gt;&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;%&lt;/span&gt;;} &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;to&lt;/span&gt; {&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;margin-left&lt;/span&gt;:&lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;%&lt;/span&gt;;}
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Assign the animation to the element:&lt;/p&gt;
-
-&lt;p&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-css&#34; data-lang=&#34;css&#34;&gt;&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;-webkit-animation&lt;/span&gt;: &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;move-odradek&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;30s&lt;/span&gt;;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;&lt;/p&gt;
-</description>
+      <description>Odradek doesn&amp;rsquo;t need Javascript to move around thanks to CSS3 and WebKit keyframe animations.
+A simple transition move-odradek can be defined in pure CSS as:
+@-webkit-keyframes move-odradek {from { margin-left:100%;} to {margin-left:0%;}} Assign the animation to the element:
+-webkit-animation: move-odradek 30s;</description>
     </item>
     
   </channel>

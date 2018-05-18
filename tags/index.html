@@ -1,23 +1,23 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <meta name="Description" content="Setting headers when using netcat">
+    <meta name="Description" content="">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
     
-    <title> Using netcat with authenticated sessions </title>
+    <title> Tags </title>
     
     <link rel="stylesheet" href="/css/theme.css" />
     
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
     <link rel="shortcut icon" href="/favicon.ico">
     
-    <link href="" rel="alternate" type="application/rss+xml" title="nspool&#39;s blog" />
+    <link href="https://nspool.github.io/tags/index.xml" rel="alternate" type="application/rss+xml" title="nspool&#39;s blog" />
 </head>
 
-  <body>
-    <nav class="navbar navbar-default navbar-fixed-top">
+<body>
+	<nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <a class="navbar-brand" href="https://nspool.github.io">nspool&#39;s blog</a>
         <div class="collapse navbar-collapse" id="navbar-right">
@@ -31,25 +31,12 @@
     </div>
 </nav>
 
-    <div class="container page-wrap">
-      <h1>Using netcat with authenticated sessions</h1>
-      <small class="post-meta">Jan 12, 2015</small>
-      <div class="post-content">
-        <p>I&rsquo;ve decided to move this blog to <a href="https://pages.github.com">GitHub Pages</a>. This will be the third move since this blog was started in 2007 on the <a href="http://sdf.org">Super Dimension Fortress</a> and then to some cheap wordpress shared hosting.</p>
+	<div class="container page-wrap">
+		
 
-<p>In the following couple of weeks I&rsquo;ll triage the old site and re-post anything that is still worthwhile to this blog.</p>
-
-<p>In the meantime here&rsquo;s an example of using <code>netcat</code> to do a HTTP request containing a cookie. For good measure parameter <code>-p 24</code> forces the server to reply to the client on port 42.</p>
-
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#008080">#!/bin/bash
-</span><span style="color:#008080"></span>head=<span style="color:#00f">&#34;GET http://www.example.org HTTP/1.1\r\nHost: .example.org\r\nCookie: VALUE=ABC123;\r\nAccept: */*\r\nConnection: Close\r\n\r\n&#34;</span>;
-echo -ne $head | nc -p42 www.example.org <span style="color:#00f">80</span>
-#=&gt; Using port <span style="color:#00f">42</span> <span style="color:#000080;font-weight:bold">for</span> the reply.</code></pre></div>
-
-        
-      </div>
-    </div>
-    <footer class="site-footer">
+	</div>
+	<ul id="tags-single">
+	<footer class="site-footer">
 	<div class="container">
 		<div class="row">
 		
@@ -123,7 +110,6 @@ echo -ne $head | nc -p42 www.example.org <span style="color:#00f">80</span>
 	</div>
 </footer>
 
-    
+	
 
-  </body>
-</html>
+</body>

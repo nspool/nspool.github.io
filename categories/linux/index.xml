@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>nspool&#39;s blog</title>
+    <title>Linux on nspool&#39;s blog</title>
     <link>https://nspool.github.io/categories/linux/</link>
     <description>Recent content in Linux on nspool&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
     <lastBuildDate>Sat, 26 Dec 2015 10:00:00 +0000</lastBuildDate>
-    <atom:link href="/categories/linux/" rel="self" type="application/rss+xml" />
+    
+	<atom:link href="https://nspool.github.io/categories/linux/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>ZeroMQ &#43; Vagrant for Fun and Profit</title>
@@ -16,188 +18,9 @@
       <pubDate>Sat, 26 Dec 2015 10:00:00 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/12/zeromq-virtualbox/</guid>
-      <description>
-
-&lt;hr&gt;
-
-&lt;p&gt;ZeroMQ is a powerful library for network programming.&lt;/p&gt;
-
-&lt;p&gt;But &lt;strong&gt;it&amp;rsquo;s no fun to just connecting to localhost!&lt;/strong&gt; By building a single Ubuntu VM and saving it as a Vagrant box, we can spin up as many clients as the machine can handle!&lt;/p&gt;
-
-&lt;h3 id=&#34;install-ubuntu-14-04-into-a-virtualbox-vm&#34;&gt;Install Ubuntu 14.04 into a VirtualBox VM&lt;/h3&gt;
-
-&lt;p&gt;Remeber to Install Ubuntu with user &amp;lsquo;Vagrant&amp;rsquo; and forward port 22 to work from the host.
-Tested with ubuntu-14.04.3-server-amd64.iso&lt;/p&gt;
-
-&lt;h3 id=&#34;setting-up-vagrant&#34;&gt;Setting up Vagrant&lt;/h3&gt;
-
-&lt;p&gt;It is best just to follow &lt;a href=&#34;https://docs.vagrantup.com/v2/boxes/base.html&#34;&gt;https://docs.vagrantup.com/v2/boxes/base.html&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;This is the default Vagrant public key. Add it to .ssh/authorized_keys by default. Vagrant will change it later:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eWW6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXPITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pzC6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZEnDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXzcWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ== vagrant insecure public key
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Also enable passwordless sudo for the vagrant user to the end of the sudoers file:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;vagrant ALL=(ALL) NOPASSWD: ALL
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;install-virtualbox-additions&#34;&gt;Install VirtualBox Additions&lt;/h3&gt;
-
-&lt;p&gt;sudo apt-get -y install libtool pkg-config linux-headers-generic build-essential dkms autoconf automake git
-Install the VirtualBox guest additions.
-Devices -&amp;gt; Insert Guest Additions CD Image
-sudo mount /dev/cdrom /media/cdrom
-sudo sh /media/cdrom/VBoxLinuxAdditions.run&lt;/p&gt;
-
-&lt;h3 id=&#34;install-dependencies&#34;&gt;Install Dependencies&lt;/h3&gt;
-
-&lt;p&gt;ZeroMQ uses Libsodium for encryption, but this is not available in the 14.04 LTS repos.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;wget -c https://download.libsodium.org/libsodium/releases/libsodium-1.0.8.tar.gz  http://download.zeromq.org/zeromq-4.1.4.tar.gz  
-tar -xf libsodium-1.0.8.tar.gz
-./configure --prefix=/usr &amp;amp;&amp;amp; make
-sudo make install
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;install-zeromq&#34;&gt;Install ZeroMQ&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;cd ~
-tar -xzf zeromq-4.1.4.tar.gz &amp;amp;&amp;amp; cd zeromq-4.1.4
-./configure --prefix=/usr &amp;amp;&amp;amp; make
-sudo make install
-cd ~
-git clone https://github.com/zeromq/cppzmq
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;install-rmate-optional&#34;&gt;Install rmate (Optional)&lt;/h3&gt;
-
-&lt;p&gt;For any TextMate users that prefer to use their host machine for editing:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo apt-get -y install ruby &amp;amp;&amp;amp; sudo gem install rmate
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Textmate remote:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ssh -p8022 -R 52698:localhost:52698 127.0.0.1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;So now a command in the VM such as:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;rmate test.cc
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Will open textmate locally if rmate is enabled under TextMate preferences.&lt;/p&gt;
-
-&lt;h3 id=&#34;testing-that-it-works&#34;&gt;Testing that it works&lt;/h3&gt;
-
-&lt;p&gt;Download the &lt;code&gt;hwserver&lt;/code&gt; example from the ZeroMQ documentation and compile it:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;gcc hwserver.c -o hwserver -lzmq
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;With the C++ bindings come in the box we should also be able to compile the hwserver C++ example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;g++ hwserver.cpp -o hwserver -lzmq
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Remember to include the &lt;code&gt;zmq.hpp&lt;/code&gt; cloned previously.&lt;/p&gt;
-
-&lt;h3 id=&#34;packaging-the-vm&#34;&gt;Packaging the VM&lt;/h3&gt;
-
-&lt;p&gt;Once we have verified that the VM will build a ZeroMQ project, we can package it using Vagrant for reuse.&lt;/p&gt;
-
-&lt;p&gt;Create a box called NodeTemplate from a VM called BaseNode into the directory ~/Boxes:&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;vagrant package --base BaseNode --output ~/Boxes/NodeTemplate.box&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;Create a new directory containing a VagrantFile:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;Vagrant.configure(&amp;#34;2&amp;#34;) do |config|
-  # Number of nodes to provision
-  numNodes = 2
-  # IP Address Base for private network
-  ipAddrPrefix = &amp;#34;172.16.0.0&amp;#34;
-  # Download the initial box from this url
-  config.vm.box_url = &amp;#34;file:///Users/nspool/Boxes/NodeTemplate.box&amp;#34;
-  # Provision Config for each of the nodes
-  1.upto(numNodes) do |num|
-    nodeName = (&amp;#34;node&amp;#34; + num.to_s).to_sym
-      config.vm.define nodeName do |node|
-        node.vm.box = &amp;#34;NodeTemplate&amp;#34;
-        node.vm.network :private_network, ip: ipAddrPrefix + num.to_s
-        node.vm.provider &amp;#34;virtualbox&amp;#34; do |v|
-          v.name = &amp;#34;Cluster Node &amp;#34; + num.to_s
-        end
-      end
-    end
-  end&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;It should now be possible to SSH into each box by name, ie.
-vagrant ssh node1&lt;/p&gt;
-
-&lt;hr&gt;
-
-&lt;h1 id=&#34;alternative-approaches&#34;&gt;Alternative approaches&lt;/h1&gt;
-
-&lt;p&gt;Here are some approached that I tried, but gave up on for one or another reason.&lt;/p&gt;
-
-&lt;h3 id=&#34;alternative-1-installing-from-source&#34;&gt;Alternative 1. Installing from source&lt;/h3&gt;
-
-&lt;p&gt;Add this to /etc/apt/sources.list:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;deb http://us.archive.ubuntu.com/ubuntu vivid main universe 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then run:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo apt-get update &amp;amp;&amp;amp;
-sudo apt-get -y upgrade &amp;amp;&amp;amp;
-sudo apt-get -y install ruby libtool pkg-config build-essential autoconf automake git libsodium-dev &amp;amp;&amp;amp;
-sudo gem install rmate &amp;amp;&amp;amp;
-wget -c http://download.zeromq.org/zeromq-4.1.4.tar.gz &amp;amp;&amp;amp;
-tar -xzf zeromq-4.1.4.tar.gz &amp;amp;&amp;amp; cd zeromq-4.1.4 &amp;amp;&amp;amp;
-./configure --prefix=/usr &amp;amp;&amp;amp; make &amp;amp;&amp;amp; sudo make install &amp;amp;&amp;amp;
-cd ~ &amp;amp;&amp;amp;
-git clone https://github.com/zeromq/cppzmq
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now reboot. Connect using:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ssh -i ~/.vagrant.d/insecure_private_key -p8022 -R 52698:localhost:52698 vagrant@127.0.0.1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This should compile the example without errors:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;g++ hwserver.cpp -o hwserver -lzmq
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then run:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;./hwserver 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now shutdown and package the node.. Except that upgrading&lt;/p&gt;
-
-&lt;h3 id=&#34;alternative-2-using-ubuntu-server-15-10&#34;&gt;Alternative 2. Using Ubuntu Server 15.10&lt;/h3&gt;
-
-&lt;p&gt;Libsodium is available for in the 15.10 packages, meaning that it doesn&amp;rsquo;t need to be built.&lt;/p&gt;
-
-&lt;p&gt;Copy SSH public key into authorized_keys. Add to sources:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;deb http://httpredir.debian.org/debian/ experimental main contrib non-free
-deb-src http://httpredir.debian.org/debian/ experimental main contrib non-free
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;apt-get update
-apt-get install libzmq5-dev ruby
-apt-get gem install rmate
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+      <description>ZeroMQ is a powerful library for network programming.
+But it&amp;rsquo;s no fun to just connecting to localhost! By building a single Ubuntu VM and saving it as a Vagrant box, we can spin up as many clients as the machine can handle!
+Install Ubuntu 14.04 into a VirtualBox VM Remeber to Install Ubuntu with user &amp;lsquo;Vagrant&amp;rsquo; and forward port 22 to work from the host. Tested with ubuntu-14.04.3-server-amd64.iso</description>
     </item>
     
     <item>
@@ -206,131 +29,10 @@ apt-get gem install rmate
       <pubDate>Wed, 23 Dec 2015 15:30:00 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/12/bitcoin-on-linux/</guid>
-      <description>
-
-&lt;h2 id=&#34;1-building-bitcoin-core&#34;&gt;1. Building BitCoin-Core&lt;/h2&gt;
-
-&lt;p&gt;Install the build environment and dependencies&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo apt-get update
-sudo apt-get install build-essential autoconf libssl-dev libboost-dev libboost-chrono-dev libboost-filesystem-dev libboost-program-options-dev libboost-system-dev libboost-test-dev libboost-thread-dev libdb4.8++-dev libdb4.8-dev pkg-config
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Clone the Git repo and view available version:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git clone https://github.com/bitcoin/bitcoin.git
-git tag
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Checkout the last released version ie.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git checkout 0.9.5rc2
-cd bitcoin
-./autogen.sh
-./configure --without-gui
-sudo make install
-which bitcoind
-which bitcoin-cli
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now run setup Bitcoind&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoind
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;create .bitcoin/bitcoin.conf and add:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;rpcuser=bitcoinrpc
-rpcpassword=&amp;lt;password shown in the previous step&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now run Bitcoind and rebuild the blockchain:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoind -daemon
-tail -f ~/.bitcoin/debug.log
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;2-setting-up-a-wallet&#34;&gt;2. Setting up a wallet&lt;/h2&gt;
-
-&lt;p&gt;Set a password&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoin-cli encryptwallet &amp;lt;SECURE PASSWORD&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Restart the daemon if it isn&amp;rsquo;t running:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoind -daemon
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Login to the wallet:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoin-cli walletpassphrase &amp;lt;SECURE PASSWORD&amp;gt; 360
-bitcoin-cli getinfo
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Backup and Restore&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoin-cli backupwallet wallet.bak
-bitcoin-cli importwallet wallet.bak
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;View as human readable:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoin-cli dumpwallet wallet.txt
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now wait for the client to become synched with the blockchain&lt;/p&gt;
-
-&lt;h2 id=&#34;3-receiving-bitcoins&#34;&gt;3. Receiving bitcoins&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoin-cli getnewaddress
-&amp;lt;NEW ADDRESS APPEARS&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Send some bitcoins!&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;  bitcoin-cli getreceivedbyaddress &amp;lt;NEW ADDRESS APPEARS&amp;gt;
-  bitcoin-cli getbalance
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;4-stopping-the-vps-hypervisor-from-shutting-down-the-vm&#34;&gt;4. Stopping the VPS hypervisor from shutting down the VM&lt;/h3&gt;
-
-&lt;p&gt;While it is syncing the blockchain it will be verifying each and every block that it receives, and so the CPU usage will get so high that the VPS provider will keep shutting it down.&lt;/p&gt;
-
-&lt;p&gt;To avoid this, limit the CPU:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ echo daemon=0 &amp;gt;&amp;gt; ~/.bitcoin/bitcoin.conf
-$ cpulimit -l 90 bitcoind &amp;amp;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;How far along is it synching?&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;nspool@vps:~$ bitcoind getinfo
-{
-    &amp;quot;version&amp;quot; : 90500,
-    &amp;quot;protocolversion&amp;quot; : 70002,
-    &amp;quot;walletversion&amp;quot; : 60000,
-    &amp;quot;balance&amp;quot; : 0.00000000,
-    &amp;quot;blocks&amp;quot; : 299058,
-    &amp;quot;timeoffset&amp;quot; : 0,
-    &amp;quot;connections&amp;quot; : 13,
-    &amp;quot;proxy&amp;quot; : &amp;quot;&amp;quot;,
-    &amp;quot;difficulty&amp;quot; : 8000872135.96816349,
-    &amp;quot;testnet&amp;quot; : false,
-    &amp;quot;keypoololdest&amp;quot; : 1449355342,
-    &amp;quot;keypoolsize&amp;quot; : 100,
-    &amp;quot;unlocked_until&amp;quot; : 0,
-    &amp;quot;paytxfee&amp;quot; : 0.00000000,
-    &amp;quot;relayfee&amp;quot; : 0.00001000,
-    &amp;quot;errors&amp;quot; : &amp;quot;&amp;quot;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;It was 386959 last I checked on blockchain.info. So the progress is &lt;sup&gt;324173&lt;/sup&gt;&amp;frasl;&lt;sub&gt;386959&lt;/sub&gt; = ~77%&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;du -sh .bitcoin/blocks/
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+      <description>1. Building BitCoin-Core Install the build environment and dependencies
+sudo apt-get update sudo apt-get install build-essential autoconf libssl-dev libboost-dev libboost-chrono-dev libboost-filesystem-dev libboost-program-options-dev libboost-system-dev libboost-test-dev libboost-thread-dev libdb4.8++-dev libdb4.8-dev pkg-config  Clone the Git repo and view available version:
+git clone https://github.com/bitcoin/bitcoin.git git tag  Checkout the last released version ie.
+git checkout 0.9.5rc2 cd bitcoin ./autogen.sh ./configure --without-gui sudo make install which bitcoind which bitcoin-cli  Now run setup Bitcoind</description>
     </item>
     
     <item>
@@ -339,54 +41,8 @@ $ cpulimit -l 90 bitcoind &amp;amp;
       <pubDate>Wed, 04 Feb 2015 22:00:00 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/02/remoting-to-a-lisp/</guid>
-      <description>&lt;p&gt;After reading about &lt;a href=&#34;http://www.flownet.com/gat/jpl-lisp.html&#34;&gt;the rise and fall of Lisp at the Jet Propulsion Lab JPL&lt;/a&gt; I refresh my Lisp experience. Now I can hack on a Lisp web service hosted on a remote server from within Emacs from my laptop.&lt;/p&gt;
-
-&lt;p&gt;Setting up a Lisp dev environment is easy: the instructions at &lt;a href=&#34;http://www.cliki.net/Getting%20Started&#34;&gt;Common Lisp Wiki&lt;/a&gt; will give you a GNU/Emacs with &lt;a href=&#34;http://common-lisp.net/project/slime/&#34;&gt;SLIME mode&lt;/a&gt; package installed. For a remote development setup, both the remote server and local dev machine should have &lt;a href=&#34;http://www.sbcl.org/&#34;&gt;Steel Bank Common Lisp&lt;/a&gt; along with the &lt;a href=&#34;http://www.quicklisp.org/&#34;&gt;QuickLisp&lt;/a&gt; package manager installed.&lt;/p&gt;
-
-&lt;p&gt;The &lt;em&gt;SLIME&lt;/em&gt; package provides an Emacs major-mode for Common Lisp development. Similar to the &lt;a href=&#34;http://en.wikipedia.org/wiki/Sam_(text_editor)&#34;&gt;Sam text editor&lt;/a&gt;, the SLIME uses a seperate backend server that it communicates with over a network port. It is that server, named &lt;em&gt;Swank&lt;/em&gt;, that is loaded into the Lisp interpreter. This means that on the target box we can just install the &lt;em&gt;Swank&lt;/em&gt; backend and then communicate with it over SSH.&lt;/p&gt;
-
-&lt;p&gt;Add the following to the &lt;code&gt;.sbclrc&lt;/code&gt; on the remote box to load &lt;em&gt;Swank&lt;/em&gt; when SBCL is started:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-lisp&#34; data-lang=&#34;lisp&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;; Setup Swank&lt;/span&gt;
-(ql:quickload &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;swank&amp;#34;&lt;/span&gt;)
-(require &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;asdf&lt;/span&gt;)
-(asdf:oos &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;asdf:load-op&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;swank&lt;/span&gt;)
-(setf swank:*communication-style* &lt;span style=&#34;color:#00f&#34;&gt;:fd-handler&lt;/span&gt;)
-(swank:create-server &lt;span style=&#34;color:#00f&#34;&gt;:dont-close&lt;/span&gt; t)&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Now in a seperate terminal window start a new instance of SSH to the remote machine, and forward the local port &lt;code&gt;4007&lt;/code&gt; to the remote port &lt;code&gt;4005&lt;/code&gt; which is used by &lt;em&gt;Swank&lt;/em&gt;:
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ssh -C -L4007:127.0.0.1:4005 $USER@$REMOTEIP&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;&lt;/p&gt;
-
-&lt;p&gt;Now tell &lt;em&gt;SLIME&lt;/em&gt; to connect to the remote machine. In Emacs type &lt;code&gt;M-x slime-connect&lt;/code&gt; and choose &lt;code&gt;127.0.0.1&lt;/code&gt; and port &lt;code&gt;4007&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;And that&amp;rsquo;s it! You will now be interacting with the REPL of the remote machine. For bonus points we can start a simple web server on the remote box just to prove we&amp;rsquo;ve done it. If you type this into the REPL it will load the &lt;a href=&#34;http://clacklisp.org/tutorial/02-getting-clack.html&#34;&gt;Clack web framwork&lt;/a&gt; and serve up a simple Hello, World on port 5000:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-lisp&#34; data-lang=&#34;lisp&#34;&gt;(ql:quickload &lt;span style=&#34;color:#00f&#34;&gt;:clack&lt;/span&gt;)
-(clack:clackup
-  (lambda (env)
-    (declare (ignore env))
-    &amp;#39;(&lt;span style=&#34;color:#00f&#34;&gt;200&lt;/span&gt; (&lt;span style=&#34;color:#00f&#34;&gt;:content-type&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;text/plain&amp;#34;&lt;/span&gt;)(break) (&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;Hello, Clack!&amp;#34;&lt;/span&gt;))))&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Use Curl on the development machine and you should see:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;curl http://$REMOTEIP:5000
-Hello, Clack!&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;To change the server text to &lt;code&gt;Hello, World!&lt;/code&gt;:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-lisp&#34; data-lang=&#34;lisp&#34;&gt;(clack:stop *)
-(clack:clackup
-  (lambda (env)
-  (declare (ignore env))
-  &amp;#39;(&lt;span style=&#34;color:#00f&#34;&gt;200&lt;/span&gt; (&lt;span style=&#34;color:#00f&#34;&gt;:content-type&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;text/plain&amp;#34;&lt;/span&gt;)(break) (&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;Hello, World!&amp;#34;&lt;/span&gt;))))&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Enjoy!&lt;/p&gt;
-</description>
+      <description>After reading about the rise and fall of Lisp at the Jet Propulsion Lab JPL I refresh my Lisp experience. Now I can hack on a Lisp web service hosted on a remote server from within Emacs from my laptop.
+Setting up a Lisp dev environment is easy: the instructions at Common Lisp Wiki will give you a GNU/Emacs with SLIME mode package installed. For a remote development setup, both the remote server and local dev machine should have Steel Bank Common Lisp along with the QuickLisp package manager installed.</description>
     </item>
     
     <item>
@@ -395,17 +51,9 @@ Hello, Clack!&lt;/code&gt;&lt;/pre&gt;
       <pubDate>Wed, 14 Jan 2015 21:16:11 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/01/strings-and-gdb/</guid>
-      <description>&lt;p&gt;In a GDB disassembly, what string is at the value being compared with &lt;code&gt;eax&lt;/code&gt;?&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;x080485a0 &amp;lt;+48&amp;gt;: je 0x34(%esp),%eax
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Solution:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;(gdb) x/s *(esp + 0x34)
-0x8048690: &amp;quot;hellostring!\n&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+      <description>In a GDB disassembly, what string is at the value being compared with eax?
+x080485a0 &amp;lt;+48&amp;gt;: je 0x34(%esp),%eax  Solution:
+(gdb) x/s *(esp + 0x34) 0x8048690: &amp;quot;hellostring!\n&amp;quot;  </description>
     </item>
     
     <item>
@@ -414,18 +62,9 @@ Hello, Clack!&lt;/code&gt;&lt;/pre&gt;
       <pubDate>Mon, 12 Jan 2015 21:08:56 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/01/cookies-and-netcat/</guid>
-      <description>&lt;p&gt;I&amp;rsquo;ve decided to move this blog to &lt;a href=&#34;https://pages.github.com&#34;&gt;GitHub Pages&lt;/a&gt;. This will be the third move since this blog was started in 2007 on the &lt;a href=&#34;http://sdf.org&#34;&gt;Super Dimension Fortress&lt;/a&gt; and then to some cheap wordpress shared hosting.&lt;/p&gt;
-
-&lt;p&gt;In the following couple of weeks I&amp;rsquo;ll triage the old site and re-post anything that is still worthwhile to this blog.&lt;/p&gt;
-
-&lt;p&gt;In the meantime here&amp;rsquo;s an example of using &lt;code&gt;netcat&lt;/code&gt; to do a HTTP request containing a cookie. For good measure parameter &lt;code&gt;-p 24&lt;/code&gt; forces the server to reply to the client on port 42.&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;#!/bin/bash
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;head=&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;GET http://www.example.org HTTP/1.1\r\nHost: .example.org\r\nCookie: VALUE=ABC123;\r\nAccept: */*\r\nConnection: Close\r\n\r\n&amp;#34;&lt;/span&gt;;
-echo -ne $head | nc -p42 www.example.org &lt;span style=&#34;color:#00f&#34;&gt;80&lt;/span&gt;
-#=&amp;gt; Using port &lt;span style=&#34;color:#00f&#34;&gt;42&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;for&lt;/span&gt; the reply.&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-</description>
+      <description>I&amp;rsquo;ve decided to move this blog to GitHub Pages. This will be the third move since this blog was started in 2007 on the Super Dimension Fortress and then to some cheap wordpress shared hosting.
+In the following couple of weeks I&amp;rsquo;ll triage the old site and re-post anything that is still worthwhile to this blog.
+In the meantime here&amp;rsquo;s an example of using netcat to do a HTTP request containing a cookie.</description>
     </item>
     
   </channel>

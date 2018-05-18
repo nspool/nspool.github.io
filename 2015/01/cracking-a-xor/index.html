@@ -37,13 +37,11 @@
       <div class="post-content">
         <p>In days part there were sites known to store login status in a client-side cookie obscured by a XOR cyper. When first visting the site some code like this would run:</p>
 
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-perl" data-lang="perl">$cookie = xor_crypt($json_encode(array(<span style="color:#00f">&#34;login&#34;</span>=&gt;<span style="color:#00f">&#34;false&#34;</span>)));</code></pre>
-</div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-perl" data-lang="perl">$cookie = xor_crypt($json_encode(array(<span style="color:#00f">&#34;login&#34;</span>=&gt;<span style="color:#00f">&#34;false&#34;</span>)));</code></pre></div>
 
 <p>Then <code>$cookie</code> would be set on the client side, something like <code>data=GkAPXlVaD0BZE1RSDREGE08=</code>. A successful login would containg a similar:</p>
 
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-perl" data-lang="perl">$cookie = xor_crypt($json_encode(array(<span style="color:#00f">&#34;login&#34;</span>=&gt;<span style="color:#00f">&#34;true&#34;</span>)));</code></pre>
-</div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-perl" data-lang="perl">$cookie = xor_crypt($json_encode(array(<span style="color:#00f">&#34;login&#34;</span>=&gt;<span style="color:#00f">&#34;true&#34;</span>)));</code></pre></div>
 
 <p>That would result in the cookie <code>data=GkAPXlVaD0BZE0ZBFAdBTA==</code>. Looking at there two values it is plain that they are very similar. That only a few positions have changed indicate a basic <a href="http://en.wikipedia.org/wiki/Symmetric-key_algorithm">symmetric cypher</a>, in this case just a simple XOR of the JSON value against a fixed key.</p>
 
@@ -55,8 +53,7 @@ $key = <span style="color:#00f">&#34;&#34;</span>;
 
 <span style="color:#000080;font-weight:bold">for</span>($i=<span style="color:#00f">0</span>;$i&lt;strlen($ct);$i++) {
   $key .= $ct[$i] ^ $pt[$i % strlen($pt)];
-}</code></pre>
-</div>
+}</code></pre></div>
 
 <p>This gives <code>abc123abc123abc123abc1 ..</code> which is both human readable and contains repetitive.</p>
 
