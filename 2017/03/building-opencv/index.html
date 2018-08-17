@@ -47,11 +47,10 @@ cd opencv_contrib &amp;&amp; git checkout 3.1.0 &amp;&amp; cd ..
 
 <pre><code>mkdir opencv_build &amp;&amp; cd opencv_build
 cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON
+-D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_CUDA=OFF -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ../opencv/
+make -j7 # runs 7 jobs in parallel
+cd ..
 </code></pre>
-
-<p>-D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_CUDA=OFF -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ../opencv/
-    make -j7 # runs 7 jobs in parallel
-    cd ..</p>
 
 <p>Copy the contrib modules into the OpenCV project:</p>
 

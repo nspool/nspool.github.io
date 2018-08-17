@@ -21,7 +21,7 @@
       <description>Odradek doesn&amp;rsquo;t need Javascript to move around thanks to CSS3 and WebKit keyframe animations.
 A simple transition move-odradek can be defined in pure CSS as:
 @-webkit-keyframes move-odradek {from { margin-left:100%;} to {margin-left:0%;}} Assign the animation to the element:
--webkit-animation: move-odradek 30s;</description>
+-webkit-animation: move-odradek 30s; </description>
     </item>
     
   </channel>

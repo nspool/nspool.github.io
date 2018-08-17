@@ -217,11 +217,10 @@ cd opencv_contrib &amp;amp;&amp;amp; git checkout 3.1.0 &amp;amp;&amp;amp; cd ..
 
 &lt;pre&gt;&lt;code&gt;mkdir opencv_build &amp;amp;&amp;amp; cd opencv_build
 cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON
+-D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_CUDA=OFF -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ../opencv/
+make -j7 # runs 7 jobs in parallel
+cd ..
 &lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;-D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_CUDA=OFF -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ../opencv/
-    make -j7 # runs 7 jobs in parallel
-    cd ..&lt;/p&gt;
 
 &lt;p&gt;Copy the contrib modules into the OpenCV project:&lt;/p&gt;
 
@@ -690,7 +689,7 @@ get &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;/image&amp;#39;&lt;/span&gt;
 
 &lt;p&gt;Here is a more complete example that does just that:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-ruby&#34; data-lang=&#34;ruby&#34;&gt;require &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;sinatra&amp;#39;&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-ruby&#34; data-lang=&#34;ruby&#34;&gt;require &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;sinatra&amp;#39;&lt;/span&gt;
 get &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;/&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;do&lt;/span&gt;
 	&lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;Usage: /image?index=123&amp;#39;&lt;/span&gt;
 &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;end&lt;/span&gt;
@@ -701,7 +700,7 @@ get &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;/image&amp;#39;&lt;/span&gt;
 	redirect &lt;span style=&#34;color:#00f&#34;&gt;404&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;unless&lt;/span&gt; File.readable?(path)
 	content_type &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;
 	send_file open(path, &lt;span style=&#34;color:#00f&#34;&gt;type&lt;/span&gt;: &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;disposition&lt;/span&gt;: &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;inline&amp;#39;&lt;/span&gt;)
-&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/p&gt;
+&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Run with &lt;code&gt;ruby server.rb&lt;/code&gt; then use URLs of the form &lt;code&gt;http://localhost:4567/image?index=123&lt;/code&gt;.&lt;/p&gt;
 </description>
