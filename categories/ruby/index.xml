@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>nspool&#39;s blog</title>
+    <title>Ruby on nspool&#39;s blog</title>
     <link>https://nspool.github.io/categories/ruby/</link>
     <description>Recent content in Ruby on nspool&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
     <lastBuildDate>Wed, 23 Sep 2015 20:30:00 +0000</lastBuildDate>
-    <atom:link href="/categories/ruby/" rel="self" type="application/rss+xml" />
+    
+	<atom:link href="https://nspool.github.io/categories/ruby/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Quick REST endpoint with Ruby &amp; Sinatra</title>
@@ -16,45 +18,8 @@
       <pubDate>Wed, 23 Sep 2015 20:30:00 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/09/serving-files/</guid>
-      <description>&lt;p&gt;Suppose we wish to serve a bunch of images from a directory by over a REST endpoint and retrieve them by index.
-For example: &lt;code&gt;http://localhost:4567/image?index=0&lt;/code&gt; would return the first image in the directory.
-This is easy to accomplish in Ruby by using Sinatra:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-ruby&#34; data-lang=&#34;ruby&#34;&gt;require &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;sinatra&amp;#39;&lt;/span&gt;
-get &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;/image&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;do&lt;/span&gt;
-
-  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Read all the JPEG files from a given directory&lt;/span&gt;
-  @images = Dir.glob(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;/Users/nspool/Pictures/*.jpg&amp;#34;&lt;/span&gt;)
-
-  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Take the path at the supplied index&lt;/span&gt;
-  index = params[&lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;index&amp;#39;&lt;/span&gt;].to_i
-  path = @images[index]
-
-  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Return the image&lt;/span&gt;
-  send_file open(path, &lt;span style=&#34;color:#00f&#34;&gt;type&lt;/span&gt;: &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;disposition&lt;/span&gt;: &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;inline&amp;#39;&lt;/span&gt;)
-&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;end&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;If we just want to serve a different image for each index and not worry about running out of images by choosing an image index that is too high, we can return the image at index modulo the number of available images.&lt;/p&gt;
-
-&lt;p&gt;Here is a more complete example that does just that:&lt;/p&gt;
-
-&lt;p&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-ruby&#34; data-lang=&#34;ruby&#34;&gt;require &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;sinatra&amp;#39;&lt;/span&gt;
-get &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;/&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;do&lt;/span&gt;
-	&lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;Usage: /image?index=123&amp;#39;&lt;/span&gt;
-&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;end&lt;/span&gt;
-get &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;/image&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;do&lt;/span&gt;
-	@images = Dir.glob(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;/Users/nspool/Pictures/*.jpg&amp;#34;&lt;/span&gt;)
-	index = params[&lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;index&amp;#39;&lt;/span&gt;].to_i &lt;span style=&#34;color:#00f&#34;&gt;% @images.count
-&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;	path &lt;/span&gt; = @images[index]
-	redirect &lt;span style=&#34;color:#00f&#34;&gt;404&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;unless&lt;/span&gt; File.readable?(path)
-	content_type &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;
-	send_file open(path, &lt;span style=&#34;color:#00f&#34;&gt;type&lt;/span&gt;: &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;disposition&lt;/span&gt;: &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;inline&amp;#39;&lt;/span&gt;)
-&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;&lt;/p&gt;
-
-&lt;p&gt;Run with &lt;code&gt;ruby server.rb&lt;/code&gt; then use URLs of the form &lt;code&gt;http://localhost:4567/image?index=123&lt;/code&gt;.&lt;/p&gt;
-</description>
+      <description>Suppose we wish to serve a bunch of images from a directory by over a REST endpoint and retrieve them by index. For example: http://localhost:4567/image?index=0 would return the first image in the directory. This is easy to accomplish in Ruby by using Sinatra:
+require &amp;#39;sinatra&amp;#39; get &amp;#39;/image&amp;#39; do # Read all the JPEG files from a given directory @images = Dir.glob(&amp;#34;/Users/nspool/Pictures/*.jpg&amp;#34;) # Take the path at the supplied index index = params[&amp;#39;index&amp;#39;].</description>
     </item>
     
   </channel>

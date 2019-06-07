@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>nspool&#39;s blog</title>
+    <title>ZeroMQ on nspool&#39;s blog</title>
     <link>https://nspool.github.io/categories/zeromq/</link>
-    <description>Recent content in Zeromq on nspool&#39;s blog</description>
+    <description>Recent content in ZeroMQ on nspool&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
     <lastBuildDate>Sat, 26 Dec 2015 10:00:00 +0000</lastBuildDate>
-    <atom:link href="/categories/zeromq/" rel="self" type="application/rss+xml" />
+    
+	<atom:link href="https://nspool.github.io/categories/zeromq/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>ZeroMQ &#43; Vagrant for Fun and Profit</title>
@@ -16,188 +18,9 @@
       <pubDate>Sat, 26 Dec 2015 10:00:00 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/12/zeromq-virtualbox/</guid>
-      <description>
-
-&lt;hr&gt;
-
-&lt;p&gt;ZeroMQ is a powerful library for network programming.&lt;/p&gt;
-
-&lt;p&gt;But &lt;strong&gt;it&amp;rsquo;s no fun to just connecting to localhost!&lt;/strong&gt; By building a single Ubuntu VM and saving it as a Vagrant box, we can spin up as many clients as the machine can handle!&lt;/p&gt;
-
-&lt;h3 id=&#34;install-ubuntu-14-04-into-a-virtualbox-vm&#34;&gt;Install Ubuntu 14.04 into a VirtualBox VM&lt;/h3&gt;
-
-&lt;p&gt;Remeber to Install Ubuntu with user &amp;lsquo;Vagrant&amp;rsquo; and forward port 22 to work from the host.
-Tested with ubuntu-14.04.3-server-amd64.iso&lt;/p&gt;
-
-&lt;h3 id=&#34;setting-up-vagrant&#34;&gt;Setting up Vagrant&lt;/h3&gt;
-
-&lt;p&gt;It is best just to follow &lt;a href=&#34;https://docs.vagrantup.com/v2/boxes/base.html&#34;&gt;https://docs.vagrantup.com/v2/boxes/base.html&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;This is the default Vagrant public key. Add it to .ssh/authorized_keys by default. Vagrant will change it later:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eWW6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXPITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pzC6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZEnDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXzcWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ== vagrant insecure public key
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Also enable passwordless sudo for the vagrant user to the end of the sudoers file:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;vagrant ALL=(ALL) NOPASSWD: ALL
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;install-virtualbox-additions&#34;&gt;Install VirtualBox Additions&lt;/h3&gt;
-
-&lt;p&gt;sudo apt-get -y install libtool pkg-config linux-headers-generic build-essential dkms autoconf automake git
-Install the VirtualBox guest additions.
-Devices -&amp;gt; Insert Guest Additions CD Image
-sudo mount /dev/cdrom /media/cdrom
-sudo sh /media/cdrom/VBoxLinuxAdditions.run&lt;/p&gt;
-
-&lt;h3 id=&#34;install-dependencies&#34;&gt;Install Dependencies&lt;/h3&gt;
-
-&lt;p&gt;ZeroMQ uses Libsodium for encryption, but this is not available in the 14.04 LTS repos.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;wget -c https://download.libsodium.org/libsodium/releases/libsodium-1.0.8.tar.gz  http://download.zeromq.org/zeromq-4.1.4.tar.gz  
-tar -xf libsodium-1.0.8.tar.gz
-./configure --prefix=/usr &amp;amp;&amp;amp; make
-sudo make install
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;install-zeromq&#34;&gt;Install ZeroMQ&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;cd ~
-tar -xzf zeromq-4.1.4.tar.gz &amp;amp;&amp;amp; cd zeromq-4.1.4
-./configure --prefix=/usr &amp;amp;&amp;amp; make
-sudo make install
-cd ~
-git clone https://github.com/zeromq/cppzmq
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;install-rmate-optional&#34;&gt;Install rmate (Optional)&lt;/h3&gt;
-
-&lt;p&gt;For any TextMate users that prefer to use their host machine for editing:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo apt-get -y install ruby &amp;amp;&amp;amp; sudo gem install rmate
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Textmate remote:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ssh -p8022 -R 52698:localhost:52698 127.0.0.1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;So now a command in the VM such as:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;rmate test.cc
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Will open textmate locally if rmate is enabled under TextMate preferences.&lt;/p&gt;
-
-&lt;h3 id=&#34;testing-that-it-works&#34;&gt;Testing that it works&lt;/h3&gt;
-
-&lt;p&gt;Download the &lt;code&gt;hwserver&lt;/code&gt; example from the ZeroMQ documentation and compile it:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;gcc hwserver.c -o hwserver -lzmq
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;With the C++ bindings come in the box we should also be able to compile the hwserver C++ example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;g++ hwserver.cpp -o hwserver -lzmq
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Remember to include the &lt;code&gt;zmq.hpp&lt;/code&gt; cloned previously.&lt;/p&gt;
-
-&lt;h3 id=&#34;packaging-the-vm&#34;&gt;Packaging the VM&lt;/h3&gt;
-
-&lt;p&gt;Once we have verified that the VM will build a ZeroMQ project, we can package it using Vagrant for reuse.&lt;/p&gt;
-
-&lt;p&gt;Create a box called NodeTemplate from a VM called BaseNode into the directory ~/Boxes:&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;vagrant package --base BaseNode --output ~/Boxes/NodeTemplate.box&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;Create a new directory containing a VagrantFile:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;Vagrant.configure(&amp;#34;2&amp;#34;) do |config|
-  # Number of nodes to provision
-  numNodes = 2
-  # IP Address Base for private network
-  ipAddrPrefix = &amp;#34;172.16.0.0&amp;#34;
-  # Download the initial box from this url
-  config.vm.box_url = &amp;#34;file:///Users/nspool/Boxes/NodeTemplate.box&amp;#34;
-  # Provision Config for each of the nodes
-  1.upto(numNodes) do |num|
-    nodeName = (&amp;#34;node&amp;#34; + num.to_s).to_sym
-      config.vm.define nodeName do |node|
-        node.vm.box = &amp;#34;NodeTemplate&amp;#34;
-        node.vm.network :private_network, ip: ipAddrPrefix + num.to_s
-        node.vm.provider &amp;#34;virtualbox&amp;#34; do |v|
-          v.name = &amp;#34;Cluster Node &amp;#34; + num.to_s
-        end
-      end
-    end
-  end&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;It should now be possible to SSH into each box by name, ie.
-vagrant ssh node1&lt;/p&gt;
-
-&lt;hr&gt;
-
-&lt;h1 id=&#34;alternative-approaches&#34;&gt;Alternative approaches&lt;/h1&gt;
-
-&lt;p&gt;Here are some approached that I tried, but gave up on for one or another reason.&lt;/p&gt;
-
-&lt;h3 id=&#34;alternative-1-installing-from-source&#34;&gt;Alternative 1. Installing from source&lt;/h3&gt;
-
-&lt;p&gt;Add this to /etc/apt/sources.list:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;deb http://us.archive.ubuntu.com/ubuntu vivid main universe 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then run:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo apt-get update &amp;amp;&amp;amp;
-sudo apt-get -y upgrade &amp;amp;&amp;amp;
-sudo apt-get -y install ruby libtool pkg-config build-essential autoconf automake git libsodium-dev &amp;amp;&amp;amp;
-sudo gem install rmate &amp;amp;&amp;amp;
-wget -c http://download.zeromq.org/zeromq-4.1.4.tar.gz &amp;amp;&amp;amp;
-tar -xzf zeromq-4.1.4.tar.gz &amp;amp;&amp;amp; cd zeromq-4.1.4 &amp;amp;&amp;amp;
-./configure --prefix=/usr &amp;amp;&amp;amp; make &amp;amp;&amp;amp; sudo make install &amp;amp;&amp;amp;
-cd ~ &amp;amp;&amp;amp;
-git clone https://github.com/zeromq/cppzmq
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now reboot. Connect using:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ssh -i ~/.vagrant.d/insecure_private_key -p8022 -R 52698:localhost:52698 vagrant@127.0.0.1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This should compile the example without errors:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;g++ hwserver.cpp -o hwserver -lzmq
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then run:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;./hwserver 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now shutdown and package the node.. Except that upgrading&lt;/p&gt;
-
-&lt;h3 id=&#34;alternative-2-using-ubuntu-server-15-10&#34;&gt;Alternative 2. Using Ubuntu Server 15.10&lt;/h3&gt;
-
-&lt;p&gt;Libsodium is available for in the 15.10 packages, meaning that it doesn&amp;rsquo;t need to be built.&lt;/p&gt;
-
-&lt;p&gt;Copy SSH public key into authorized_keys. Add to sources:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;deb http://httpredir.debian.org/debian/ experimental main contrib non-free
-deb-src http://httpredir.debian.org/debian/ experimental main contrib non-free
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;apt-get update
-apt-get install libzmq5-dev ruby
-apt-get gem install rmate
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+      <description>ZeroMQ is a powerful library for network programming.
+But it&amp;rsquo;s no fun to just connecting to localhost! By building a single Ubuntu VM and saving it as a Vagrant box, we can spin up as many clients as the machine can handle!
+Install Ubuntu 14.04 into a VirtualBox VM Remeber to Install Ubuntu with user &amp;lsquo;Vagrant&amp;rsquo; and forward port 22 to work from the host. Tested with ubuntu-14.04.3-server-amd64.iso</description>
     </item>
     
   </channel>

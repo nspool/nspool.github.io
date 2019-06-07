@@ -133,26 +133,25 @@ git clone https://github.com/zeromq/cppzmq
 
 <p>Create a new directory containing a VagrantFile:</p>
 
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">Vagrant.configure(&#34;2&#34;) do |config|
-  # Number of nodes to provision
-  numNodes = 2
-  # IP Address Base for private network
-  ipAddrPrefix = &#34;172.16.0.0&#34;
-  # Download the initial box from this url
-  config.vm.box_url = &#34;file:///Users/nspool/Boxes/NodeTemplate.box&#34;
-  # Provision Config for each of the nodes
-  1.upto(numNodes) do |num|
-    nodeName = (&#34;node&#34; + num.to_s).to_sym
-      config.vm.define nodeName do |node|
-        node.vm.box = &#34;NodeTemplate&#34;
-        node.vm.network :private_network, ip: ipAddrPrefix + num.to_s
-        node.vm.provider &#34;virtualbox&#34; do |v|
-          v.name = &#34;Cluster Node &#34; + num.to_s
-        end
-      end
-    end
-  end</code></pre>
-</div>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">Vagrant.configure(<span style="color:#00f">&#34;2&#34;</span>)<span style="color:#bbb"> </span>do<span style="color:#bbb"> </span>|config<span style="color:#00f">|
+</span><span style="color:#00f">  # Number of nodes to provision</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span>numNodes<span style="color:#bbb"> </span>=<span style="color:#bbb"> </span><span style="color:#00f">2</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#080;font-style:italic"># IP Address Base for private network</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span>ipAddrPrefix<span style="color:#bbb"> </span>=<span style="color:#bbb"> </span><span style="color:#00f">&#34;172.16.0.0&#34;</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#080;font-style:italic"># Download the initial box from this url</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span>config.vm.box_url<span style="color:#bbb"> </span>=<span style="color:#bbb"> </span><span style="color:#00f">&#34;file:///Users/nspool/Boxes/NodeTemplate.box&#34;</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#080;font-style:italic"># Provision Config for each of the nodes</span><span style="color:#bbb">
+</span><span style="color:#bbb">  </span><span style="color:#00f">1.</span>upto(numNodes)<span style="color:#bbb"> </span>do<span style="color:#bbb"> </span>|num<span style="color:#00f">|
+</span><span style="color:#00f">    nodeName = (&#34;node&#34; + num.to_s).to_sym</span><span style="color:#bbb">
+</span><span style="color:#bbb">      </span>config.vm.define<span style="color:#bbb"> </span>nodeName<span style="color:#bbb"> </span>do<span style="color:#bbb"> </span>|node<span style="color:#00f">|
+</span><span style="color:#00f">        node.vm.box = &#34;NodeTemplate&#34;</span><span style="color:#bbb">
+</span><span style="color:#bbb">        </span>node.vm.network<span style="color:#bbb"> </span>:private_network,<span style="color:#bbb"> </span>ip:<span style="color:#bbb"> </span>ipAddrPrefix<span style="color:#bbb"> </span>+<span style="color:#bbb"> </span>num.to_s<span style="color:#bbb">
+</span><span style="color:#bbb">        </span>node.vm.provider<span style="color:#bbb"> </span><span style="color:#00f">&#34;virtualbox&#34;</span><span style="color:#bbb"> </span>do<span style="color:#bbb"> </span>|v<span style="color:#00f">|
+</span><span style="color:#00f">          v.name = &#34;Cluster Node &#34; + num.to_s</span><span style="color:#bbb">
+</span><span style="color:#bbb">        </span>end<span style="color:#bbb">
+</span><span style="color:#bbb">      </span>end<span style="color:#bbb">
+</span><span style="color:#bbb">    </span>end<span style="color:#bbb">
+</span><span style="color:#bbb">  </span>end</code></pre></div>
 
 <p>It should now be possible to SSH into each box by name, ie.
 vagrant ssh node1</p>
@@ -285,7 +284,7 @@ apt-get gem install rmate
 						<a href="https://github.com/nspool">nspool</a>
 						<br>
 						<span class="fa fa-fw fa-twitter"></span>
-						<a href="https://twitter.com/@nsautopool">@nsautopool</a>
+						<a href="https://twitter.com/"></a>
                                                 
 					</p>
 				</div>

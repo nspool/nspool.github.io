@@ -39,19 +39,18 @@
 
 <p>In this example, fileHandle could represent an open socket, with the <em>SIGPIP</em> thrown if the client disconnects unexpectedly and the pipe is closed:</p>
 
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-objective-c" data-lang="objective-c">@try
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-objective-c" data-lang="objective-c"><span style="color:#000080;font-weight:bold">@try</span>
 {
   [fileHandle writeData:fileData];
 }
-@catch (NSException *exception)
+<span style="color:#000080;font-weight:bold">@catch</span> (NSException *exception)
 {
-  // Ignore the SIGPIP
-}
-@finally
+  <span style="color:#080;font-style:italic">// Ignore the SIGPIP
+</span><span style="color:#080;font-style:italic"></span>}
+<span style="color:#000080;font-weight:bold">@finally</span>
 {
   CFRelease(fileData);
-}</code></pre>
-</div>
+}</code></pre></div>
 
 <p>Unfortunately in Swift 2.0 this isn&rsquo;t possible; the analogous <code>try-catch</code> doesn&rsquo;t capture signals.</p>
 
@@ -64,8 +63,7 @@ setsockopt(CFSocketGetNative(socket),
 SOL_SOCKET,
 SO_NOSIGPIPE,
 &amp;no_sig_pipe,
-socklen_t(sizeof(Int32)))</code></pre>
-</div>
+socklen_t(sizeof(Int32)))</code></pre></div>
 
 <p>Then assuming the write is performed in a separate method, we can use a guard to perform a dummy write before the socket is used:</p>
 
@@ -73,8 +71,7 @@ socklen_t(sizeof(Int32)))</code></pre>
   CFRelease(fileData)
     <span style="color:#000080;font-weight:bold">return</span> <span style="color:#000080;font-weight:bold">false</span>
   }
-fileHandle.writeData(fileData)</code></pre>
-</div>
+fileHandle.writeData(fileData)</code></pre></div>
 
 <p>If the socket is closed then the guard will cleanup and return.</p>
 
@@ -146,7 +143,7 @@ fileHandle.writeData(fileData)</code></pre>
 						<a href="https://github.com/nspool">nspool</a>
 						<br>
 						<span class="fa fa-fw fa-twitter"></span>
-						<a href="https://twitter.com/@nsautopool">@nsautopool</a>
+						<a href="https://twitter.com/"></a>
                                                 
 					</p>
 				</div>

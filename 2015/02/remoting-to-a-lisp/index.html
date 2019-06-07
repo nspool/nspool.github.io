@@ -48,12 +48,10 @@
 (require <span style="color:#00f">&#39;asdf</span>)
 (asdf:oos <span style="color:#00f">&#39;asdf:load-op</span> <span style="color:#00f">&#39;swank</span>)
 (setf swank:*communication-style* <span style="color:#00f">:fd-handler</span>)
-(swank:create-server <span style="color:#00f">:dont-close</span> t)</code></pre>
-</div>
+(swank:create-server <span style="color:#00f">:dont-close</span> t)</code></pre></div>
 
 <p>Now in a seperate terminal window start a new instance of SSH to the remote machine, and forward the local port <code>4007</code> to the remote port <code>4005</code> which is used by <em>Swank</em>:
-<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ssh -C -L4007:127.0.0.1:4005 $USER@$REMOTEIP</code></pre>
-</div></p>
+<div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ssh -C -L4007:127.0.0.1:4005 $USER@$REMOTEIP</code></pre></div></p>
 
 <p>Now tell <em>SLIME</em> to connect to the remote machine. In Emacs type <code>M-x slime-connect</code> and choose <code>127.0.0.1</code> and port <code>4007</code>.</p>
 
@@ -63,14 +61,12 @@
 (clack:clackup
   (lambda (env)
     (declare (ignore env))
-    &#39;(<span style="color:#00f">200</span> (<span style="color:#00f">:content-type</span> <span style="color:#00f">&#34;text/plain&#34;</span>)(break) (<span style="color:#00f">&#34;Hello, Clack!&#34;</span>))))</code></pre>
-</div>
+    &#39;(<span style="color:#00f">200</span> (<span style="color:#00f">:content-type</span> <span style="color:#00f">&#34;text/plain&#34;</span>)(break) (<span style="color:#00f">&#34;Hello, Clack!&#34;</span>))))</code></pre></div>
 
 <p>Use Curl on the development machine and you should see:</p>
 
 <div class="highlight"><pre style="background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">curl http://$REMOTEIP:5000
-Hello, Clack!</code></pre>
-</div>
+Hello, Clack!</code></pre></div>
 
 <p>To change the server text to <code>Hello, World!</code>:</p>
 
@@ -78,8 +74,7 @@ Hello, Clack!</code></pre>
 (clack:clackup
   (lambda (env)
   (declare (ignore env))
-  &#39;(<span style="color:#00f">200</span> (<span style="color:#00f">:content-type</span> <span style="color:#00f">&#34;text/plain&#34;</span>)(break) (<span style="color:#00f">&#34;Hello, World!&#34;</span>))))</code></pre>
-</div>
+  &#39;(<span style="color:#00f">200</span> (<span style="color:#00f">:content-type</span> <span style="color:#00f">&#34;text/plain&#34;</span>)(break) (<span style="color:#00f">&#34;Hello, World!&#34;</span>))))</code></pre></div>
 
 <p>Enjoy!</p>
 
@@ -151,7 +146,7 @@ Hello, Clack!</code></pre>
 						<a href="https://github.com/nspool">nspool</a>
 						<br>
 						<span class="fa fa-fw fa-twitter"></span>
-						<a href="https://twitter.com/@nsautopool">@nsautopool</a>
+						<a href="https://twitter.com/"></a>
                                                 
 					</p>
 				</div>

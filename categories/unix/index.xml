@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>nspool&#39;s blog</title>
+    <title>UNIX on nspool&#39;s blog</title>
     <link>https://nspool.github.io/categories/unix/</link>
-    <description>Recent content in Unix on nspool&#39;s blog</description>
+    <description>Recent content in UNIX on nspool&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
     <lastBuildDate>Fri, 06 Apr 2018 21:11:00 +1000</lastBuildDate>
-    <atom:link href="/categories/unix/" rel="self" type="application/rss+xml" />
+    
+	<atom:link href="https://nspool.github.io/categories/unix/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Adding a syscall to Minix 2</title>
@@ -16,110 +18,9 @@
       <pubDate>Fri, 06 Apr 2018 21:11:00 +1000</pubDate>
       
       <guid>https://nspool.github.io/2018/04/minix-syscall/</guid>
-      <description>
-
-&lt;h2 id=&#34;getting-minix-2&#34;&gt;Getting Minix 2&lt;/h2&gt;
-
-&lt;p&gt;Older Minix versions are available from the &lt;a href=&#34;http://wiki.minix3.org/doku.php?id=www:download:previousversions&#34;&gt;Minix 3 official website&lt;/a&gt;.
-If using a VM I would recommend the HD image from the &lt;a href=&#34;https://github.com/davidgiven/minix2&#34;&gt;Minix 2 Quick and Dirty edition&lt;/a&gt;. This is what I used for this blog post.&lt;/p&gt;
-
-&lt;h2 id=&#34;running-in-virtualbox&#34;&gt;Running in VirtualBox&lt;/h2&gt;
-
-&lt;p&gt;If using the Quick and Dirty edition HDD image from the link above, first convert it to VDI format:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;VBoxManage convertdd minix-2.0-hd-64MB.img minix-2.0-hd-64MB.vdi  --format VDI
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Create a Linux 2.4 32-bit VM with 64mb of RAM. Make sure that the storage controller is IDE.&lt;/p&gt;
-
-&lt;h2 id=&#34;building-the-kernel&#34;&gt;Building the kernel&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code&gt;cd /usr/src/tools
-make
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This should build the kernel and out bootable kernel file named &lt;code&gt;image&lt;/code&gt;. Copy it into the directory containing the kernel:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;cp image /minix/custom
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now reboot Minix with the new kernel image. Perform a clean shutdown of the OS:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;shutdown
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;From the Supervisor, set our custom kernel image as the kernel and boot back into Minix:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;name=/minix/custom
-boot
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;adding-a-syscall-to-the-memory-manager-server&#34;&gt;Adding a syscall to the memory manager server&lt;/h2&gt;
-
-&lt;h3 id=&#34;usr-include-minix-callnr-h&#34;&gt;/usr/include/minix/callnr.h&lt;/h3&gt;
-
-&lt;p&gt;increment NCALLS and allocate an number for the new syscall:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;#define HELLOWORLD 78
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;usr-src-mm-main-c&#34;&gt;/usr/src/mm/main.c&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;PUBLIC void do_helloworld()
-{
-    message msg;
-    msg = mm_in;
-    _taskcall(SYSTASK, SYS_HELLO, &amp;amp;msg);
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;usr-src-mm-proto-h&#34;&gt;/usr/src/mm/proto.h&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;_PROTOTYPE(void do_helloworld, (void));
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;usr-src-mm-table-c&#34;&gt;/usr/src/mm/table.c&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;do_helloworld, /* 78 = HELLOWORLD */
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;usr-src-fs-table-c&#34;&gt;/usr/src/fs/table.c&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;no_sys , /* 78 = HELLOWORLD */
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;usr-include-minix-com-h&#34;&gt;/usr/include/minix/com.h&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;#define SYS_HELLOWORLD 22 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;usr-src-kernel-system-c&#34;&gt;/usr/src/kernel/system.c&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;case SYS_HELLOWORLD: r = do_helloworld(&amp;amp;m); break;
-
-PRIVATE int do_helloworld(m_ptr)
-register message *m_ptr;
-{
-    printf(&amp;quot;Hello, World\n&amp;quot;);
-    return(OK);
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;calling-the-syscall-from-user-land&#34;&gt;Calling the syscall from user land&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code&gt;#include &amp;lt;lib.h&amp;gt;
-
-int main(int argc, char** argv)
-{
-    int ret;
-    message msg;
-    ret = _syscall(MM, HELLOWORLD, &amp;amp;msg);
-    return ret;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Build this program with &lt;code&gt;cc -o hello hello.c&lt;/code&gt;. Running &lt;code&gt;./hello&lt;/code&gt; should output &lt;em&gt;Hello, World&lt;/em&gt; from the new syscall.&lt;/p&gt;
-</description>
+      <description>Getting Minix 2 Older Minix versions are available from the Minix 3 official website. If using a VM I would recommend the HD image from the Minix 2 Quick and Dirty edition. This is what I used for this blog post.
+Running in VirtualBox If using the Quick and Dirty edition HDD image from the link above, first convert it to VDI format:
+VBoxManage convertdd minix-2.0-hd-64MB.img minix-2.0-hd-64MB.vdi --format VDI  Create a Linux 2.</description>
     </item>
     
   </channel>

@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>nspool&#39;s blog</title>
+    <title>macOS on nspool&#39;s blog</title>
     <link>https://nspool.github.io/categories/macos/</link>
-    <description>Recent content in Macos on nspool&#39;s blog</description>
+    <description>Recent content in macOS on nspool&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
     <lastBuildDate>Mon, 15 Jan 2018 21:24:00 +1100</lastBuildDate>
-    <atom:link href="/categories/macos/" rel="self" type="application/rss+xml" />
+    
+	<atom:link href="https://nspool.github.io/categories/macos/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>NSUndoManager in a storyboard-based macOS app</title>
@@ -16,34 +18,10 @@
       <pubDate>Mon, 15 Jan 2018 21:24:00 +1100</pubDate>
       
       <guid>https://nspool.github.io/2018/01/nsundomanager/</guid>
-      <description>&lt;p&gt;The MacOS application template in a newer version of Xcode defaults to using storyboards. To implement custom Undo and Redo operations it is necessary to implement to have  your NSView implement &lt;code&gt;NSWindowDelegate&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Create an &lt;code&gt;NSUndoManager&lt;/code&gt; for the view:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;NSUndoManager* undoManager;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Assign the delegate programmatically within &lt;code&gt;initWithFrame&lt;/code&gt; and set your view as the first responder:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;NSWindow* mainWindow = [[[NSApplication sharedApplication] windows] objectAtIndex:0];
-mainWindow.delegate = self;
-undoManager = [[NSUndoManager alloc] init];
-    [self becomeFirstResponder];
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then in the method where the undoable action takes place&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[[undoManager prepareWithInvocationTarget:self] undoAction];
-
-if(![undoManager isUndoing]) {
-    [undoManager setActionName:@&amp;quot;Select&amp;quot;];
-} 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Where &lt;code&gt;undoAction&lt;/code&gt; is the method on your view.&lt;/p&gt;
-
-&lt;p&gt;For a working example see &lt;a href=&#34;https://github.com/nspool/pocket-life/blob/master/Pocket%20Life/LifeView.m&#34;&gt;this LifeView.m in my Game of Life cocoa app&lt;/a&gt;.&lt;/p&gt;
-</description>
+      <description>The MacOS application template in a newer version of Xcode defaults to using storyboards. To implement custom Undo and Redo operations it is necessary to implement to have your NSView implement NSWindowDelegate.
+Create an NSUndoManager for the view:
+NSUndoManager* undoManager;  Assign the delegate programmatically within initWithFrame and set your view as the first responder:
+NSWindow* mainWindow = [[[NSApplication sharedApplication] windows] objectAtIndex:0]; mainWindow.delegate = self; undoManager = [[NSUndoManager alloc] init]; [self becomeFirstResponder];  Then in the method where the undoable action takes place</description>
     </item>
     
     <item>
@@ -52,39 +30,9 @@ if(![undoManager isUndoing]) {
       <pubDate>Sat, 18 Mar 2017 21:32:56 +1100</pubDate>
       
       <guid>https://nspool.github.io/2017/03/building-opencv/</guid>
-      <description>&lt;p&gt;Clone the OpenCV and OpenCV_Contrib repos and checkout release 3.1.0:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git clone https://github.com/opencv/opencv.git
-git clone https://github.com/opencv/opencv_contrib.git
-cd opencv &amp;amp;&amp;amp; git checkout 3.1.0 &amp;amp;&amp;amp; cd ..
-cd opencv_contrib &amp;amp;&amp;amp; git checkout 3.1.0 &amp;amp;&amp;amp; cd ..
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Create a build directory, configure and build the project:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;mkdir opencv_build &amp;amp;&amp;amp; cd opencv_build
-cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;-D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_CUDA=OFF -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ../opencv/
-    make -j7 # runs 7 jobs in parallel
-    cd ..&lt;/p&gt;
-
-&lt;p&gt;Copy the contrib modules into the OpenCV project:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;cp -ri opencv_contrib/modules opencv/modules
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;To build an iOS framework:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;python opencv/platforms/ios/build_framework.py ios
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Similarly, to build the macOS framework:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;python opencv/platforms/osx/build_framework.py osx
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+      <description>Clone the OpenCV and OpenCV_Contrib repos and checkout release 3.1.0:
+git clone https://github.com/opencv/opencv.git git clone https://github.com/opencv/opencv_contrib.git cd opencv &amp;amp;&amp;amp; git checkout 3.1.0 &amp;amp;&amp;amp; cd .. cd opencv_contrib &amp;amp;&amp;amp; git checkout 3.1.0 &amp;amp;&amp;amp; cd ..  Create a build directory, configure and build the project:
+mkdir opencv_build &amp;amp;&amp;amp; cd opencv_build cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON  -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_CUDA=OFF -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ../opencv/ make -j7 # runs 7 jobs in parallel cd .</description>
     </item>
     
     <item>
@@ -93,49 +41,9 @@ cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON
       <pubDate>Wed, 16 Sep 2015 20:30:00 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/09/nsfilehandle/</guid>
-      <description>&lt;p&gt;If you are working with an NSFileHandle that encapsulated a pipe, it was possible to use a &lt;code&gt;@try-@catch&lt;/code&gt; block to handle a failed write.&lt;/p&gt;
-
-&lt;p&gt;In this example, fileHandle could represent an open socket, with the &lt;em&gt;SIGPIP&lt;/em&gt; thrown if the client disconnects unexpectedly and the pipe is closed:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-objective-c&#34; data-lang=&#34;objective-c&#34;&gt;@try
-{
-  [fileHandle writeData:fileData];
-}
-@catch (NSException *exception)
-{
-  // Ignore the SIGPIP
-}
-@finally
-{
-  CFRelease(fileData);
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Unfortunately in Swift 2.0 this isn&amp;rsquo;t possible; the analogous &lt;code&gt;try-catch&lt;/code&gt; doesn&amp;rsquo;t capture signals.&lt;/p&gt;
-
-&lt;p&gt;How can we can handle this in Swift?&lt;/p&gt;
-
-&lt;p&gt;My solution has been to fall back to the native BSD APIs. When creating the socket with &lt;code&gt;CFSocketCreate&lt;/code&gt; prevent &lt;em&gt;SIGPIP&lt;/em&gt; from being thrown by setting the option:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;var&lt;/span&gt; no_sig_pipe: Int32 = &lt;span style=&#34;color:#00f&#34;&gt;1&lt;/span&gt;
-setsockopt(CFSocketGetNative(socket),
-SOL_SOCKET,
-SO_NOSIGPIPE,
-&amp;amp;no_sig_pipe,
-socklen_t(sizeof(Int32)))&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;Then assuming the write is performed in a separate method, we can use a guard to perform a dummy write before the socket is used:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;guard&lt;/span&gt; (write(fileHandle.fileDescriptor, &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;nil&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;) == &lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;) &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;else&lt;/span&gt; {
-  CFRelease(fileData)
-    &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;false&lt;/span&gt;
-  }
-fileHandle.writeData(fileData)&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-
-&lt;p&gt;If the socket is closed then the guard will cleanup and return.&lt;/p&gt;
-</description>
+      <description>If you are working with an NSFileHandle that encapsulated a pipe, it was possible to use a @try-@catch block to handle a failed write.
+In this example, fileHandle could represent an open socket, with the SIGPIP thrown if the client disconnects unexpectedly and the pipe is closed:
+@try { [fileHandle writeData:fileData]; } @catch (NSException *exception) { // Ignore the SIGPIP } @finally { CFRelease(fileData); } Unfortunately in Swift 2.0 this isn&amp;rsquo;t possible; the analogous try-catch doesn&amp;rsquo;t capture signals.</description>
     </item>
     
     <item>
@@ -144,23 +52,9 @@ fileHandle.writeData(fileData)&lt;/code&gt;&lt;/pre&gt;
       <pubDate>Wed, 11 Dec 2013 09:00:00 +0000</pubDate>
       
       <guid>https://nspool.github.io/2013/12/status.net-on-mamp/</guid>
-      <description>&lt;p&gt;(Update: StatusNet is now &lt;a href=&#34;http://www.gnu.org/software/social/merge.html&#34;&gt;merged into GNU social&lt;/a&gt;)&lt;/p&gt;
-
-&lt;p&gt;StatusNet is a federated microblogging service. This is how I managed to setup a local server on my laptop under &lt;a href=&#34;https://www.mamp.info/&#34;&gt;MAMP&lt;/a&gt;.&lt;/p&gt;
-
-&lt;ol&gt;
-&lt;li&gt;Set MAMP PHP version to 5.2.*&lt;/li&gt;
-&lt;li&gt;Extract tar into htdocs&lt;/li&gt;
-&lt;li&gt;Fix permissions&lt;/li&gt;
-&lt;li&gt;Replace .htaccess with the htaccess.sample, filling out the values manually&lt;/li&gt;
-&lt;li&gt;Add statusnet database using phpmyadmin&lt;/li&gt;
-&lt;li&gt;Make sure statusnet database user has all the permissions.&lt;/li&gt;
-&lt;li&gt;Apply &lt;a href=&#34;http://pastebin.com/usWAGgB9&#34;&gt;this patch&lt;/a&gt;. If this isn&amp;rsquo;t applied doing a tweet status update will result in a HTTP 500.&lt;/li&gt;
-&lt;li&gt;Run the install script&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;StatusNet should now be running locally and be fully functional.&lt;/p&gt;
-</description>
+      <description>(Update: StatusNet is now merged into GNU social)
+StatusNet is a federated microblogging service. This is how I managed to setup a local server on my laptop under MAMP.
+ Set MAMP PHP version to 5.2.* Extract tar into htdocs Fix permissions Replace .htaccess with the htaccess.sample, filling out the values manually Add statusnet database using phpmyadmin Make sure statusnet database user has all the permissions. Apply this patch. If this isn&amp;rsquo;t applied doing a tweet status update will result in a HTTP 500.</description>
     </item>
     
   </channel>

@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>nspool&#39;s blog</title>
+    <title>Bitcoin on nspool&#39;s blog</title>
     <link>https://nspool.github.io/categories/bitcoin/</link>
     <description>Recent content in Bitcoin on nspool&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
     <lastBuildDate>Wed, 23 Dec 2015 15:30:00 +0000</lastBuildDate>
-    <atom:link href="/categories/bitcoin/" rel="self" type="application/rss+xml" />
+    
+	<atom:link href="https://nspool.github.io/categories/bitcoin/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Running a full Bitcoin node on a Debian VPS</title>
@@ -16,131 +18,10 @@
       <pubDate>Wed, 23 Dec 2015 15:30:00 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/12/bitcoin-on-linux/</guid>
-      <description>
-
-&lt;h2 id=&#34;1-building-bitcoin-core&#34;&gt;1. Building BitCoin-Core&lt;/h2&gt;
-
-&lt;p&gt;Install the build environment and dependencies&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo apt-get update
-sudo apt-get install build-essential autoconf libssl-dev libboost-dev libboost-chrono-dev libboost-filesystem-dev libboost-program-options-dev libboost-system-dev libboost-test-dev libboost-thread-dev libdb4.8++-dev libdb4.8-dev pkg-config
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Clone the Git repo and view available version:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git clone https://github.com/bitcoin/bitcoin.git
-git tag
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Checkout the last released version ie.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git checkout 0.9.5rc2
-cd bitcoin
-./autogen.sh
-./configure --without-gui
-sudo make install
-which bitcoind
-which bitcoin-cli
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now run setup Bitcoind&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoind
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;create .bitcoin/bitcoin.conf and add:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;rpcuser=bitcoinrpc
-rpcpassword=&amp;lt;password shown in the previous step&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now run Bitcoind and rebuild the blockchain:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoind -daemon
-tail -f ~/.bitcoin/debug.log
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;2-setting-up-a-wallet&#34;&gt;2. Setting up a wallet&lt;/h2&gt;
-
-&lt;p&gt;Set a password&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoin-cli encryptwallet &amp;lt;SECURE PASSWORD&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Restart the daemon if it isn&amp;rsquo;t running:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoind -daemon
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Login to the wallet:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoin-cli walletpassphrase &amp;lt;SECURE PASSWORD&amp;gt; 360
-bitcoin-cli getinfo
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Backup and Restore&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoin-cli backupwallet wallet.bak
-bitcoin-cli importwallet wallet.bak
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;View as human readable:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoin-cli dumpwallet wallet.txt
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now wait for the client to become synched with the blockchain&lt;/p&gt;
-
-&lt;h2 id=&#34;3-receiving-bitcoins&#34;&gt;3. Receiving bitcoins&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoin-cli getnewaddress
-&amp;lt;NEW ADDRESS APPEARS&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Send some bitcoins!&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;  bitcoin-cli getreceivedbyaddress &amp;lt;NEW ADDRESS APPEARS&amp;gt;
-  bitcoin-cli getbalance
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;4-stopping-the-vps-hypervisor-from-shutting-down-the-vm&#34;&gt;4. Stopping the VPS hypervisor from shutting down the VM&lt;/h3&gt;
-
-&lt;p&gt;While it is syncing the blockchain it will be verifying each and every block that it receives, and so the CPU usage will get so high that the VPS provider will keep shutting it down.&lt;/p&gt;
-
-&lt;p&gt;To avoid this, limit the CPU:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ echo daemon=0 &amp;gt;&amp;gt; ~/.bitcoin/bitcoin.conf
-$ cpulimit -l 90 bitcoind &amp;amp;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;How far along is it synching?&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;nspool@vps:~$ bitcoind getinfo
-{
-    &amp;quot;version&amp;quot; : 90500,
-    &amp;quot;protocolversion&amp;quot; : 70002,
-    &amp;quot;walletversion&amp;quot; : 60000,
-    &amp;quot;balance&amp;quot; : 0.00000000,
-    &amp;quot;blocks&amp;quot; : 299058,
-    &amp;quot;timeoffset&amp;quot; : 0,
-    &amp;quot;connections&amp;quot; : 13,
-    &amp;quot;proxy&amp;quot; : &amp;quot;&amp;quot;,
-    &amp;quot;difficulty&amp;quot; : 8000872135.96816349,
-    &amp;quot;testnet&amp;quot; : false,
-    &amp;quot;keypoololdest&amp;quot; : 1449355342,
-    &amp;quot;keypoolsize&amp;quot; : 100,
-    &amp;quot;unlocked_until&amp;quot; : 0,
-    &amp;quot;paytxfee&amp;quot; : 0.00000000,
-    &amp;quot;relayfee&amp;quot; : 0.00001000,
-    &amp;quot;errors&amp;quot; : &amp;quot;&amp;quot;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;It was 386959 last I checked on blockchain.info. So the progress is &lt;sup&gt;324173&lt;/sup&gt;&amp;frasl;&lt;sub&gt;386959&lt;/sub&gt; = ~77%&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;du -sh .bitcoin/blocks/
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+      <description>1. Building BitCoin-Core Install the build environment and dependencies
+sudo apt-get update sudo apt-get install build-essential autoconf libssl-dev libboost-dev libboost-chrono-dev libboost-filesystem-dev libboost-program-options-dev libboost-system-dev libboost-test-dev libboost-thread-dev libdb4.8++-dev libdb4.8-dev pkg-config  Clone the Git repo and view available version:
+git clone https://github.com/bitcoin/bitcoin.git git tag  Checkout the last released version ie.
+git checkout 0.9.5rc2 cd bitcoin ./autogen.sh ./configure --without-gui sudo make install which bitcoind which bitcoin-cli  Now run setup Bitcoind</description>
     </item>
     
   </channel>

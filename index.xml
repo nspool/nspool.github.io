@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>nspool&#39;s blog</title>
@@ -323,13 +322,13 @@ g this &#39;RTPSink&#39;.  (Current value is 100000.)
 
 &lt;p&gt;Edit the file &lt;code&gt;DynamicRTSPServer.cpp&lt;/code&gt; and any time this appears:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;  OutPacketBuffer::maxSize = &lt;span style=&#34;color:#00f&#34;&gt;100000&lt;/span&gt;;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;  OutPacketBuffer::maxSize = &lt;span style=&#34;color:#00f&#34;&gt;100000&lt;/span&gt;;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;change it to:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;  OutPacketBuffer::maxSize = &lt;span style=&#34;color:#00f&#34;&gt;200000&lt;/span&gt;;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;  OutPacketBuffer::maxSize = &lt;span style=&#34;color:#00f&#34;&gt;200000&lt;/span&gt;;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Then rebuild the Live555MediaServer with these commands:&lt;/p&gt;
 
@@ -444,26 +443,25 @@ git clone https://github.com/zeromq/cppzmq
 
 &lt;p&gt;Create a new directory containing a VagrantFile:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;Vagrant.configure(&amp;#34;2&amp;#34;) do |config|
-  # Number of nodes to provision
-  numNodes = 2
-  # IP Address Base for private network
-  ipAddrPrefix = &amp;#34;172.16.0.0&amp;#34;
-  # Download the initial box from this url
-  config.vm.box_url = &amp;#34;file:///Users/nspool/Boxes/NodeTemplate.box&amp;#34;
-  # Provision Config for each of the nodes
-  1.upto(numNodes) do |num|
-    nodeName = (&amp;#34;node&amp;#34; + num.to_s).to_sym
-      config.vm.define nodeName do |node|
-        node.vm.box = &amp;#34;NodeTemplate&amp;#34;
-        node.vm.network :private_network, ip: ipAddrPrefix + num.to_s
-        node.vm.provider &amp;#34;virtualbox&amp;#34; do |v|
-          v.name = &amp;#34;Cluster Node &amp;#34; + num.to_s
-        end
-      end
-    end
-  end&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;Vagrant.configure(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;2&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;do&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;|config&lt;span style=&#34;color:#00f&#34;&gt;|
+&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;  # Number of nodes to provision&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;numNodes&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;=&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# IP Address Base for private network&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;ipAddrPrefix&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;=&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;172.16.0.0&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Download the initial box from this url&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;config.vm.box_url&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;=&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;file:///Users/nspool/Boxes/NodeTemplate.box&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Provision Config for each of the nodes&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;1.&lt;/span&gt;upto(numNodes)&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;do&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;|num&lt;span style=&#34;color:#00f&#34;&gt;|
+&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;    nodeName = (&amp;#34;node&amp;#34; + num.to_s).to_sym&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;config.vm.define&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;nodeName&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;do&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;|node&lt;span style=&#34;color:#00f&#34;&gt;|
+&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;        node.vm.box = &amp;#34;NodeTemplate&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;node.vm.network&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;:private_network,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;ip:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;ipAddrPrefix&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;+&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;num.to_s&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;node.vm.provider&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;virtualbox&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;do&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;|v&lt;span style=&#34;color:#00f&#34;&gt;|
+&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;          v.name = &amp;#34;Cluster Node &amp;#34; + num.to_s&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;end&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;end&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;end&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;end&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;It should now be possible to SSH into each box by name, ie.
 vagrant ssh node1&lt;/p&gt;
@@ -685,14 +683,13 @@ get &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;/image&amp;#39;&lt;/span&gt;
 
   &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Return the image&lt;/span&gt;
   send_file open(path, &lt;span style=&#34;color:#00f&#34;&gt;type&lt;/span&gt;: &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;disposition&lt;/span&gt;: &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;inline&amp;#39;&lt;/span&gt;)
-&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;end&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;end&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;If we just want to serve a different image for each index and not worry about running out of images by choosing an image index that is too high, we can return the image at index modulo the number of available images.&lt;/p&gt;
 
 &lt;p&gt;Here is a more complete example that does just that:&lt;/p&gt;
 
-&lt;p&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-ruby&#34; data-lang=&#34;ruby&#34;&gt;require &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;sinatra&amp;#39;&lt;/span&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-ruby&#34; data-lang=&#34;ruby&#34;&gt;require &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;sinatra&amp;#39;&lt;/span&gt;
 get &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;/&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;do&lt;/span&gt;
 	&lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;Usage: /image?index=123&amp;#39;&lt;/span&gt;
 &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;end&lt;/span&gt;
@@ -703,8 +700,7 @@ get &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;/image&amp;#39;&lt;/span&gt;
 	redirect &lt;span style=&#34;color:#00f&#34;&gt;404&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;unless&lt;/span&gt; File.readable?(path)
 	content_type &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;
 	send_file open(path, &lt;span style=&#34;color:#00f&#34;&gt;type&lt;/span&gt;: &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;disposition&lt;/span&gt;: &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;inline&amp;#39;&lt;/span&gt;)
-&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;&lt;/p&gt;
+&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Run with &lt;code&gt;ruby server.rb&lt;/code&gt; then use URLs of the form &lt;code&gt;http://localhost:4567/image?index=123&lt;/code&gt;.&lt;/p&gt;
 </description>
@@ -720,19 +716,18 @@ get &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;/image&amp;#39;&lt;/span&gt;
 
 &lt;p&gt;In this example, fileHandle could represent an open socket, with the &lt;em&gt;SIGPIP&lt;/em&gt; thrown if the client disconnects unexpectedly and the pipe is closed:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-objective-c&#34; data-lang=&#34;objective-c&#34;&gt;@try
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-objective-c&#34; data-lang=&#34;objective-c&#34;&gt;&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;@try&lt;/span&gt;
 {
   [fileHandle writeData:fileData];
 }
-@catch (NSException *exception)
+&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;@catch&lt;/span&gt; (NSException *exception)
 {
-  // Ignore the SIGPIP
-}
-@finally
+  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Ignore the SIGPIP
+&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;}
+&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;@finally&lt;/span&gt;
 {
   CFRelease(fileData);
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Unfortunately in Swift 2.0 this isn&amp;rsquo;t possible; the analogous &lt;code&gt;try-catch&lt;/code&gt; doesn&amp;rsquo;t capture signals.&lt;/p&gt;
 
@@ -745,8 +740,7 @@ setsockopt(CFSocketGetNative(socket),
 SOL_SOCKET,
 SO_NOSIGPIPE,
 &amp;amp;no_sig_pipe,
-socklen_t(sizeof(Int32)))&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+socklen_t(sizeof(Int32)))&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Then assuming the write is performed in a separate method, we can use a guard to perform a dummy write before the socket is used:&lt;/p&gt;
 
@@ -754,8 +748,7 @@ socklen_t(sizeof(Int32)))&lt;/code&gt;&lt;/pre&gt;
   CFRelease(fileData)
     &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;false&lt;/span&gt;
   }
-fileHandle.writeData(fileData)&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+fileHandle.writeData(fileData)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;If the socket is closed then the guard will cleanup and return.&lt;/p&gt;
 </description>
@@ -773,8 +766,7 @@ fileHandle.writeData(fileData)&lt;/code&gt;&lt;/pre&gt;
 
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;(openssl x509 -inform PEM -in COMODORSADomainValidationSecureServerCA.crt; 
 openssl x509 -inform PEM -in COMODORSAAddTrustCA.crt; 
-openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) &amp;gt; ca_chain.pem&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) &amp;gt; ca_chain.pem&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;This will provide a file that is suitable for the &lt;code&gt;--certificate-chain&lt;/code&gt; parameter of &lt;code&gt;aws iam upload-server-certificate&lt;/code&gt;:&lt;/p&gt;
 
@@ -783,8 +775,7 @@ openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) &amp;gt; ca_chain.pem&l
 &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --certificate-body file://mycert.crt &lt;span style=&#34;color:#00f&#34;&gt;\
 &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --private-key file://mycert.key &lt;span style=&#34;color:#00f&#34;&gt;\
 &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --certificate-chain file://ca_chain.pem &lt;span style=&#34;color:#00f&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --path /cloudfront/&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --path /cloudfront/&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 </description>
     </item>
     
@@ -807,12 +798,10 @@ openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) &amp;gt; ca_chain.pem&l
 (require &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;asdf&lt;/span&gt;)
 (asdf:oos &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;asdf:load-op&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;swank&lt;/span&gt;)
 (setf swank:*communication-style* &lt;span style=&#34;color:#00f&#34;&gt;:fd-handler&lt;/span&gt;)
-(swank:create-server &lt;span style=&#34;color:#00f&#34;&gt;:dont-close&lt;/span&gt; t)&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+(swank:create-server &lt;span style=&#34;color:#00f&#34;&gt;:dont-close&lt;/span&gt; t)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Now in a seperate terminal window start a new instance of SSH to the remote machine, and forward the local port &lt;code&gt;4007&lt;/code&gt; to the remote port &lt;code&gt;4005&lt;/code&gt; which is used by &lt;em&gt;Swank&lt;/em&gt;:
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ssh -C -L4007:127.0.0.1:4005 $USER@$REMOTEIP&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ssh -C -L4007:127.0.0.1:4005 $USER@$REMOTEIP&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/p&gt;
 
 &lt;p&gt;Now tell &lt;em&gt;SLIME&lt;/em&gt; to connect to the remote machine. In Emacs type &lt;code&gt;M-x slime-connect&lt;/code&gt; and choose &lt;code&gt;127.0.0.1&lt;/code&gt; and port &lt;code&gt;4007&lt;/code&gt;.&lt;/p&gt;
 
@@ -822,14 +811,12 @@ openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) &amp;gt; ca_chain.pem&l
 (clack:clackup
   (lambda (env)
     (declare (ignore env))
-    &amp;#39;(&lt;span style=&#34;color:#00f&#34;&gt;200&lt;/span&gt; (&lt;span style=&#34;color:#00f&#34;&gt;:content-type&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;text/plain&amp;#34;&lt;/span&gt;)(break) (&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;Hello, Clack!&amp;#34;&lt;/span&gt;))))&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+    &amp;#39;(&lt;span style=&#34;color:#00f&#34;&gt;200&lt;/span&gt; (&lt;span style=&#34;color:#00f&#34;&gt;:content-type&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;text/plain&amp;#34;&lt;/span&gt;)(break) (&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;Hello, Clack!&amp;#34;&lt;/span&gt;))))&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Use Curl on the development machine and you should see:&lt;/p&gt;
 
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;curl http://$REMOTEIP:5000
-Hello, Clack!&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+Hello, Clack!&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;To change the server text to &lt;code&gt;Hello, World!&lt;/code&gt;:&lt;/p&gt;
 
@@ -837,8 +824,7 @@ Hello, Clack!&lt;/code&gt;&lt;/pre&gt;
 (clack:clackup
   (lambda (env)
   (declare (ignore env))
-  &amp;#39;(&lt;span style=&#34;color:#00f&#34;&gt;200&lt;/span&gt; (&lt;span style=&#34;color:#00f&#34;&gt;:content-type&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;text/plain&amp;#34;&lt;/span&gt;)(break) (&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;Hello, World!&amp;#34;&lt;/span&gt;))))&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+  &amp;#39;(&lt;span style=&#34;color:#00f&#34;&gt;200&lt;/span&gt; (&lt;span style=&#34;color:#00f&#34;&gt;:content-type&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;text/plain&amp;#34;&lt;/span&gt;)(break) (&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;Hello, World!&amp;#34;&lt;/span&gt;))))&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Enjoy!&lt;/p&gt;
 </description>
@@ -853,8 +839,7 @@ Hello, Clack!&lt;/code&gt;&lt;/pre&gt;
       <description>&lt;p&gt;Here is a Mathematica snippit to count the number of &lt;a href=&#34;http://oeis.org/A007770&#34;&gt;Happy Numbers&lt;/a&gt; up to 1000:&lt;/p&gt;
 
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-mathematica&#34; data-lang=&#34;mathematica&#34;&gt;Length[Select[Range[&lt;span style=&#34;color:#00f&#34;&gt;1000&lt;/span&gt;],&lt;span style=&#34;color:#bbb&#34;&gt; 
-&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;FixedPoint[Total[IntegerDigits[#]^&lt;span style=&#34;color:#00f&#34;&gt;2&lt;/span&gt;]&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&amp;amp;,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;#,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;10&lt;/span&gt;]&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;==&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&amp;amp;]]&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;FixedPoint[Total[IntegerDigits[#]^&lt;span style=&#34;color:#00f&#34;&gt;2&lt;/span&gt;]&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&amp;amp;,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;#,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;10&lt;/span&gt;]&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;==&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&amp;amp;]]&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 </description>
     </item>
     
@@ -885,13 +870,11 @@ Hello, Clack!&lt;/code&gt;&lt;/pre&gt;
       <guid>https://nspool.github.io/2015/01/cracking-a-xor/</guid>
       <description>&lt;p&gt;In days part there were sites known to store login status in a client-side cookie obscured by a XOR cyper. When first visting the site some code like this would run:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-perl&#34; data-lang=&#34;perl&#34;&gt;$cookie = xor_crypt($json_encode(array(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;login&amp;#34;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;false&amp;#34;&lt;/span&gt;)));&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-perl&#34; data-lang=&#34;perl&#34;&gt;$cookie = xor_crypt($json_encode(array(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;login&amp;#34;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;false&amp;#34;&lt;/span&gt;)));&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;Then &lt;code&gt;$cookie&lt;/code&gt; would be set on the client side, something like &lt;code&gt;data=GkAPXlVaD0BZE1RSDREGE08=&lt;/code&gt;. A successful login would containg a similar:&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-perl&#34; data-lang=&#34;perl&#34;&gt;$cookie = xor_crypt($json_encode(array(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;login&amp;#34;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;true&amp;#34;&lt;/span&gt;)));&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-perl&#34; data-lang=&#34;perl&#34;&gt;$cookie = xor_crypt($json_encode(array(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;login&amp;#34;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;true&amp;#34;&lt;/span&gt;)));&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;That would result in the cookie &lt;code&gt;data=GkAPXlVaD0BZE0ZBFAdBTA==&lt;/code&gt;. Looking at there two values it is plain that they are very similar. That only a few positions have changed indicate a basic &lt;a href=&#34;http://en.wikipedia.org/wiki/Symmetric-key_algorithm&#34;&gt;symmetric cypher&lt;/a&gt;, in this case just a simple XOR of the JSON value against a fixed key.&lt;/p&gt;
 
@@ -903,8 +886,7 @@ $key = &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;;
 
 &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;for&lt;/span&gt;($i=&lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;;$i&amp;lt;strlen($ct);$i++) {
   $key .= $ct[$i] ^ $pt[$i % strlen($pt)];
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;This gives &lt;code&gt;abc123abc123abc123abc1 ..&lt;/code&gt; which is both human readable and contains repetitive.&lt;/p&gt;
 
@@ -924,11 +906,10 @@ $key = &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;;
 
 &lt;p&gt;In the meantime here&amp;rsquo;s an example of using &lt;code&gt;netcat&lt;/code&gt; to do a HTTP request containing a cookie. For good measure parameter &lt;code&gt;-p 24&lt;/code&gt; forces the server to reply to the client on port 42.&lt;/p&gt;
 
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;#!/bin/bash
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;head=&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;GET http://www.example.org HTTP/1.1\r\nHost: .example.org\r\nCookie: VALUE=ABC123;\r\nAccept: */*\r\nConnection: Close\r\n\r\n&amp;#34;&lt;/span&gt;;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#008080&#34;&gt;#!/bin/bash
+&lt;/span&gt;&lt;span style=&#34;color:#008080&#34;&gt;&lt;/span&gt;head=&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;GET http://www.example.org HTTP/1.1\r\nHost: .example.org\r\nCookie: VALUE=ABC123;\r\nAccept: */*\r\nConnection: Close\r\n\r\n&amp;#34;&lt;/span&gt;;
 echo -ne $head | nc -p42 www.example.org &lt;span style=&#34;color:#00f&#34;&gt;80&lt;/span&gt;
-#=&amp;gt; Using port &lt;span style=&#34;color:#00f&#34;&gt;42&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;for&lt;/span&gt; the reply.&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
+&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;#=&amp;gt; Using port 42 for the reply.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 </description>
     </item>
     
