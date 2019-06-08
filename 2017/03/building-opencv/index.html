@@ -12,14 +12,12 @@
     
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
     <link rel="shortcut icon" href="/favicon.ico">
-    
-    <link href="" rel="alternate" type="application/rss+xml" title="nspool&#39;s blog" />
 </head>
 
   <body>
     <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="https://nspool.github.io">nspool&#39;s blog</a>
+        <a class="navbar-brand" href="https://nspool.github.io">Programming Notes</a>
         <div class="collapse navbar-collapse" id="navbar-right">
             <ul class="nav navbar-nav navbar-right">
                 
@@ -47,11 +45,10 @@ cd opencv_contrib &amp;&amp; git checkout 3.1.0 &amp;&amp; cd ..
 
 <pre><code>mkdir opencv_build &amp;&amp; cd opencv_build
 cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON
+-D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_CUDA=OFF -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ../opencv/
+make -j7 # runs 7 jobs in parallel
+cd ..
 </code></pre>
-
-<p>-D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_CUDA=OFF -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ../opencv/
-    make -j7 # runs 7 jobs in parallel
-    cd ..</p>
 
 <p>Copy the contrib modules into the OpenCV project:</p>
 
@@ -129,18 +126,6 @@ cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON
 		
 		<a href="https://nspool.github.io/categories/zeromq">zeromq &nbsp;</a>
 		
-			<div class="col-md-3">
-				<div class="form-group">
-					<p>
-						<span class="fa fa-fw fa-github"></span>
-						<a href="https://github.com/nspool">nspool</a>
-						<br>
-						<span class="fa fa-fw fa-twitter"></span>
-						<a href="https://twitter.com/"></a>
-                                                
-					</p>
-				</div>
-			</div>
 		</div>
 	</div>
 </footer>

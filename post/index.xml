@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on nspool&#39;s blog</title>
+    <title>Posts on Programming Notes</title>
     <link>https://nspool.github.io/post/</link>
-    <description>Recent content in Posts on nspool&#39;s blog</description>
+    <description>Recent content in Posts on Programming Notes</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
@@ -54,7 +54,7 @@ Step 1: Build libSDL2.a for each target Download the SDL2 source from the offici
       <guid>https://nspool.github.io/2017/03/building-opencv/</guid>
       <description>Clone the OpenCV and OpenCV_Contrib repos and checkout release 3.1.0:
 git clone https://github.com/opencv/opencv.git git clone https://github.com/opencv/opencv_contrib.git cd opencv &amp;amp;&amp;amp; git checkout 3.1.0 &amp;amp;&amp;amp; cd .. cd opencv_contrib &amp;amp;&amp;amp; git checkout 3.1.0 &amp;amp;&amp;amp; cd ..  Create a build directory, configure and build the project:
-mkdir opencv_build &amp;amp;&amp;amp; cd opencv_build cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON  -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_CUDA=OFF -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ../opencv/ make -j7 # runs 7 jobs in parallel cd .</description>
+mkdir opencv_build &amp;amp;&amp;amp; cd opencv_build cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_CUDA=OFF -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ../opencv/ make -j7 # runs 7 jobs in parallel cd .</description>
     </item>
     
     <item>

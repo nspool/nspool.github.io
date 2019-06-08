@@ -1,13 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>nspool&#39;s blog</title>
+    <title>Programming Notes</title>
     <link>https://nspool.github.io/</link>
-    <description>Recent content in nspool&#39;s blog on nspool&#39;s blog</description>
+    <description>Recent content on Programming Notes</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.</copyright>
     <lastBuildDate>Fri, 06 Apr 2018 21:11:00 +1000</lastBuildDate>
-    <atom:link href="/" rel="self" type="application/rss+xml" />
+    
+        <atom:link href="https://nspool.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>Adding a syscall to Minix 2</title>
@@ -15,110 +18,9 @@
       <pubDate>Fri, 06 Apr 2018 21:11:00 +1000</pubDate>
       
       <guid>https://nspool.github.io/2018/04/minix-syscall/</guid>
-      <description>
-
-&lt;h2 id=&#34;getting-minix-2&#34;&gt;Getting Minix 2&lt;/h2&gt;
-
-&lt;p&gt;Older Minix versions are available from the &lt;a href=&#34;http://wiki.minix3.org/doku.php?id=www:download:previousversions&#34;&gt;Minix 3 official website&lt;/a&gt;.
-If using a VM I would recommend the HD image from the &lt;a href=&#34;https://github.com/davidgiven/minix2&#34;&gt;Minix 2 Quick and Dirty edition&lt;/a&gt;. This is what I used for this blog post.&lt;/p&gt;
-
-&lt;h2 id=&#34;running-in-virtualbox&#34;&gt;Running in VirtualBox&lt;/h2&gt;
-
-&lt;p&gt;If using the Quick and Dirty edition HDD image from the link above, first convert it to VDI format:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;VBoxManage convertdd minix-2.0-hd-64MB.img minix-2.0-hd-64MB.vdi  --format VDI
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Create a Linux 2.4 32-bit VM with 64mb of RAM. Make sure that the storage controller is IDE.&lt;/p&gt;
-
-&lt;h2 id=&#34;building-the-kernel&#34;&gt;Building the kernel&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code&gt;cd /usr/src/tools
-make
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This should build the kernel and out bootable kernel file named &lt;code&gt;image&lt;/code&gt;. Copy it into the directory containing the kernel:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;cp image /minix/custom
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now reboot Minix with the new kernel image. Perform a clean shutdown of the OS:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;shutdown
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;From the Supervisor, set our custom kernel image as the kernel and boot back into Minix:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;name=/minix/custom
-boot
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;adding-a-syscall-to-the-memory-manager-server&#34;&gt;Adding a syscall to the memory manager server&lt;/h2&gt;
-
-&lt;h3 id=&#34;usr-include-minix-callnr-h&#34;&gt;/usr/include/minix/callnr.h&lt;/h3&gt;
-
-&lt;p&gt;increment NCALLS and allocate an number for the new syscall:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;#define HELLOWORLD 78
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;usr-src-mm-main-c&#34;&gt;/usr/src/mm/main.c&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;PUBLIC void do_helloworld()
-{
-    message msg;
-    msg = mm_in;
-    _taskcall(SYSTASK, SYS_HELLO, &amp;amp;msg);
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;usr-src-mm-proto-h&#34;&gt;/usr/src/mm/proto.h&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;_PROTOTYPE(void do_helloworld, (void));
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;usr-src-mm-table-c&#34;&gt;/usr/src/mm/table.c&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;do_helloworld, /* 78 = HELLOWORLD */
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;usr-src-fs-table-c&#34;&gt;/usr/src/fs/table.c&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;no_sys , /* 78 = HELLOWORLD */
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;usr-include-minix-com-h&#34;&gt;/usr/include/minix/com.h&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;#define SYS_HELLOWORLD 22 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;usr-src-kernel-system-c&#34;&gt;/usr/src/kernel/system.c&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;case SYS_HELLOWORLD: r = do_helloworld(&amp;amp;m); break;
-
-PRIVATE int do_helloworld(m_ptr)
-register message *m_ptr;
-{
-    printf(&amp;quot;Hello, World\n&amp;quot;);
-    return(OK);
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;calling-the-syscall-from-user-land&#34;&gt;Calling the syscall from user land&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code&gt;#include &amp;lt;lib.h&amp;gt;
-
-int main(int argc, char** argv)
-{
-    int ret;
-    message msg;
-    ret = _syscall(MM, HELLOWORLD, &amp;amp;msg);
-    return ret;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Build this program with &lt;code&gt;cc -o hello hello.c&lt;/code&gt;. Running &lt;code&gt;./hello&lt;/code&gt; should output &lt;em&gt;Hello, World&lt;/em&gt; from the new syscall.&lt;/p&gt;
-</description>
+      <description>Getting Minix 2 Older Minix versions are available from the Minix 3 official website. If using a VM I would recommend the HD image from the Minix 2 Quick and Dirty edition. This is what I used for this blog post.
+Running in VirtualBox If using the Quick and Dirty edition HDD image from the link above, first convert it to VDI format:
+VBoxManage convertdd minix-2.0-hd-64MB.img minix-2.0-hd-64MB.vdi --format VDI  Create a Linux 2.</description>
     </item>
     
     <item>
@@ -127,34 +29,10 @@ int main(int argc, char** argv)
       <pubDate>Mon, 15 Jan 2018 21:24:00 +1100</pubDate>
       
       <guid>https://nspool.github.io/2018/01/nsundomanager/</guid>
-      <description>&lt;p&gt;The MacOS application template in a newer version of Xcode defaults to using storyboards. To implement custom Undo and Redo operations it is necessary to implement to have  your NSView implement &lt;code&gt;NSWindowDelegate&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;Create an &lt;code&gt;NSUndoManager&lt;/code&gt; for the view:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;NSUndoManager* undoManager;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Assign the delegate programmatically within &lt;code&gt;initWithFrame&lt;/code&gt; and set your view as the first responder:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;NSWindow* mainWindow = [[[NSApplication sharedApplication] windows] objectAtIndex:0];
-mainWindow.delegate = self;
-undoManager = [[NSUndoManager alloc] init];
-    [self becomeFirstResponder];
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then in the method where the undoable action takes place&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;[[undoManager prepareWithInvocationTarget:self] undoAction];
-
-if(![undoManager isUndoing]) {
-    [undoManager setActionName:@&amp;quot;Select&amp;quot;];
-} 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Where &lt;code&gt;undoAction&lt;/code&gt; is the method on your view.&lt;/p&gt;
-
-&lt;p&gt;For a working example see &lt;a href=&#34;https://github.com/nspool/pocket-life/blob/master/Pocket%20Life/LifeView.m&#34;&gt;this LifeView.m in my Game of Life cocoa app&lt;/a&gt;.&lt;/p&gt;
-</description>
+      <description>The MacOS application template in a newer version of Xcode defaults to using storyboards. To implement custom Undo and Redo operations it is necessary to implement to have your NSView implement NSWindowDelegate.
+Create an NSUndoManager for the view:
+NSUndoManager* undoManager;  Assign the delegate programmatically within initWithFrame and set your view as the first responder:
+NSWindow* mainWindow = [[[NSApplication sharedApplication] windows] objectAtIndex:0]; mainWindow.delegate = self; undoManager = [[NSUndoManager alloc] init]; [self becomeFirstResponder];  Then in the method where the undoable action takes place</description>
     </item>
     
     <item>
@@ -163,39 +41,9 @@ if(![undoManager isUndoing]) {
       <pubDate>Sun, 19 Mar 2017 21:24:00 +1100</pubDate>
       
       <guid>https://nspool.github.io/2017/03/building-fat-library/</guid>
-      <description>
-
-&lt;p&gt;&lt;em&gt;Updated 2017-11-19: Rewrote for clarity and removed references to the 32-bit simulator which has been removed from the default install as of Xcode 9&lt;/em&gt;&lt;/p&gt;
-
-&lt;hr/&gt;
-
-&lt;p&gt;For iOS development it is handy to have a single SDL2 library that supports both the simulator and the physical device. This is how to create a libSDL2.a that can be used for both.&lt;/p&gt;
-
-&lt;h2 id=&#34;step-1-build-libsdl2-a-for-each-target&#34;&gt;Step 1: Build libSDL2.a for each target&lt;/h2&gt;
-
-&lt;p&gt;Download the SDL2 source from &lt;a href=&#34;https://libsdl.org/download-2.0.php&#34;&gt;the official SDL website&lt;/a&gt; and verify the integrity of the source package using GPG.&lt;/p&gt;
-
-&lt;p&gt;Extract the source. There will be a folder named Xcode-iOS that is used to build the iOS version of the library.&lt;/p&gt;
-
-&lt;p&gt;Now build the project twice, once against the simulator and then against an actual device. This will build a version of the library for each architecture.&lt;/p&gt;
-
-&lt;p&gt;In the project navigator right-click the Product folder. There will be two output libraries named &lt;code&gt;libSDL2.a&lt;/code&gt;.  Select one of them and choose &lt;code&gt;Show in Finder&lt;/code&gt;. Go up a directory and there should be two folders: &lt;code&gt;Debug-iphoneos&lt;/code&gt; and &lt;code&gt;Debug-iphonesimulator&lt;/code&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;step-2-combine-into-a-single-library&#34;&gt;Step 2: Combine into a single library&lt;/h2&gt;
-
-&lt;p&gt;Use the macOS &lt;code&gt;lipo&lt;/code&gt; command command to combine the two output libraries into a single library.&lt;/p&gt;
-
-&lt;p&gt;Open Terminal and cd to the Build/Projects directory containing the two folders listed above.&lt;/p&gt;
-
-&lt;p&gt;The following &lt;code&gt;lipo&lt;/code&gt; command can be used to combine them and but the resulting library in the home directory:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;lipo -create Debug-iphoneos/libSDL2.a Debug-iphonesimulator/libSDL2.a -output ~/libSDL2.a
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Linking against this libSDL2.a will allow the project to run in either the simulator or the physical device.&lt;/p&gt;
-
-&lt;p&gt;For App Store submission you may wish to replace this with the SDL2 framework without debugging symbols so that the binary size is smaller.&lt;/p&gt;
-</description>
+      <description>Updated 2017-11-19: Rewrote for clarity and removed references to the 32-bit simulator which has been removed from the default install as of Xcode 9
+ For iOS development it is handy to have a single SDL2 library that supports both the simulator and the physical device. This is how to create a libSDL2.a that can be used for both.
+Step 1: Build libSDL2.a for each target Download the SDL2 source from the official SDL website and verify the integrity of the source package using GPG.</description>
     </item>
     
     <item>
@@ -204,39 +52,9 @@ if(![undoManager isUndoing]) {
       <pubDate>Sat, 18 Mar 2017 21:32:56 +1100</pubDate>
       
       <guid>https://nspool.github.io/2017/03/building-opencv/</guid>
-      <description>&lt;p&gt;Clone the OpenCV and OpenCV_Contrib repos and checkout release 3.1.0:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git clone https://github.com/opencv/opencv.git
-git clone https://github.com/opencv/opencv_contrib.git
-cd opencv &amp;amp;&amp;amp; git checkout 3.1.0 &amp;amp;&amp;amp; cd ..
-cd opencv_contrib &amp;amp;&amp;amp; git checkout 3.1.0 &amp;amp;&amp;amp; cd ..
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Create a build directory, configure and build the project:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;mkdir opencv_build &amp;amp;&amp;amp; cd opencv_build
-cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;-D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_CUDA=OFF -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ../opencv/
-    make -j7 # runs 7 jobs in parallel
-    cd ..&lt;/p&gt;
-
-&lt;p&gt;Copy the contrib modules into the OpenCV project:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;cp -ri opencv_contrib/modules opencv/modules
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;To build an iOS framework:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;python opencv/platforms/ios/build_framework.py ios
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Similarly, to build the macOS framework:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;python opencv/platforms/osx/build_framework.py osx
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+      <description>Clone the OpenCV and OpenCV_Contrib repos and checkout release 3.1.0:
+git clone https://github.com/opencv/opencv.git git clone https://github.com/opencv/opencv_contrib.git cd opencv &amp;amp;&amp;amp; git checkout 3.1.0 &amp;amp;&amp;amp; cd .. cd opencv_contrib &amp;amp;&amp;amp; git checkout 3.1.0 &amp;amp;&amp;amp; cd ..  Create a build directory, configure and build the project:
+mkdir opencv_build &amp;amp;&amp;amp; cd opencv_build cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_CUDA=OFF -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ../opencv/ make -j7 # runs 7 jobs in parallel cd .</description>
     </item>
     
     <item>
@@ -245,98 +63,9 @@ cmake -D CMAKE_BUILD_TYPE=Release -D APPLE_FRAMEWORK=ON
       <pubDate>Mon, 01 Feb 2016 20:10:00 +0000</pubDate>
       
       <guid>https://nspool.github.io/2016/02/building-live555/</guid>
-      <description>
-
-&lt;h3 id=&#34;update-2017-08-23&#34;&gt;Update 2017-08-23&lt;/h3&gt;
-
-&lt;p&gt;Thanks to &lt;a href=&#34;https://github.com/kwikwag&#34;&gt;@kwikwag&lt;/a&gt; for making a Windows batch file to simplify all this! Find it &lt;a href=&#34;https://gist.github.com/kwikwag/c8b715a056b69b5fc07efe05e42187b1&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;hr&gt;
-
-&lt;p&gt;Live555 is an excellent RTSP library for Windows, but can be a bit tricky to build. These are the instructions that I follow to build it in Visual Studio 2015 in Windows 10 Professional.&lt;/p&gt;
-
-&lt;h2 id=&#34;1-extract-the-live555-latest-tar-gz-into-your-source-directory&#34;&gt;1) Extract the &lt;code&gt;live555-latest.tar.gz&lt;/code&gt; into your source directory.&lt;/h2&gt;
-
-&lt;h2 id=&#34;2-make-the-following-changes-to-the-win32config-file&#34;&gt;2) Make the following changes to the win32config file:&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Change &lt;code&gt;msvcirt.lib&lt;/code&gt; to &lt;code&gt;msvcrt.lib&lt;/code&gt;.&lt;/li&gt;
-&lt;li&gt;Comment out the &lt;code&gt;ntwin32.mak&lt;/code&gt; include. ie:&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;code&gt;#!include &amp;lt;ntwin32.mak&amp;gt;&lt;/code&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;If you&amp;rsquo;ve installed Visual Studio in the default location then change TOOLS32 to:
-&lt;code&gt;TOOLS32 = C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&#34;3-run-vsvars32-bat-and-build-the-make-files&#34;&gt;3) Run &lt;code&gt;vsvars32.bat&lt;/code&gt; and build the make files&lt;/h2&gt;
-
-&lt;p&gt;Open an MSBuild for Visual Studio 2015 command prompt. Set the environment variables by running this batch file:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;quot;\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\vsvars32.bat&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Build the make files run running:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;genWindowsMakefiles
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;4-build-the-project&#34;&gt;4) Build the project!&lt;/h2&gt;
-
-&lt;p&gt;Now you’re ready to build! Build each of the components of the project in this order:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;cd liveMedia
-nmake /B -f liveMedia.mak
-cd ..\groupsock
-nmake /B -f groupsock.mak
-cd ..\UsageEnvironment
-nmake /B -f UsageEnvironment.mak
-cd ..\BasicUsageEnvironment
-nmake /B -f BasicUsageEnvironment.mak
-cd ..\testProgs
-nmake /B -f testProgs.mak
-cd ..\mediaServer
-nmake /B -f mediaServer.mak
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;If you encounter a linker errors when compiling any of the executable projects (like the Live555MediaServer) then build that project manually by entering the command displayed by nmake, but without the &lt;code&gt;out:&lt;/code&gt; parameter and including the ws2_32 library, for example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;cl ws2_32.lib msvcrt.lib live555MediaServer.obj DynamicRTSPServer.obj ../liveMedia/libliveMedia.lib ../groupsock/libgroupsock.lib  ../BasicUsageEnvironment/libBasicUsageEnvironment.lib ../UsageEnvironment/libUsageEnvironment.lib
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This should give a valid &lt;code&gt;Live555MediaServer.exe&lt;/code&gt; that is ready to run!&lt;/p&gt;
-
-&lt;hr&gt;
-
-&lt;h1 id=&#34;extending-live555mediaserver-to-cope-with-large-frames&#34;&gt;Extending Live555MediaServer to cope with large frames&lt;/h1&gt;
-
-&lt;p&gt;Live555MediaServer sometimes cannot handle large 1080p frames and will throw this error:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;MultiFramedRTPSink::afterGettingFrame1(): The input frame data was too large for
-our buffer size (100452).  3712 bytes of trailing data was dropped!  Correct th
-is by increasing &#34;OutPacketBuffer::maxSize&#34; to at least 103712, *before* creatin
-g this &#39;RTPSink&#39;.  (Current value is 100000.)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Edit the file &lt;code&gt;DynamicRTSPServer.cpp&lt;/code&gt; and any time this appears:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;  OutPacketBuffer::maxSize = &lt;span style=&#34;color:#00f&#34;&gt;100000&lt;/span&gt;;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;change it to:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;  OutPacketBuffer::maxSize = &lt;span style=&#34;color:#00f&#34;&gt;200000&lt;/span&gt;;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Then rebuild the Live555MediaServer with these commands:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;del *.obj
-del Live555MediaServer.exe
-cl ws2_32.lib msvcrt.lib live555MediaServer.obj DynamicRTSPServer.obj ../liveMedia/libliveMedia.lib ../groupsock/libgroupsock.lib  ../BasicUsageEnvironment/libBasicUsageEnvironment.lib ../UsageEnvironment/libUsageEnvironment.lib
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+      <description>Update 2017-08-23 Thanks to @kwikwag for making a Windows batch file to simplify all this! Find it here.
+ Live555 is an excellent RTSP library for Windows, but can be a bit tricky to build. These are the instructions that I follow to build it in Visual Studio 2015 in Windows 10 Professional.
+1) Extract the live555-latest.tar.gz into your source directory. 2) Make the following changes to the win32config file:  Change msvcirt.</description>
     </item>
     
     <item>
@@ -345,187 +74,9 @@ cl ws2_32.lib msvcrt.lib live555MediaServer.obj DynamicRTSPServer.obj ../liveMed
       <pubDate>Sat, 26 Dec 2015 10:00:00 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/12/zeromq-virtualbox/</guid>
-      <description>
-
-&lt;hr&gt;
-
-&lt;p&gt;ZeroMQ is a powerful library for network programming.&lt;/p&gt;
-
-&lt;p&gt;But &lt;strong&gt;it&amp;rsquo;s no fun to just connecting to localhost!&lt;/strong&gt; By building a single Ubuntu VM and saving it as a Vagrant box, we can spin up as many clients as the machine can handle!&lt;/p&gt;
-
-&lt;h3 id=&#34;install-ubuntu-14-04-into-a-virtualbox-vm&#34;&gt;Install Ubuntu 14.04 into a VirtualBox VM&lt;/h3&gt;
-
-&lt;p&gt;Remeber to Install Ubuntu with user &amp;lsquo;Vagrant&amp;rsquo; and forward port 22 to work from the host.
-Tested with ubuntu-14.04.3-server-amd64.iso&lt;/p&gt;
-
-&lt;h3 id=&#34;setting-up-vagrant&#34;&gt;Setting up Vagrant&lt;/h3&gt;
-
-&lt;p&gt;It is best just to follow &lt;a href=&#34;https://docs.vagrantup.com/v2/boxes/base.html&#34;&gt;https://docs.vagrantup.com/v2/boxes/base.html&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;This is the default Vagrant public key. Add it to .ssh/authorized_keys by default. Vagrant will change it later:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eWW6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXPITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pzC6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZEnDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXzcWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ== vagrant insecure public key
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Also enable passwordless sudo for the vagrant user to the end of the sudoers file:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;vagrant ALL=(ALL) NOPASSWD: ALL
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;install-virtualbox-additions&#34;&gt;Install VirtualBox Additions&lt;/h3&gt;
-
-&lt;p&gt;sudo apt-get -y install libtool pkg-config linux-headers-generic build-essential dkms autoconf automake git
-Install the VirtualBox guest additions.
-Devices -&amp;gt; Insert Guest Additions CD Image
-sudo mount /dev/cdrom /media/cdrom
-sudo sh /media/cdrom/VBoxLinuxAdditions.run&lt;/p&gt;
-
-&lt;h3 id=&#34;install-dependencies&#34;&gt;Install Dependencies&lt;/h3&gt;
-
-&lt;p&gt;ZeroMQ uses Libsodium for encryption, but this is not available in the 14.04 LTS repos.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;wget -c https://download.libsodium.org/libsodium/releases/libsodium-1.0.8.tar.gz  http://download.zeromq.org/zeromq-4.1.4.tar.gz  
-tar -xf libsodium-1.0.8.tar.gz
-./configure --prefix=/usr &amp;amp;&amp;amp; make
-sudo make install
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;install-zeromq&#34;&gt;Install ZeroMQ&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;cd ~
-tar -xzf zeromq-4.1.4.tar.gz &amp;amp;&amp;amp; cd zeromq-4.1.4
-./configure --prefix=/usr &amp;amp;&amp;amp; make
-sudo make install
-cd ~
-git clone https://github.com/zeromq/cppzmq
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;install-rmate-optional&#34;&gt;Install rmate (Optional)&lt;/h3&gt;
-
-&lt;p&gt;For any TextMate users that prefer to use their host machine for editing:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo apt-get -y install ruby &amp;amp;&amp;amp; sudo gem install rmate
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Textmate remote:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ssh -p8022 -R 52698:localhost:52698 127.0.0.1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;So now a command in the VM such as:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;rmate test.cc
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Will open textmate locally if rmate is enabled under TextMate preferences.&lt;/p&gt;
-
-&lt;h3 id=&#34;testing-that-it-works&#34;&gt;Testing that it works&lt;/h3&gt;
-
-&lt;p&gt;Download the &lt;code&gt;hwserver&lt;/code&gt; example from the ZeroMQ documentation and compile it:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;gcc hwserver.c -o hwserver -lzmq
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;With the C++ bindings come in the box we should also be able to compile the hwserver C++ example:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;g++ hwserver.cpp -o hwserver -lzmq
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Remember to include the &lt;code&gt;zmq.hpp&lt;/code&gt; cloned previously.&lt;/p&gt;
-
-&lt;h3 id=&#34;packaging-the-vm&#34;&gt;Packaging the VM&lt;/h3&gt;
-
-&lt;p&gt;Once we have verified that the VM will build a ZeroMQ project, we can package it using Vagrant for reuse.&lt;/p&gt;
-
-&lt;p&gt;Create a box called NodeTemplate from a VM called BaseNode into the directory ~/Boxes:&lt;/p&gt;
-
-&lt;p&gt;&lt;code&gt;vagrant package --base BaseNode --output ~/Boxes/NodeTemplate.box&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;Create a new directory containing a VagrantFile:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;Vagrant.configure(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;2&amp;#34;&lt;/span&gt;)&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;do&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;|config&lt;span style=&#34;color:#00f&#34;&gt;|
-&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;  # Number of nodes to provision&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;numNodes&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;=&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;2&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# IP Address Base for private network&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;ipAddrPrefix&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;=&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;172.16.0.0&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Download the initial box from this url&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;config.vm.box_url&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;=&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;file:///Users/nspool/Boxes/NodeTemplate.box&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Provision Config for each of the nodes&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;1.&lt;/span&gt;upto(numNodes)&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;do&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;|num&lt;span style=&#34;color:#00f&#34;&gt;|
-&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;    nodeName = (&amp;#34;node&amp;#34; + num.to_s).to_sym&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;config.vm.define&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;nodeName&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;do&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;|node&lt;span style=&#34;color:#00f&#34;&gt;|
-&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;        node.vm.box = &amp;#34;NodeTemplate&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;node.vm.network&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;:private_network,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;ip:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;ipAddrPrefix&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;+&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;num.to_s&lt;span style=&#34;color:#bbb&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;node.vm.provider&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;virtualbox&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;do&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;|v&lt;span style=&#34;color:#00f&#34;&gt;|
-&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;          v.name = &amp;#34;Cluster Node &amp;#34; + num.to_s&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;end&lt;span style=&#34;color:#bbb&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;end&lt;span style=&#34;color:#bbb&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;end&lt;span style=&#34;color:#bbb&#34;&gt;
-&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;end&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;It should now be possible to SSH into each box by name, ie.
-vagrant ssh node1&lt;/p&gt;
-
-&lt;hr&gt;
-
-&lt;h1 id=&#34;alternative-approaches&#34;&gt;Alternative approaches&lt;/h1&gt;
-
-&lt;p&gt;Here are some approached that I tried, but gave up on for one or another reason.&lt;/p&gt;
-
-&lt;h3 id=&#34;alternative-1-installing-from-source&#34;&gt;Alternative 1. Installing from source&lt;/h3&gt;
-
-&lt;p&gt;Add this to /etc/apt/sources.list:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;deb http://us.archive.ubuntu.com/ubuntu vivid main universe 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then run:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo apt-get update &amp;amp;&amp;amp;
-sudo apt-get -y upgrade &amp;amp;&amp;amp;
-sudo apt-get -y install ruby libtool pkg-config build-essential autoconf automake git libsodium-dev &amp;amp;&amp;amp;
-sudo gem install rmate &amp;amp;&amp;amp;
-wget -c http://download.zeromq.org/zeromq-4.1.4.tar.gz &amp;amp;&amp;amp;
-tar -xzf zeromq-4.1.4.tar.gz &amp;amp;&amp;amp; cd zeromq-4.1.4 &amp;amp;&amp;amp;
-./configure --prefix=/usr &amp;amp;&amp;amp; make &amp;amp;&amp;amp; sudo make install &amp;amp;&amp;amp;
-cd ~ &amp;amp;&amp;amp;
-git clone https://github.com/zeromq/cppzmq
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now reboot. Connect using:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;ssh -i ~/.vagrant.d/insecure_private_key -p8022 -R 52698:localhost:52698 vagrant@127.0.0.1
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;This should compile the example without errors:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;g++ hwserver.cpp -o hwserver -lzmq
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then run:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;./hwserver 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now shutdown and package the node.. Except that upgrading&lt;/p&gt;
-
-&lt;h3 id=&#34;alternative-2-using-ubuntu-server-15-10&#34;&gt;Alternative 2. Using Ubuntu Server 15.10&lt;/h3&gt;
-
-&lt;p&gt;Libsodium is available for in the 15.10 packages, meaning that it doesn&amp;rsquo;t need to be built.&lt;/p&gt;
-
-&lt;p&gt;Copy SSH public key into authorized_keys. Add to sources:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;deb http://httpredir.debian.org/debian/ experimental main contrib non-free
-deb-src http://httpredir.debian.org/debian/ experimental main contrib non-free
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Then:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;apt-get update
-apt-get install libzmq5-dev ruby
-apt-get gem install rmate
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+      <description>ZeroMQ is a powerful library for network programming.
+But it&amp;rsquo;s no fun to just connecting to localhost! By building a single Ubuntu VM and saving it as a Vagrant box, we can spin up as many clients as the machine can handle!
+Install Ubuntu 14.04 into a VirtualBox VM Remeber to Install Ubuntu with user &amp;lsquo;Vagrant&amp;rsquo; and forward port 22 to work from the host. Tested with ubuntu-14.04.3-server-amd64.iso</description>
     </item>
     
     <item>
@@ -534,131 +85,10 @@ apt-get gem install rmate
       <pubDate>Wed, 23 Dec 2015 15:30:00 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/12/bitcoin-on-linux/</guid>
-      <description>
-
-&lt;h2 id=&#34;1-building-bitcoin-core&#34;&gt;1. Building BitCoin-Core&lt;/h2&gt;
-
-&lt;p&gt;Install the build environment and dependencies&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo apt-get update
-sudo apt-get install build-essential autoconf libssl-dev libboost-dev libboost-chrono-dev libboost-filesystem-dev libboost-program-options-dev libboost-system-dev libboost-test-dev libboost-thread-dev libdb4.8++-dev libdb4.8-dev pkg-config
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Clone the Git repo and view available version:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git clone https://github.com/bitcoin/bitcoin.git
-git tag
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Checkout the last released version ie.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;git checkout 0.9.5rc2
-cd bitcoin
-./autogen.sh
-./configure --without-gui
-sudo make install
-which bitcoind
-which bitcoin-cli
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now run setup Bitcoind&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoind
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;create .bitcoin/bitcoin.conf and add:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;rpcuser=bitcoinrpc
-rpcpassword=&amp;lt;password shown in the previous step&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now run Bitcoind and rebuild the blockchain:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoind -daemon
-tail -f ~/.bitcoin/debug.log
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;2-setting-up-a-wallet&#34;&gt;2. Setting up a wallet&lt;/h2&gt;
-
-&lt;p&gt;Set a password&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoin-cli encryptwallet &amp;lt;SECURE PASSWORD&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Restart the daemon if it isn&amp;rsquo;t running:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoind -daemon
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Login to the wallet:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoin-cli walletpassphrase &amp;lt;SECURE PASSWORD&amp;gt; 360
-bitcoin-cli getinfo
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Backup and Restore&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoin-cli backupwallet wallet.bak
-bitcoin-cli importwallet wallet.bak
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;View as human readable:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoin-cli dumpwallet wallet.txt
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Now wait for the client to become synched with the blockchain&lt;/p&gt;
-
-&lt;h2 id=&#34;3-receiving-bitcoins&#34;&gt;3. Receiving bitcoins&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code&gt;bitcoin-cli getnewaddress
-&amp;lt;NEW ADDRESS APPEARS&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Send some bitcoins!&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;  bitcoin-cli getreceivedbyaddress &amp;lt;NEW ADDRESS APPEARS&amp;gt;
-  bitcoin-cli getbalance
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3 id=&#34;4-stopping-the-vps-hypervisor-from-shutting-down-the-vm&#34;&gt;4. Stopping the VPS hypervisor from shutting down the VM&lt;/h3&gt;
-
-&lt;p&gt;While it is syncing the blockchain it will be verifying each and every block that it receives, and so the CPU usage will get so high that the VPS provider will keep shutting it down.&lt;/p&gt;
-
-&lt;p&gt;To avoid this, limit the CPU:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;$ echo daemon=0 &amp;gt;&amp;gt; ~/.bitcoin/bitcoin.conf
-$ cpulimit -l 90 bitcoind &amp;amp;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;How far along is it synching?&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;nspool@vps:~$ bitcoind getinfo
-{
-    &amp;quot;version&amp;quot; : 90500,
-    &amp;quot;protocolversion&amp;quot; : 70002,
-    &amp;quot;walletversion&amp;quot; : 60000,
-    &amp;quot;balance&amp;quot; : 0.00000000,
-    &amp;quot;blocks&amp;quot; : 299058,
-    &amp;quot;timeoffset&amp;quot; : 0,
-    &amp;quot;connections&amp;quot; : 13,
-    &amp;quot;proxy&amp;quot; : &amp;quot;&amp;quot;,
-    &amp;quot;difficulty&amp;quot; : 8000872135.96816349,
-    &amp;quot;testnet&amp;quot; : false,
-    &amp;quot;keypoololdest&amp;quot; : 1449355342,
-    &amp;quot;keypoolsize&amp;quot; : 100,
-    &amp;quot;unlocked_until&amp;quot; : 0,
-    &amp;quot;paytxfee&amp;quot; : 0.00000000,
-    &amp;quot;relayfee&amp;quot; : 0.00001000,
-    &amp;quot;errors&amp;quot; : &amp;quot;&amp;quot;
-}
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;It was 386959 last I checked on blockchain.info. So the progress is &lt;sup&gt;324173&lt;/sup&gt;&amp;frasl;&lt;sub&gt;386959&lt;/sub&gt; = ~77%&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;du -sh .bitcoin/blocks/
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+      <description>1. Building BitCoin-Core Install the build environment and dependencies
+sudo apt-get update sudo apt-get install build-essential autoconf libssl-dev libboost-dev libboost-chrono-dev libboost-filesystem-dev libboost-program-options-dev libboost-system-dev libboost-test-dev libboost-thread-dev libdb4.8++-dev libdb4.8-dev pkg-config  Clone the Git repo and view available version:
+git clone https://github.com/bitcoin/bitcoin.git git tag  Checkout the last released version ie.
+git checkout 0.9.5rc2 cd bitcoin ./autogen.sh ./configure --without-gui sudo make install which bitcoind which bitcoin-cli  Now run setup Bitcoind</description>
     </item>
     
     <item>
@@ -667,43 +97,8 @@ $ cpulimit -l 90 bitcoind &amp;amp;
       <pubDate>Wed, 23 Sep 2015 20:30:00 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/09/serving-files/</guid>
-      <description>&lt;p&gt;Suppose we wish to serve a bunch of images from a directory by over a REST endpoint and retrieve them by index.
-For example: &lt;code&gt;http://localhost:4567/image?index=0&lt;/code&gt; would return the first image in the directory.
-This is easy to accomplish in Ruby by using Sinatra:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-ruby&#34; data-lang=&#34;ruby&#34;&gt;require &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;sinatra&amp;#39;&lt;/span&gt;
-get &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;/image&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;do&lt;/span&gt;
-
-  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Read all the JPEG files from a given directory&lt;/span&gt;
-  @images = Dir.glob(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;/Users/nspool/Pictures/*.jpg&amp;#34;&lt;/span&gt;)
-
-  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Take the path at the supplied index&lt;/span&gt;
-  index = params[&lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;index&amp;#39;&lt;/span&gt;].to_i
-  path = @images[index]
-
-  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;# Return the image&lt;/span&gt;
-  send_file open(path, &lt;span style=&#34;color:#00f&#34;&gt;type&lt;/span&gt;: &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;disposition&lt;/span&gt;: &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;inline&amp;#39;&lt;/span&gt;)
-&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;end&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;If we just want to serve a different image for each index and not worry about running out of images by choosing an image index that is too high, we can return the image at index modulo the number of available images.&lt;/p&gt;
-
-&lt;p&gt;Here is a more complete example that does just that:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-ruby&#34; data-lang=&#34;ruby&#34;&gt;require &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;sinatra&amp;#39;&lt;/span&gt;
-get &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;/&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;do&lt;/span&gt;
-	&lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;Usage: /image?index=123&amp;#39;&lt;/span&gt;
-&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;end&lt;/span&gt;
-get &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;/image&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;do&lt;/span&gt;
-	@images = Dir.glob(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;/Users/nspool/Pictures/*.jpg&amp;#34;&lt;/span&gt;)
-	index = params[&lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;index&amp;#39;&lt;/span&gt;].to_i &lt;span style=&#34;color:#00f&#34;&gt;% @images.count
-&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;	path &lt;/span&gt; = @images[index]
-	redirect &lt;span style=&#34;color:#00f&#34;&gt;404&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;unless&lt;/span&gt; File.readable?(path)
-	content_type &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;
-	send_file open(path, &lt;span style=&#34;color:#00f&#34;&gt;type&lt;/span&gt;: &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;image/jpeg&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;disposition&lt;/span&gt;: &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;inline&amp;#39;&lt;/span&gt;)
-&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Run with &lt;code&gt;ruby server.rb&lt;/code&gt; then use URLs of the form &lt;code&gt;http://localhost:4567/image?index=123&lt;/code&gt;.&lt;/p&gt;
-</description>
+      <description>Suppose we wish to serve a bunch of images from a directory by over a REST endpoint and retrieve them by index. For example: http://localhost:4567/image?index=0 would return the first image in the directory. This is easy to accomplish in Ruby by using Sinatra:
+require &amp;#39;sinatra&amp;#39; get &amp;#39;/image&amp;#39; do # Read all the JPEG files from a given directory @images = Dir.glob(&amp;#34;/Users/nspool/Pictures/*.jpg&amp;#34;) # Take the path at the supplied index index = params[&amp;#39;index&amp;#39;].</description>
     </item>
     
     <item>
@@ -712,46 +107,9 @@ get &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;/image&amp;#39;&lt;/span&gt;
       <pubDate>Wed, 16 Sep 2015 20:30:00 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/09/nsfilehandle/</guid>
-      <description>&lt;p&gt;If you are working with an NSFileHandle that encapsulated a pipe, it was possible to use a &lt;code&gt;@try-@catch&lt;/code&gt; block to handle a failed write.&lt;/p&gt;
-
-&lt;p&gt;In this example, fileHandle could represent an open socket, with the &lt;em&gt;SIGPIP&lt;/em&gt; thrown if the client disconnects unexpectedly and the pipe is closed:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-objective-c&#34; data-lang=&#34;objective-c&#34;&gt;&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;@try&lt;/span&gt;
-{
-  [fileHandle writeData:fileData];
-}
-&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;@catch&lt;/span&gt; (NSException *exception)
-{
-  &lt;span style=&#34;color:#080;font-style:italic&#34;&gt;// Ignore the SIGPIP
-&lt;/span&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;&lt;/span&gt;}
-&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;@finally&lt;/span&gt;
-{
-  CFRelease(fileData);
-}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Unfortunately in Swift 2.0 this isn&amp;rsquo;t possible; the analogous &lt;code&gt;try-catch&lt;/code&gt; doesn&amp;rsquo;t capture signals.&lt;/p&gt;
-
-&lt;p&gt;How can we can handle this in Swift?&lt;/p&gt;
-
-&lt;p&gt;My solution has been to fall back to the native BSD APIs. When creating the socket with &lt;code&gt;CFSocketCreate&lt;/code&gt; prevent &lt;em&gt;SIGPIP&lt;/em&gt; from being thrown by setting the option:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;var&lt;/span&gt; no_sig_pipe: Int32 = &lt;span style=&#34;color:#00f&#34;&gt;1&lt;/span&gt;
-setsockopt(CFSocketGetNative(socket),
-SOL_SOCKET,
-SO_NOSIGPIPE,
-&amp;amp;no_sig_pipe,
-socklen_t(sizeof(Int32)))&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Then assuming the write is performed in a separate method, we can use a guard to perform a dummy write before the socket is used:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-swift&#34; data-lang=&#34;swift&#34;&gt;&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;guard&lt;/span&gt; (write(fileHandle.fileDescriptor, &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;nil&lt;/span&gt;, &lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;) == &lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;) &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;else&lt;/span&gt; {
-  CFRelease(fileData)
-    &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;false&lt;/span&gt;
-  }
-fileHandle.writeData(fileData)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;If the socket is closed then the guard will cleanup and return.&lt;/p&gt;
-</description>
+      <description>If you are working with an NSFileHandle that encapsulated a pipe, it was possible to use a @try-@catch block to handle a failed write.
+In this example, fileHandle could represent an open socket, with the SIGPIP thrown if the client disconnects unexpectedly and the pipe is closed:
+@try { [fileHandle writeData:fileData]; } @catch (NSException *exception) { // Ignore the SIGPIP } @finally { CFRelease(fileData); } Unfortunately in Swift 2.0 this isn&amp;rsquo;t possible; the analogous try-catch doesn&amp;rsquo;t capture signals.</description>
     </item>
     
     <item>
@@ -760,23 +118,8 @@ fileHandle.writeData(fileData)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       <pubDate>Mon, 20 Jul 2015 09:00:00 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/07/moving/</guid>
-      <description>&lt;p&gt;GitHub Pages doesn&amp;rsquo;t (yet) allow an SSL certificate for a custom domain, so I&amp;rsquo;ve moved this blog to S3.&lt;/p&gt;
-
-&lt;p&gt;Uploading the certificate to AWS requires the CA certificate chain. This isn&amp;rsquo;t always always provided by the CA, but can be generated from the command line. For example, Comodo provides the certificates in the chain, so all that&amp;rsquo;s necessary to create the file is to concatenate the certs in PEM format into one file:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;(openssl x509 -inform PEM -in COMODORSADomainValidationSecureServerCA.crt; 
-openssl x509 -inform PEM -in COMODORSAAddTrustCA.crt; 
-openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) &amp;gt; ca_chain.pem&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;This will provide a file that is suitable for the &lt;code&gt;--certificate-chain&lt;/code&gt; parameter of &lt;code&gt;aws iam upload-server-certificate&lt;/code&gt;:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;aws iam upload-server-certificate &lt;span style=&#34;color:#00f&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --server-certificate-name mycert &lt;span style=&#34;color:#00f&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --certificate-body file://mycert.crt &lt;span style=&#34;color:#00f&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --private-key file://mycert.key &lt;span style=&#34;color:#00f&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --certificate-chain file://ca_chain.pem &lt;span style=&#34;color:#00f&#34;&gt;\
-&lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;&lt;/span&gt;  --path /cloudfront/&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-</description>
+      <description>GitHub Pages doesn&amp;rsquo;t (yet) allow an SSL certificate for a custom domain, so I&amp;rsquo;ve moved this blog to S3.
+Uploading the certificate to AWS requires the CA certificate chain. This isn&amp;rsquo;t always always provided by the CA, but can be generated from the command line. For example, Comodo provides the certificates in the chain, so all that&amp;rsquo;s necessary to create the file is to concatenate the certs in PEM format into one file:</description>
     </item>
     
     <item>
@@ -785,49 +128,8 @@ openssl x509 -inform PEM -in AddTrustExternalCARoot.crt) &amp;gt; ca_chain.pem&l
       <pubDate>Wed, 04 Feb 2015 22:00:00 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/02/remoting-to-a-lisp/</guid>
-      <description>&lt;p&gt;After reading about &lt;a href=&#34;http://www.flownet.com/gat/jpl-lisp.html&#34;&gt;the rise and fall of Lisp at the Jet Propulsion Lab JPL&lt;/a&gt; I refresh my Lisp experience. Now I can hack on a Lisp web service hosted on a remote server from within Emacs from my laptop.&lt;/p&gt;
-
-&lt;p&gt;Setting up a Lisp dev environment is easy: the instructions at &lt;a href=&#34;http://www.cliki.net/Getting%20Started&#34;&gt;Common Lisp Wiki&lt;/a&gt; will give you a GNU/Emacs with &lt;a href=&#34;http://common-lisp.net/project/slime/&#34;&gt;SLIME mode&lt;/a&gt; package installed. For a remote development setup, both the remote server and local dev machine should have &lt;a href=&#34;http://www.sbcl.org/&#34;&gt;Steel Bank Common Lisp&lt;/a&gt; along with the &lt;a href=&#34;http://www.quicklisp.org/&#34;&gt;QuickLisp&lt;/a&gt; package manager installed.&lt;/p&gt;
-
-&lt;p&gt;The &lt;em&gt;SLIME&lt;/em&gt; package provides an Emacs major-mode for Common Lisp development. Similar to the &lt;a href=&#34;http://en.wikipedia.org/wiki/Sam_(text_editor)&#34;&gt;Sam text editor&lt;/a&gt;, the SLIME uses a seperate backend server that it communicates with over a network port. It is that server, named &lt;em&gt;Swank&lt;/em&gt;, that is loaded into the Lisp interpreter. This means that on the target box we can just install the &lt;em&gt;Swank&lt;/em&gt; backend and then communicate with it over SSH.&lt;/p&gt;
-
-&lt;p&gt;Add the following to the &lt;code&gt;.sbclrc&lt;/code&gt; on the remote box to load &lt;em&gt;Swank&lt;/em&gt; when SBCL is started:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-lisp&#34; data-lang=&#34;lisp&#34;&gt;&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;; Setup Swank&lt;/span&gt;
-(ql:quickload &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;swank&amp;#34;&lt;/span&gt;)
-(require &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;asdf&lt;/span&gt;)
-(asdf:oos &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;asdf:load-op&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;&amp;#39;swank&lt;/span&gt;)
-(setf swank:*communication-style* &lt;span style=&#34;color:#00f&#34;&gt;:fd-handler&lt;/span&gt;)
-(swank:create-server &lt;span style=&#34;color:#00f&#34;&gt;:dont-close&lt;/span&gt; t)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Now in a seperate terminal window start a new instance of SSH to the remote machine, and forward the local port &lt;code&gt;4007&lt;/code&gt; to the remote port &lt;code&gt;4005&lt;/code&gt; which is used by &lt;em&gt;Swank&lt;/em&gt;:
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;ssh -C -L4007:127.0.0.1:4005 $USER@$REMOTEIP&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/p&gt;
-
-&lt;p&gt;Now tell &lt;em&gt;SLIME&lt;/em&gt; to connect to the remote machine. In Emacs type &lt;code&gt;M-x slime-connect&lt;/code&gt; and choose &lt;code&gt;127.0.0.1&lt;/code&gt; and port &lt;code&gt;4007&lt;/code&gt;.&lt;/p&gt;
-
-&lt;p&gt;And that&amp;rsquo;s it! You will now be interacting with the REPL of the remote machine. For bonus points we can start a simple web server on the remote box just to prove we&amp;rsquo;ve done it. If you type this into the REPL it will load the &lt;a href=&#34;http://clacklisp.org/tutorial/02-getting-clack.html&#34;&gt;Clack web framwork&lt;/a&gt; and serve up a simple Hello, World on port 5000:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-lisp&#34; data-lang=&#34;lisp&#34;&gt;(ql:quickload &lt;span style=&#34;color:#00f&#34;&gt;:clack&lt;/span&gt;)
-(clack:clackup
-  (lambda (env)
-    (declare (ignore env))
-    &amp;#39;(&lt;span style=&#34;color:#00f&#34;&gt;200&lt;/span&gt; (&lt;span style=&#34;color:#00f&#34;&gt;:content-type&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;text/plain&amp;#34;&lt;/span&gt;)(break) (&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;Hello, Clack!&amp;#34;&lt;/span&gt;))))&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Use Curl on the development machine and you should see:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;curl http://$REMOTEIP:5000
-Hello, Clack!&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;To change the server text to &lt;code&gt;Hello, World!&lt;/code&gt;:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-lisp&#34; data-lang=&#34;lisp&#34;&gt;(clack:stop *)
-(clack:clackup
-  (lambda (env)
-  (declare (ignore env))
-  &amp;#39;(&lt;span style=&#34;color:#00f&#34;&gt;200&lt;/span&gt; (&lt;span style=&#34;color:#00f&#34;&gt;:content-type&lt;/span&gt; &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;text/plain&amp;#34;&lt;/span&gt;)(break) (&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;Hello, World!&amp;#34;&lt;/span&gt;))))&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Enjoy!&lt;/p&gt;
-</description>
+      <description>After reading about the rise and fall of Lisp at the Jet Propulsion Lab JPL I refresh my Lisp experience. Now I can hack on a Lisp web service hosted on a remote server from within Emacs from my laptop.
+Setting up a Lisp dev environment is easy: the instructions at Common Lisp Wiki will give you a GNU/Emacs with SLIME mode package installed. For a remote development setup, both the remote server and local dev machine should have Steel Bank Common Lisp along with the QuickLisp package manager installed.</description>
     </item>
     
     <item>
@@ -836,11 +138,8 @@ Hello, Clack!&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       <pubDate>Wed, 28 Jan 2015 22:18:56 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/01/happy-numbers/</guid>
-      <description>&lt;p&gt;Here is a Mathematica snippit to count the number of &lt;a href=&#34;http://oeis.org/A007770&#34;&gt;Happy Numbers&lt;/a&gt; up to 1000:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-mathematica&#34; data-lang=&#34;mathematica&#34;&gt;Length[Select[Range[&lt;span style=&#34;color:#00f&#34;&gt;1000&lt;/span&gt;],&lt;span style=&#34;color:#bbb&#34;&gt; 
-&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;FixedPoint[Total[IntegerDigits[#]^&lt;span style=&#34;color:#00f&#34;&gt;2&lt;/span&gt;]&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&amp;amp;,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;#,&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;10&lt;/span&gt;]&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;==&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#00f&#34;&gt;1&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&amp;amp;]]&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-</description>
+      <description>Here is a Mathematica snippit to count the number of Happy Numbers up to 1000:
+Length[Select[Range[1000],FixedPoint[Total[IntegerDigits[#]^2]&amp;amp;,#,10]==1&amp;amp;]] </description>
     </item>
     
     <item>
@@ -849,17 +148,9 @@ Hello, Clack!&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       <pubDate>Wed, 14 Jan 2015 21:16:11 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/01/strings-and-gdb/</guid>
-      <description>&lt;p&gt;In a GDB disassembly, what string is at the value being compared with &lt;code&gt;eax&lt;/code&gt;?&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;x080485a0 &amp;lt;+48&amp;gt;: je 0x34(%esp),%eax
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Solution:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;(gdb) x/s *(esp + 0x34)
-0x8048690: &amp;quot;hellostring!\n&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-</description>
+      <description>In a GDB disassembly, what string is at the value being compared with eax?
+x080485a0 &amp;lt;+48&amp;gt;: je 0x34(%esp),%eax  Solution:
+(gdb) x/s *(esp + 0x34) 0x8048690: &amp;quot;hellostring!\n&amp;quot;  </description>
     </item>
     
     <item>
@@ -868,30 +159,9 @@ Hello, Clack!&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
       <pubDate>Tue, 13 Jan 2015 21:16:11 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/01/cracking-a-xor/</guid>
-      <description>&lt;p&gt;In days part there were sites known to store login status in a client-side cookie obscured by a XOR cyper. When first visting the site some code like this would run:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-perl&#34; data-lang=&#34;perl&#34;&gt;$cookie = xor_crypt($json_encode(array(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;login&amp;#34;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;false&amp;#34;&lt;/span&gt;)));&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;Then &lt;code&gt;$cookie&lt;/code&gt; would be set on the client side, something like &lt;code&gt;data=GkAPXlVaD0BZE1RSDREGE08=&lt;/code&gt;. A successful login would containg a similar:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-perl&#34; data-lang=&#34;perl&#34;&gt;$cookie = xor_crypt($json_encode(array(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;login&amp;#34;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;true&amp;#34;&lt;/span&gt;)));&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;That would result in the cookie &lt;code&gt;data=GkAPXlVaD0BZE0ZBFAdBTA==&lt;/code&gt;. Looking at there two values it is plain that they are very similar. That only a few positions have changed indicate a basic &lt;a href=&#34;http://en.wikipedia.org/wiki/Symmetric-key_algorithm&#34;&gt;symmetric cypher&lt;/a&gt;, in this case just a simple XOR of the JSON value against a fixed key.&lt;/p&gt;
-
-&lt;p&gt;While it is trivial to brute-force the key, it is more fun to guess. A website setting a single long key might indicate a serialized array and logging in and out gives some indicate to what is being set. Then we can determine the key:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-perl&#34; data-lang=&#34;perl&#34;&gt;$ct = base64_decode(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;GkAPXlVaD0BZE1RSDREGE08=&amp;#34;&lt;/span&gt;);
-$pt = json_encode(array(&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;login&amp;#34;&lt;/span&gt;=&amp;gt;&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;false&amp;#34;&lt;/span&gt;));
-$key = &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;;
-
-&lt;span style=&#34;color:#000080;font-weight:bold&#34;&gt;for&lt;/span&gt;($i=&lt;span style=&#34;color:#00f&#34;&gt;0&lt;/span&gt;;$i&amp;lt;strlen($ct);$i++) {
-  $key .= $ct[$i] ^ $pt[$i % strlen($pt)];
-}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;This gives &lt;code&gt;abc123abc123abc123abc1 ..&lt;/code&gt; which is both human readable and contains repetitive.&lt;/p&gt;
-
-&lt;p&gt;Now it is just a matter of determining the value of &lt;code&gt;login&lt;/code&gt; that we desire and re-encoding the cookie.&lt;/p&gt;
-</description>
+      <description>In days part there were sites known to store login status in a client-side cookie obscured by a XOR cyper. When first visting the site some code like this would run:
+$cookie = xor_crypt($json_encode(array(&amp;#34;login&amp;#34;=&amp;gt;&amp;#34;false&amp;#34;))); Then $cookie would be set on the client side, something like data=GkAPXlVaD0BZE1RSDREGE08=. A successful login would containg a similar:
+$cookie = xor_crypt($json_encode(array(&amp;#34;login&amp;#34;=&amp;gt;&amp;#34;true&amp;#34;))); That would result in the cookie data=GkAPXlVaD0BZE0ZBFAdBTA==. Looking at there two values it is plain that they are very similar.</description>
     </item>
     
     <item>
@@ -900,17 +170,72 @@ $key = &lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;;
       <pubDate>Mon, 12 Jan 2015 21:08:56 +0000</pubDate>
       
       <guid>https://nspool.github.io/2015/01/cookies-and-netcat/</guid>
-      <description>&lt;p&gt;I&amp;rsquo;ve decided to move this blog to &lt;a href=&#34;https://pages.github.com&#34;&gt;GitHub Pages&lt;/a&gt;. This will be the third move since this blog was started in 2007 on the &lt;a href=&#34;http://sdf.org&#34;&gt;Super Dimension Fortress&lt;/a&gt; and then to some cheap wordpress shared hosting.&lt;/p&gt;
-
-&lt;p&gt;In the following couple of weeks I&amp;rsquo;ll triage the old site and re-post anything that is still worthwhile to this blog.&lt;/p&gt;
-
-&lt;p&gt;In the meantime here&amp;rsquo;s an example of using &lt;code&gt;netcat&lt;/code&gt; to do a HTTP request containing a cookie. For good measure parameter &lt;code&gt;-p 24&lt;/code&gt; forces the server to reply to the client on port 42.&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#008080&#34;&gt;#!/bin/bash
-&lt;/span&gt;&lt;span style=&#34;color:#008080&#34;&gt;&lt;/span&gt;head=&lt;span style=&#34;color:#00f&#34;&gt;&amp;#34;GET http://www.example.org HTTP/1.1\r\nHost: .example.org\r\nCookie: VALUE=ABC123;\r\nAccept: */*\r\nConnection: Close\r\n\r\n&amp;#34;&lt;/span&gt;;
-echo -ne $head | nc -p42 www.example.org &lt;span style=&#34;color:#00f&#34;&gt;80&lt;/span&gt;
-&lt;span style=&#34;color:#080;font-style:italic&#34;&gt;#=&amp;gt; Using port 42 for the reply.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-</description>
+      <description>I&amp;rsquo;ve decided to move this blog to GitHub Pages. This will be the third move since this blog was started in 2007 on the Super Dimension Fortress and then to some cheap wordpress shared hosting.
+In the following couple of weeks I&amp;rsquo;ll triage the old site and re-post anything that is still worthwhile to this blog.
+In the meantime here&amp;rsquo;s an example of using netcat to do a HTTP request containing a cookie.</description>
+    </item>
+    
+    <item>
+      <title>Partitioning Sets</title>
+      <link>https://nspool.github.io/2014/08/notes-from-a-combinatorial-problem/</link>
+      <pubDate>Fri, 01 Aug 2014 09:00:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2014/08/notes-from-a-combinatorial-problem/</guid>
+      <description>We have a program that performs a comparison of every pair of elements in a database, and then compares the result with the median value of all values. It was suggested that the program should instead make pairwise comparisons within every possible combination of subsets. How many comparisons would we end up making?
+For this example, each element in our database will be represented by an integer. We call these elements the population which is then partitioned into all possible distinct pairwise disjoint subsets .</description>
+    </item>
+    
+    <item>
+      <title>StatusNet on MAMP</title>
+      <link>https://nspool.github.io/2013/12/status.net-on-mamp/</link>
+      <pubDate>Wed, 11 Dec 2013 09:00:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2013/12/status.net-on-mamp/</guid>
+      <description>(Update: StatusNet is now merged into GNU social)
+StatusNet is a federated microblogging service. This is how I managed to setup a local server on my laptop under MAMP.
+ Set MAMP PHP version to 5.2.* Extract tar into htdocs Fix permissions Replace .htaccess with the htaccess.sample, filling out the values manually Add statusnet database using phpmyadmin Make sure statusnet database user has all the permissions. Apply this patch. If this isn&amp;rsquo;t applied doing a tweet status update will result in a HTTP 500.</description>
+    </item>
+    
+    <item>
+      <title>WebKit Keyframe Animations</title>
+      <link>https://nspool.github.io/2013/11/odradek/</link>
+      <pubDate>Sat, 23 Nov 2013 09:00:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2013/11/odradek/</guid>
+      <description>Odradek doesn&amp;rsquo;t need Javascript to move around thanks to CSS3 and WebKit keyframe animations.
+A simple transition move-odradek can be defined in pure CSS as:
+@-webkit-keyframes move-odradek { from { margin-left:100%;} to {margin-left:0%;} } Assign the animation to the element:
+-webkit-animation: move-odradek 30s; </description>
+    </item>
+    
+    <item>
+      <title>Getting Started with Plan 9 graphics programming</title>
+      <link>https://nspool.github.io/2013/02/bouncing-ball/</link>
+      <pubDate>Fri, 22 Feb 2013 09:00:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/2013/02/bouncing-ball/</guid>
+      <description>Where to start writing apps for Plan 9 from Bell Labs? Most of the documentation around focuses on the shell and the file system. The tutorial explains how to write a simple bouncing ball app for the Plan 9 UI.
+First, install either the official Plan 9 distribution or the community fork 9front. If you are only interested in experimenting with the Plan 9 GUI, I would recommend 9front. However if you intend on understanding Plan 9 as an operating systems research project in the way that it was intended then start with the official distribution, set up the prerequisite file, CPU and auth servers and go from there.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://nspool.github.io/contact/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/contact/</guid>
+      <description>Contact Email: nspool at gmx.com</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://nspool.github.io/privacy/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://nspool.github.io/privacy/</guid>
+      <description>Game of Life Privacy Policy Pocket Life is a Free app. This SERVICE is provided at no cost and is intended for use as is.
+This page is used to inform visitors regarding my policies with the collection, use, and disclosure of Personal Information if anyone decided to use my Service.
+If you choose to use my Service, then you agree to the collection and use of information in relation to this policy.</description>
     </item>
     
   </channel>

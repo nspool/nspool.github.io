@@ -26,13 +26,13 @@
   </url>
   
   <url>
-    <loc>https://nspool.github.io/categories/unix/</loc>
+    <loc>https://nspool.github.io/</loc>
     <lastmod>2018-04-06T21:11:00+10:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://nspool.github.io/</loc>
+    <loc>https://nspool.github.io/categories/unix/</loc>
     <lastmod>2018-04-06T21:11:00+10:00</lastmod>
     <priority>0</priority>
   </url>
@@ -279,6 +279,11 @@
   
   <url>
     <loc>https://nspool.github.io/contact/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://nspool.github.io/privacy/</loc>
     <priority>0</priority>
   </url>
   
